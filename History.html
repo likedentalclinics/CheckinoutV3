@@ -35,7 +35,7 @@
           <span id="name-info" class="font-medium ml-1"></span>
         </div>
         <div class="flex items-center">
-          <strong>รหัสพนักงาน:</strong>
+          <strong>เลข ท.:</strong>
           <span id="employee-id-info" class="font-medium ml-1"></span>
         </div>
       </div>
@@ -109,7 +109,7 @@
         console.log('Fetched data:', data);
         const filteredData = data.filter(row => row[11] === userId); // กรองข้อมูลตาม userId (คอลัมน์ที่ 11)
 
-        // แสดงชื่อและรหัสพนักงานจากแถวสุดท้าย
+        // แสดงชื่อและเลข ท.จากแถวสุดท้าย
         if (filteredData.length > 0) {
           const lastRow = filteredData[filteredData.length - 1];
           document.getElementById('name-info').textContent = lastRow[2];
