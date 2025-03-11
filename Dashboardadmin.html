@@ -77,9 +77,9 @@
         <input type="text" id="filterName" autocomplete="off"
           class="mt-2 block w-full rounded-md border-0 p-1.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm" />
       </div>
-      <!-- Filter: รหัสพนักงาน -->
+      <!-- Filter: เลข ท. -->
       <div class="mb-4">
-        <label for="filterEmployeeId" class="block text-sm font-medium text-slate-900">รหัสพนักงาน</label>
+        <label for="filterEmployeeId" class="block text-sm font-medium text-slate-900">เลข ท.</label>
         <input type="text" id="filterEmployeeId" autocomplete="off"
           class="mt-2 block w-full rounded-md border-0 p-1.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm" />
       </div>
@@ -134,7 +134,7 @@
           </div>
           <div>
             <input type="checkbox" id="colEmployeeId" checked />
-            <label for="colEmployeeId">รหัสพนักงาน</label>
+            <label for="colEmployeeId">เลข ท.</label>
           </div>
           <div>
             <input type="checkbox" id="colName" checked />
@@ -309,7 +309,7 @@
       const selectedColumns = [];
       if (document.getElementById('colImage').checked) selectedColumns.push({ index: 1, label: 'รูปภาพ' });
       if (document.getElementById('colName').checked) selectedColumns.push({ index: 2, label: 'ชื่อ' });
-      if (document.getElementById('colEmployeeId').checked) selectedColumns.push({ index: 3, label: 'รหัสพนักงาน' });
+      if (document.getElementById('colEmployeeId').checked) selectedColumns.push({ index: 3, label: 'เลข ท.' });
       if (document.getElementById('colStatus').checked) selectedColumns.push({ index: 4, label: 'บันทึก' });
       if (document.getElementById('colNote').checked) selectedColumns.push({ index: 5, label: 'หมายเหตุ' });
       if (document.getElementById('colDate').checked) selectedColumns.push({ index: 0, label: 'วันที่' });
@@ -366,9 +366,9 @@
         row1_col2.classList.add('text-right');
         row1_col2.textContent = `วันที่: ${formatted.date}`;
 
-        // แถว 2: รหัสพนักงาน (ซ้าย), เวลา (ขวา)
+        // แถว 2: เลข ท. (ซ้าย), เวลา (ขวา)
         const row2_col1 = document.createElement('div');
-        row2_col1.textContent = `รหัสพนักงาน: ${item[3] || ''}`;
+        row2_col1.textContent = `เลข ท.: ${item[3] || ''}`;
         const row2_col2 = document.createElement('div');
         row2_col2.classList.add('text-right');
         row2_col2.textContent = `เวลา: ${formatted.time}`;
