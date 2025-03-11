@@ -7,8 +7,8 @@ const WEB_APP_Leave_URL = 'https://script.google.com/macros/s/AKfycbzG_o6J7cL_Bg
 const WEB_APP_OT_URL = 'https://script.google.com/macros/s/AKfycbxhqXkdnJB30SIDfFXi_fr02rVAOtNPiz3u6a0hQJPcfeLSL4WsdsTFjPz6W7frJnkl/exec';
 
 //LIFF_ID
-const LIFF_ID = 'XXXXXXXX'; // LIFF ID Checkin
-const LIFF_ID1 = 'XXXXXXXX'; // LIFF ID history
-const LIFF_ID2 = 'XXXXXXXX'; // LIFF ID leave
-const LIFF_ID3 = 'XXXXXXXX'; // LIFF ID ot
-const LIFF_ID4 = 'XXXXXXXX'; // LIFF ID register
+const LIFF_ID = '2007047383-gVW8J9pn'; // LIFF ID Checkin
+const LIFF_ID1 = '2007047383-ADDp4zLM'; // LIFF ID history
+const LIFF_ID2 = '2007047383-vaORNVq4'; // LIFF ID leave
+const LIFF_ID3 = '2007047383-Vw0q76Nz'; // LIFF ID ot
+const LIFF_ID4 = '2007047383-9LzDaqAg'; // LIFF ID register
