@@ -9,6 +9,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
     <style>
         #signatureCanvas {
             border: 1px solid #ccc;
@@ -58,6 +59,7 @@
         // ฟังก์ชันเริ่มต้น LIFF SDK เมื่อโหลดหน้าเว็บ
         window.onload = function () {
             initializeLiff();
+            initializeSignaturePad(); // เรียกฟังก์ชันเริ่มต้น Signature Pad เมื่อหน้าเว็บโหลด
         };
 
         // ฟังก์ชันสำหรับเริ่มต้น LIFF SDK
@@ -230,25 +232,27 @@
         let submitBtn = document.getElementById("submitBtn");
 
         // Signature Pad functionality
+        let signaturePad = null;
         const signatureCanvas = document.getElementById('signatureCanvas');
         const clearSignatureButton = document.getElementById('clearSignature');
         const signatureDataInput = document.getElementById('signatureData');
-        let signaturePad = null;
 
-        if (signatureCanvas) {
-            signaturePad = new SignaturePad(signatureCanvas);
+        function initializeSignaturePad() {
+            if (signatureCanvas) {
+                signaturePad = new SignaturePad(signatureCanvas);
 
-            clearSignatureButton.addEventListener('click', function () {
-                signaturePad.clear();
-                signatureDataInput.value = '';
-            });
+                clearSignatureButton.addEventListener('click', function () {
+                    signaturePad.clear();
+                    signatureDataInput.value = '';
+                });
 
-            // Save signature data to hidden input when submit button is clicked
-            submitBtn.addEventListener('click', function() {
-                if (!signaturePad.isEmpty()) {
-                    signatureDataInput.value = signaturePad.toDataURL();
-                }
-            });
+                // Save signature data to hidden input when submit button is clicked
+                submitBtn.addEventListener('click', function() {
+                    if (!signaturePad.isEmpty()) {
+                        signatureDataInput.value = signaturePad.toDataURL();
+                    }
+                });
+            }
         }
 
 
@@ -258,11 +262,7 @@
             const nameId = nameIdInput.value.trim();
             const keynumberId = keynumberIdInput.value.trim();
 
-            if (userlineId === '' || nameId === '' || keynumberId === '' || signaturePad.isEmpty()) {
-                return false;
-            }
-
-            return true;
+            return userlineId !== '' && nameId !== '' && keynumberId !== '' && !signaturePad.isEmpty();
         }
 
         // เพิ่ม event listener สำหรับปุ่มบันทึกข้อมูล
@@ -351,7 +351,6 @@
             return confirmation.isConfirmed;
         }
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/signature_pad@2.3.2/dist/signature_pad.umd.min.js"></script>
 </body>
 
 </html>
