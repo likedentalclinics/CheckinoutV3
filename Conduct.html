@@ -15,6 +15,7 @@
             border: 1px solid #ccc;
             width: 100%;
             height: 100px;
+            touch-action: none; /* Prevent default touch actions that might interfere */
         }
     </style>
 </head>
@@ -58,8 +59,7 @@
     <script>
         // ฟังก์ชันเริ่มต้น LIFF SDK เมื่อโหลดหน้าเว็บ
         window.onload = function () {
-            initializeLiff();
-            initializeSignaturePad(); // เรียกฟังก์ชันเริ่มต้น Signature Pad เมื่อหน้าเว็บโหลด
+            initializeLiff().then(initializeSignaturePad); // เรียก initializeSignaturePad หลัง initializeLiff เสร็จ
         };
 
         // ฟังก์ชันสำหรับเริ่มต้น LIFF SDK
@@ -67,9 +67,9 @@
             await liff.init({ liffId: `${'2007047383-lvkPL4QJ'}` });
 
             if (liff.isLoggedIn()) {
-                getUserProfile(); // ถ้าเข้าสู่ระบบแล้วให้ดึงข้อมูลโปรไฟล์
+                getUserProfile();
             } else {
-                liff.login(); // ถ้ายังไม่ได้เข้าสู่ระบบ ให้เข้าสู่ระบบก่อน
+                liff.login();
             }
         }
 
@@ -77,9 +77,9 @@
         async function getUserProfile() {
             try {
                 const profile = await liff.getProfile();
-                document.getElementById('userlineId').value = profile.userId; // กำหนดค่า Line ID ในฟิลด์
+                document.getElementById('userlineId').value = profile.userId;
             } catch (error) {
-                console.error('เกิดข้อผิดพลาดในการดึงข้อมูลโปรไฟล์:', error); // แสดงข้อผิดพลาดถ้าดึงข้อมูลไม่สำเร็จ
+                console.error('เกิดข้อผิดพลาดในการดึงข้อมูลโปรไฟล์:', error);
             }
         }
 
@@ -112,7 +112,6 @@
                         type: 'box',
                         layout: 'vertical',
                         contents: [
-                            // แถว "ชื่อ-สกุล"
                             {
                                 type: 'box',
                                 layout: 'horizontal',
@@ -120,7 +119,7 @@
                                 contents: [
                                     {
                                         type: 'image',
-                                        url: 'https://img.icons8.com/?size=100&id=zxB19VPoVLjK&format=png&color=000000', // ตัวอย่างไอคอน
+                                        url: 'https://img.icons8.com/?size=100&id=zxB19VPoVLjK&format=png&color=000000',
                                         size: 'xs',
                                         aspectRatio: '1:1'
                                     },
@@ -148,7 +147,6 @@
                                 type: 'separator',
                                 margin: 'md'
                             },
-                            // แถว "เลข ท."
                             {
                                 type: 'box',
                                 layout: 'horizontal',
@@ -156,7 +154,7 @@
                                 contents: [
                                     {
                                         type: 'image',
-                                        url: 'https://img.icons8.com/?size=100&id=22127&format=png&color=000000', // ตัวอย่างไอคอน
+                                        url: 'https://img.icons8.com/?size=100&id=22127&format=png&color=000000',
                                         size: 'xs',
                                         aspectRatio: '1:1'
                                     },
@@ -184,7 +182,6 @@
                                 type: 'separator',
                                 margin: 'md'
                             },
-                            // แถว "ลายเซ็น"
                             {
                                 type: 'box',
                                 layout: 'horizontal',
@@ -192,7 +189,7 @@
                                 contents: [
                                     {
                                         type: 'image',
-                                        url: 'https://img.icons8.com/?size=100&id=33196&format=png&color=000000', // ตัวอย่างไอคอน
+                                        url: 'https://img.icons8.com/?size=100&id=33196&format=png&color=000000',
                                         size: 'xs',
                                         aspectRatio: '1:1'
                                     },
@@ -229,7 +226,6 @@
         let userlineIdInput = document.getElementById("userlineId");
         let nameIdInput = document.getElementById("nameId");
         let keynumberIdInput = document.getElementById("keynumberId");
-        let signatureDataInput = document.getElementById("signatureData")
         let submitBtn = document.getElementById("submitBtn");
 
         // Signature Pad functionality
@@ -240,7 +236,9 @@
 
         function initializeSignaturePad() {
             if (signatureCanvas) {
-                signaturePad = new SignaturePad(signatureCanvas);
+                signaturePad = new SignaturePad(signatureCanvas, {
+                    penColor: 'rgb(0, 0, 0)' // กำหนดสีของปากกา (ถ้าต้องการ)
+                });
 
                 clearSignatureButton.addEventListener('click', function () {
                     signaturePad.clear();
@@ -256,7 +254,6 @@
             }
         }
 
-
         // ฟังก์ชันสำหรับตรวจสอบการกรอกข้อมูลในฟิลด์ที่จำเป็น
         function validateForm() {
             const userlineId = userlineIdInput.value.trim();
@@ -270,7 +267,7 @@
         submitBtn.addEventListener('click', async (event) => {
             event.preventDefault();
 
-            if (!validateForm()) { // ตรวจสอบว่ากรอกข้อมูลครบถ้วนหรือไม่
+            if (!validateForm()) {
                 Swal.fire({
                     icon: 'error',
                     title: 'Validation Error',
@@ -279,7 +276,7 @@
                 return;
             }
 
-            const isConfirmed = await showConfirmationDialog(); // แสดงกล่องยืนยันก่อนบันทึกข้อมูล
+            const isConfirmed = await showConfirmationDialog();
 
             if (isConfirmed) {
                 submitBtn.disabled = true;
@@ -290,7 +287,7 @@
                         userlineId: userlineIdInput.value,
                         nameId: nameIdInput.value,
                         keynumberId: keynumberIdInput.value,
-                        signature: signatureData // ส่งข้อมูลลายเซ็น
+                        signature: signatureData
                     };
 
                     Swal.fire({
@@ -305,7 +302,7 @@
 
                     let response = await fetch(url, {
                         method: "POST",
-                        body: JSON.stringify(obj) // ส่งข้อมูลในรูปแบบ JSON ไปยัง Web App
+                        body: JSON.stringify(obj)
                     });
 
                     let data = await response.text();
@@ -317,10 +314,10 @@
                         confirmButtonText: 'ปิด',
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            liff.closeWindow(); // ปิดหน้าต่าง LIFF เมื่อบันทึกข้อมูลสำเร็จ
+                            liff.closeWindow();
                         }
                     });
-                    sendFlexMessage(); // ส่งข้อความ Flex หลังจากบันทึกข้อมูลสำเร็จ
+                    sendFlexMessage();
                     console.log(data);
                 } catch (error) {
                     Swal.fire({
@@ -334,11 +331,10 @@
                     submitBtn.disabled = false;
                 }
             } else {
-                Swal.fire('Submission Canceled', 'ข้อมูลของคุณไม่ได้ถูกส่ง.', 'info'); // แสดงข้อความถ้ายกเลิกการส่งข้อมูล
+                Swal.fire('Submission Canceled', 'ข้อมูลของคุณไม่ได้ถูกส่ง.', 'info');
             }
         });
 
-        // ฟังก์ชันสำหรับแสดงกล่องยืนยันก่อนส่งข้อมูล
         async function showConfirmationDialog() {
             const confirmation = await Swal.fire({
                 title: 'ยืนยันการส่งข้อมูล',
