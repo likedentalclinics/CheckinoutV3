@@ -5,6 +5,7 @@ const WEB_APP_MEMBER_URL = 'https://script.google.com/macros/s/AKfycbw48SH2wdgMg
 const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwJ7QcquMh-HJrOZTKb7PbhrvHt_JUL1OJaQKXIuYOGV_lgudsJfkQYYMd_Rt6NdB_JhA/exec';
 const WEB_APP_Leave_URL = 'https://script.google.com/macros/s/AKfycbzG_o6J7cL_BgCCjB88ULXAOsJx5TJ29Q2GYOBdNBtZ_2ZI7Rjv6BApCwpO-jtaHzSoVw/exec';
 const WEB_APP_OT_URL = 'https://script.google.com/macros/s/AKfycbxhqXkdnJB30SIDfFXi_fr02rVAOtNPiz3u6a0hQJPcfeLSL4WsdsTFjPz6W7frJnkl/exec';
+const CONDUCT_URL = 'https://script.google.com/macros/s/AKfycbxJz3DSvUpX5O7erZHVS95vuByYGLQGSvVdgBQiho7Xw0fItJ6wErovmwSfdFESZpc1Tg/exec';
 
 //LIFF_ID
 const LIFF_ID = '2007047383-gVW8J9pn'; // LIFF ID Checkin
