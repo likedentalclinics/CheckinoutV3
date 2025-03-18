@@ -1,1 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
 
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ลงทะเบียน</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
+    <style>
+        #signatureCanvas {
+            border: 1px solid #ccc;
+            width: 100%;
+            height: 100px;
+            touch-action: none; /* ป้องกันการทำงานเริ่มต้นของการสัมผัสที่อาจรบกวน */
+            background-image: url('YOUR_BACKGROUND_IMAGE_URL'); /* แทนที่ด้วย URL ของภาพพื้นหลังของคุณ */
+            background-repeat: no-repeat;
+            background-size: contain; /* หรือ 'cover' ขึ้นอยู่กับความต้องการ */
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 min-h-screen">
+    <div class="max-w-md m-auto p-2">
+        <form>
+            <div class="p-8">
+                <div class="mb-5 text-center">
+                    <h2>ลงทะเบียน</h2>
+                    <div class="mx-auto w-48 text-slate-500 text-xs text-center mt-1">กรุณากรอกข้อมูลให้ครบถ้วน</div>
+                </div>
+                <div class="flex flex-col">
+                    <div class="mb-4">
+                        <input type="text"
+                            class="input-field w-full  bg-slate-200 p-2 text-slate-500 text-sm text-center rounded-lg"
+                            id="userlineId" placeholder="lineId" name="userlineId" readonly>
+                    </div>
+                    <div class="mb-4">
+                        <input type="text" class="input-field w-full border border-slate-300 p-2 text-md rounded-lg"
+                            id="nameId" placeholder="ชื่อ-สกุล" name="nameId" required>
+                    </div>
+                    <div class="mb-4">
+                        <input type="text" class="input-field w-full border border-slate-300 p-2 text-md rounded-lg"
+                            id="keynumberId" placeholder="เลข ท." name="keynumberId" required>
+                    </div>
+                    <div class="mb-6">
+                        <label for="signatureCanvas" class="block text-sm font-medium text-gray-700 mb-1">ลายเซ็น</label>
+                        <canvas id="signatureCanvas" class="w-full border border-slate-300 rounded-lg"></canvas>
+                        <button type="button" class="mt-2 text-sm text-red-500 hover:underline" id="clearSignature">เคลียร์ลายเซ็น</button>
+                        <input type="hidden" id="signatureData" name="signatureData">
+                    </div>
+                </div>
+                <button type="button" id="submitBtn"
+                    class="bg-slate-800 text-center w-full text-white py-4 px-4 rounded-lg hover:bg-blue-700">บันทึกข้อมูล</button>
+            </div>
+        </form>
+    </div>
+    <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
+    <script src="config.js"></script>
+    <script>
+        window.onload = function () {
+            initializeLiff().then(initializeSignaturePad);
+        };
+
+        async function initializeLiff() {
+            await liff.init({ liffId: `${'2007047383-lvkPL4QJ'}` });
+
+            if (liff.isLoggedIn()) {
+                getUserProfile();
+            } else {
+                liff.login();
+            }
+        }
+
+        async function getUserProfile() {
+            try {
+                const profile = await liff.getProfile();
+                document.getElementById('userlineId').value = profile.userId;
+            } catch (error) {
+                console.error('เกิดข้อผิดพลาดในการดึงข้อมูลโปรไฟล์:', error);
+            }
+        }
+
+        let url = 'https://script.google.com/macros/s/AKfycbxJz3DSvUpX5O7erZHVS95vuByYGLQGSvVdgBQiho7Xw0fItJ6wErovmwSfdFESZpc1Tg/exec';
+        let userlineIdInput = document.getElementById("userlineId");
+        let nameIdInput = document.getElementById("nameId");
+        let keynumberIdInput = document.getElementById("keynumberId");
+        let submitBtn = document.getElementById("submitBtn");
+        let signaturePad = null;
+        const signatureCanvas = document.getElementById('signatureCanvas');
+        const clearSignatureButton = document.getElementById('clearSignature');
+        const signatureDataInput = document.getElementById('signatureData');
+
+        function initializeSignaturePad() {
+            if (signatureCanvas) {
+                signaturePad = new SignaturePad(signatureCanvas, {
+                    penColor: 'rgb(0, 0, 0)'
+                });
+
+                clearSignatureButton.addEventListener('click', function () {
+                    signaturePad.clear();
+                    signatureDataInput.value = '';
+                });
+
+                submitBtn.addEventListener('click', function() {
+                    if (!signaturePad.isEmpty()) {
+                        signatureDataInput.value = signaturePad.toDataURL();
+                    }
+                });
+            }
+        }
+
+        function validateForm() {
+            const userlineId = userlineIdInput.value.trim();
+            const nameId = nameIdInput.value.trim();
+            const keynumberId = keynumberIdInput.value.trim();
+            return userlineId !== '' && nameId !== '' && keynumberId !== '' && !signaturePad.isEmpty();
+        }
+
+        submitBtn.addEventListener('click', async (event) => {
+            event.preventDefault();
+
+            if (!validateForm()) {
+                Swal.fire({ icon: 'error', title: 'Validation Error', text: 'กรุณากรอกข้อมูลและเซ็นลายเซ็นให้ครบถ้วน.', });
+                return;
+            }
+
+            const isConfirmed = await showConfirmationDialog();
+
+            if (isConfirmed) {
+                submitBtn.disabled = true;
+
+                try {
+                    const signatureData = signaturePad.toDataURL();
+                    const obj = {
+                        userlineId: userlineIdInput.value,
+                        nameId: nameIdInput.value,
+                        keynumberId: keynumberIdInput.value,
+                        signature: signatureData
+                    };
+
+                    Swal.fire({ title: '<div class="text-md">กำลังบันทึก, รอสักครู่...</div>', allowOutsideClick: false, showConfirmButton: false, html: '<div class="swal2-loading"></div>', onBeforeOpen: () => { Swal.showLoading(); } });
+
+                    let response = await fetch(url, { method: "POST", body: JSON.stringify(obj) });
+                    let data = await response.text();
+
+                    Swal.fire({ title: 'สำเร็จ!', text: 'บันทึกข้อมูลของคุณเรียบร้อย!', icon: 'success', confirmButtonText: 'ปิด', }).then((result) => { if (result.isConfirmed) { liff.closeWindow(); } });
+                    console.log(data);
+                } catch (error) {
+                    Swal.fire({ icon: 'error', title: 'Error', text: 'เกิดข้อผิดพลาดขณะส่งข้อมูล.', });
+                    console.error(error);
+                } finally {
+                    submitBtn.disabled = false;
+                }
+            } else {
+                Swal.fire('Submission Canceled', 'ข้อมูลของคุณไม่ได้ถูกส่ง.', 'info');
+            }
+        });
+
+        async function showConfirmationDialog() {
+            const confirmation = await Swal.fire({ title: 'ยืนยันการส่งข้อมูล', text: 'แน่ใจ ว่าคุณกำลังส่งข้อมูล?', icon: 'question', showCancelButton: true, confirmButtonText: 'ใช่, ส่งข้อมูล!', cancelButtonText: 'ไม่, ยกเลิก' });
+            return confirmation.isConfirmed;
+        }
+    </script>
+</body>
+
+</html>
