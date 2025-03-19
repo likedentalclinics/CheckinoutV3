@@ -39,6 +39,10 @@
 
                 const canvas = document.getElementById("signatureCanvas");
                 const ctx = canvas.getContext("2d");
+                ctx.beginPath();
+                ctx.moveTo(50, 50);
+                ctx.lineTo(100, 100);
+                ctx.stroke();
                 ctx.strokeStyle = "#000";
                 ctx.lineWidth = 2;
                 ctx.lineCap = "round";
