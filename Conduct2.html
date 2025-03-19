@@ -157,7 +157,7 @@
                     }
                     try {
                         this.formData.signature = this.signaturePad.toDataURL();
-                        const url = 'https://script.google.com/macros/s/AKfycbzSerwuPr3tV_kb_bWIayfabD_wCVk_iSVj0gjyBjeek70aeEtIK3aTiHh17VZD0Gtq/execc';
+                        const url = 'https://script.google.com/macros/s/AKfycbzSerwuPr3tV_kb_bWIayfabD_wCVk_iSVj0gjyBjeek70aeEtIK3aTiHh17VZD0Gtq/exec';
                         const response = await fetch(url, {
                             method: 'POST',
                             body: JSON.stringify(this.formData)
