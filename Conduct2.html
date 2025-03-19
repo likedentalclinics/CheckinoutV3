@@ -1,368 +1,195 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-  <base target="_top">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ลงทะเบียน</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
 
-  <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+    <style>
+        .input-field {
+            @apply w-full border border-slate-300 p-2 text-md rounded-lg;
+        }
 
-  <!-- LIFF SDK -->
-  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+        #signatureCanvas {
+            border: 1px solid #ccc;
+            width: 100%;
+            height: 100px;
+            touch-action: none;
+            /* Prevent default touch actions that might interfere */
+        }
+    </style>
 </head>
 
-<body>
-    <div id="app">
-        <v-app>
-            <v-main>
-                <v-container>
-                    <v-form ref="form" @submit.prevent="submit" :disabled="loading">
-                        <v-card :loading="loading" outlined>
-                            <v-img class="white--text align-end" height="200px"
-                src="https://source.unsplash.com/random">
-                                <v-card-title>{{ title }}</v-card-title>
-                                <v-card-subtitle v-if="subtitle">{{ subtitle }}</v-card-subtitle>
-                              </v-img>
-                            <v-card-text>
-                                <v-row>
-                                    <v-col cols="12">
-                                        <my-input :item="form.name"></my-input>
-                                      </v-col>
-                                    <v-col cols="12">
-                                        <my-input :item="form.email"></my-input>
-                                      </v-col>
-                                    <v-col cols="12">
-                                        <my-input :item="form.phone"></my-input>
-                                      </v-col>
-                                    <v-col cols="12">
-                                        <my-input :item="form.signature"></my-input>
-                                      </v-col>
-                                    <v-col cols="12">
-                                        <v-btn type="submit" color="primary" :disabled="loading" large depressed>Submit
-                    </v-btn>
-                                      </v-col>
-                                  </v-row>
-                              </v-card-text>
-                        </v-form>
-                    <v-snackbar v-model="snackbar.show" :color="snackbar.color" bottom>
-                        {{ snackbar.message }}
-                        <template v-slot:action="{ attrs }">
-                            <v-btn color="white" text v-bind="attrs" :timeout="snackbar.timeout"
-                @click="snackbar.show = false">
-                                <v-icon>mdi-close</v-icon>
-                              </v-btn>
-                          </template>
-                      </v-snackbar>
-                  </v-container>
-              </v-main>
-          </v-app>
-      </div>
-
-   
-  <script src="https://cdn.jsdelivr.net/npm/signature_pad@2.3.2/dist/signature_pad.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
-  <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzSerwuPr3tV_kb_bWIayfabD_wCVk_iSVj0gjyBjeek70aeEtIK3aTiHh17VZD0Gtq/exec";  // *** แทนที่ด้วย Web App URL ของคุณ ***
-
-    const apiCall = function(functionName, params = {}) {
-      params = JSON.stringify(params);
-      return new Promise((resolve, reject) => {
-        fetch(WEB_APP_URL + '?function=' + functionName, { // Modify the URL
-            method: 'POST',
-            mode: 'cors', // Important for cross-origin requests
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: params
-          })
-          .then(response => response.json()) // Parse response as JSON
-          .then(data => resolve(data))
-          .catch(error => reject(error));
-      });
-    };
-
-    const getFormData = (form) => {
-      const data = {};
-      Object.entries(form).forEach(([key, item]) => {
-        data[key] = item.value;
-      });
-      return data
-    };
-
-    const form = {
-      name: {
-        label: "Name",
-        type: "text",
-        value: "",
-        disabled: false,
-        placeholder: "",
-        rules: [(v) => !!v || "This is required!"],
-      },
-      email: {
-        label: "Email",
-        type: "email",
-        value: "",
-        disabled: false,
-        placeholder: "",
-        rules: [(v) => !!v || "This is required!"],
-      },
-      phone: {
-        label: "Phone",
-        type: "tel",
-        value: "",
-        disabled: false,
-        placeholder: "",
-        rules: [(v) => !!v || "This is required!"],
-      },
-      signature: {
-        label: "Signature",
-        type: "signature",
-        value: "",
-        disabled: false,
-        placeholder: "Click to open the signature pad",
-        items: [],
-        rules: [(v) => !!v || "This is required!"],
-      },
-    };
-
-    const MySnackbar = Vue.component("my-snackbar", {
-      template: `
-    
-  `,
-      props: {
-        show: true,
-        message: "",
-        color: "",
-      },
-      data: () => ({
-        snackbar: this.show,
-        timeout: 5000,
-      })
-    })
-
-    const MySignature = Vue.component("my-signature", {
-      template: `
-    <div>
-      <v-select
-        v-model="item.value"
-        :label="item.label"
-        :placeholder="item.placeholder"
-        :rules="item.rules"
-        :type="item.type"
-        :items="item.items"
-        @click="openPad"
-        small-chips
-        filled
-        ></v-select>
-      <v-dialog
-        v-model="dialog"
-        width="600"
-        eager
-      >
-        <v-card>
-          <v-card-title class="text-h5 primary white--text">
-            {{item.label}} Pad
-          </v-card-title>
-          <v-card-text class="pa-0">
-            <canvas :ref="item.label" width="600" height="210"/>
-          </v-card-text>
-          <v-divider></v-divider>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn
-              color="primary"
-              text
-              @click="savePad"
-            >
-              Done
-            </v-btn>
-            <v-btn
-              color="error"
-              text
-              @click="clearPad"
-            >
-              Clear
-            </v-btn>
-            <v-btn
-              color="grey"
-              text
-              @click="closePad"
-            >
-              Close
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
+<body class="bg-slate-50 min-h-screen">
+    <div id="app">
+        <v-app>
+            <v-main>
+                <div class="max-w-md m-auto p-2">
+                    <form @submit.prevent="submitForm">
+                        <div class="p-8">
+                            <div class="mb-5 text-center">
+                                <h2>ลงทะเบียน</h2>
+                                <div class="mx-auto w-48 text-slate-500 text-xs text-center mt-1">กรุณากรอกข้อมูลให้ครบถ้วน
+                                </div>
+                            </div>
+                            <div class="flex flex-col">
+                                <div class="mb-4">
+                                    <input type="text"
+                                        class="input-field w-full  bg-slate-200 p-2 text-slate-500 text-sm text-center rounded-lg"
+                                        id="userlineId" placeholder="lineId" name="userlineId" readonly
+                                        v-model="formData.userlineId">
+                                </div>
+                                <div class="mb-4">
+                                    <input type="text" class="input-field" id="nameId" placeholder="ชื่อ-สกุล"
+                                        name="nameId" required v-model="formData.nameId">
+                                </div>
+                                <div class="mb-4">
+                                    <input type="text" class="input-field" id="keynumberId" placeholder="เลข ท."
+                                        name="keynumberId" required v-model="formData.keynumberId">
+                                </div>
+                                <div class="mb-6">
+                                    <label for="signatureCanvas"
+                                        class="block text-sm font-medium text-gray-700 mb-1">ลายเซ็น</label>
+                                    <canvas id="signatureCanvas" class="w-full border border-slate-300 rounded-lg"></canvas>
+                                    <button type="button" class="mt-2 text-sm text-red-500 hover:underline"
+                                        @click="clearSignature">เคลียร์ลายเซ็น</button>
+                                </div>
+                            </div>
+                            <button type="submit" id="submitBtn"
+                                class="bg-slate-800 text-center w-full text-white py-4 px-4 rounded-lg hover:bg-blue-700">บันทึกข้อมูล</button>
+                        </div>
+                    </form>
+                    <v-snackbar v-model="snackbar.show" :color="snackbar.color" bottom>
+                        {{ snackbar.message }}
+                        <template v-slot:action="{ attrs }">
+                            <v-btn color="white" text v-bind="attrs" :timeout="snackbar.timeout"
+                                @click="snackbar.show = false">
+                                <v-icon>mdi-close</v-icon>
+                            </v-btn>
+                        </template>
+                    </v-snackbar>
+                </div>
+            </v-main>
+        </v-app>
     </div>
-  `,
-      props: {
-        item: Object,
-      },
-      data: () => ({
-        dialog: false,
-        show: false,
-        signaturePad: null,
-      }),
-      methods: {
-        openPad: function() {
-          this.dialog = true
-          const label = this.item.label
-          this.signaturePad = new SignaturePad(this.$refs[label])
-          if (this.item.value) this.signaturePad.fromDataURL(this.item.value)
-        },
-        closePad: function() {
-          this.dialog = false
-        },
-        clearPad() {
-          this.signaturePad.clear()
-        },
-        savePad() {
-          if (this.signaturePad.isEmpty()) {
-            this.item.value = null
-            this.item.items = []
-          } else {
-            this.item.value = this.signaturePad.toDataURL()
-            this.item.items = [{
-              text: `Signed at ${new Date().toLocaleString()}`,
-              value: this.item.value
-            }]
-          }
-          this.signaturePad.clear()
-          this.dialog = false
-        }
-      }
-    })
 
-    const MyInput = Vue.component("my-input", {
-      components: {
-        MySignature
-      },
-      template: `
-    <my-signature v-if="item.type === 'signature' ":item="item"></my-signature>
-    <v-autocomplete
-      v-else-if="item.type === 'select'"
-      v-model="item.value"
-      :label="item.label"
-      :placeholder="item.placeholder"
-      :rules="item.rules"
-      :type="item.type"
-      :items="item.items"
-      :multiple="item.multiple"
-      small-chips
-      filled
-      ></v-autocomplete>
-    <v-text-field
-      v-else
-      v-model="item.value"
-      :label="item.label"
-      :placeholder="item.placeholder"
-      :rules="item.rules"
-      :type="item.type"
-      filled
-      ></v-text-field>
-    `,
-      props: {
-        item: Object,
-      },
-    });
+    <script>
+        new Vue({
+            el: '#app',
+            vuetify: new Vuetify(),
+            data: () => ({
+                formData: {
+                    userlineId: '',
+                    nameId: '',
+                    keynumberId: '',
+                    signature: '' // Add signature property
+                },
+                snackbar: {
+                    show: false,
+                    message: '',
+                    color: '',
+                    timeout: 5000
+                },
+                signaturePad: null // Signature pad instance
+            }),
+            mounted() {
+                this.initializeLiff();
+                this.initializeSignaturePad();
+            },
+            methods: {
+                async initializeLiff() {
+                    try {
+                        await liff.init({
+                            liffId: `2007047383-9n1A0g3Y`
+                        });
 
+                        if (liff.isLoggedIn()) {
+                            this.getUserProfile();
+                        } else {
+                            liff.login();
+                        }
+                    } catch (error) {
+                        console.error('เกิดข้อผิดพลาดในการเริ่มต้น LIFF:', error);
+                        this.showSnackbar({
+                            message: `เกิดข้อผิดพลาดในการเริ่มต้น LIFF: ${error.message}`,
+                            color: 'error'
+                        });
+                    }
+                },
+                async getUserProfile() {
+                    try {
+                        const profile = await liff.getProfile();
+                        this.formData.userlineId = profile.userId;
+                    } catch (error) {
+                        console.error('เกิดข้อผิดพลาดในการดึงข้อมูลโปรไฟล์:', error);
+                        this.showSnackbar({
+                            message: `เกิดข้อผิดพลาดในการดึงข้อมูลโปรไฟล์: ${error.message}`,
+                            color: 'error'
+                        });
+                    }
+                },
+                initializeSignaturePad() {
+                    const canvas = document.getElementById('signatureCanvas');
+                    this.signaturePad = new SignaturePad(canvas, {
+                        penColor: 'rgb(0, 0, 0)'
+                    });
+                },
+                clearSignature() {
+                    this.signaturePad.clear();
+                },
+                async submitForm() {
+                    if (this.signaturePad.isEmpty()) {
+                        this.showSnackbar({
+                            message: 'กรุณาเซ็นลายเซ็น',
+                            color: 'warning'
+                        });
+                        return;
+                    }
+                    try {
+                        this.formData.signature = this.signaturePad.toDataURL();
+                        const url = 'https://script.google.com/macros/s/AKfycbzSerwuPr3tV_kb_bWIayfabD_wCVk_iSVj0gjyBjeek70aeEtIK3aTiHh17VZD0Gtq/execc';
+                        const response = await fetch(url, {
+                            method: 'POST',
+                            body: JSON.stringify(this.formData)
+                        });
 
+                        const data = await response.text();
+                        console.log('Success:', data);
 
-    new Vue({
-      el: "#app",
-      vuetify: new Vuetify(),
-      data: () => ({
-        loading: false,
-        title: "R9 Form Submit With Signature",
-        subtitle: "Innvoate , Create & Inspire ",
-        form,
-        snackbar: {
-          show: false,
-          message: "",
-          color: "",
-          timeout: 5000,
-        },
-        lineUserId: null, // Store Line User ID here
-      }),
-      mounted() {
-        this.initializeLiff();
-      },
-      methods: {
-        async initializeLiff() {
-          try {
-            await liff.init({
-              liffId: '2007047383-9n1A0g3Y' // Replace with your LIFF ID
-            });
-
-            if (liff.isLoggedIn()) {
-              this.getProfile();
-            } else {
-              liff.login(); // Auto login
+                        this.showSnackbar({
+                            message: 'บันทึกข้อมูลสำเร็จ!',
+                            color: 'success'
+                        });
+                        liff.closeWindow();
+                    } catch (error) {
+                        console.error('Error:', error);
+                        this.showSnackbar({
+                            message: `เกิดข้อผิดพลาดในการบันทึกข้อมูล: ${error.message}`,
+                            color: 'error'
+                        });
+                    }
+                },
+                showSnackbar: function({
+                    message,
+                    color
+                }) {
+                    this.snackbar.message = message;
+                    this.snackbar.color = color;
+                    this.snackbar.show = true;
+                }
             }
-          } catch (err) {
-            console.error("LIFF Initialization failed:", err);
-            this.showSnackbar({
-              message: "LIFF Initialization failed: " + err.message,
-              color: "error"
-            });
-          }
-        },
-        async getProfile() {
-          try {
-            const profile = await liff.getProfile();
-            this.lineUserId = profile.userId;
-            console.log("Line User ID:", this.lineUserId);
-          } catch (err) {
-            console.error("Failed to get profile:", err);
-            this.showSnackbar({
-              message: "Failed to get profile: " + err.message,
-              color: "error"
-            });
-          }
-        },
-        showSnackbar: function({
-          message,
-          color
-        }) {
-          this.snackbar.message = message
-          this.snackbar.color = color
-          this.snackbar.show = true
-        },
-        submit: async function() {
-          if (!this.$refs.form.validate()) {
-            return this.showSnackbar({
-              message: "Form is invalid",
-              color: "warning"
-            })
-          }
-          this.loading = true;
-          const data = getFormData(this.form);
-
-          // Add Line User ID to the data
-          data.lineUserId = this.lineUserId;
-
-          try {
-            const result = await apiCall("submit", data);
-            this.loading = false;
-            this.$refs.form.reset()
-            this.showSnackbar({
-              message: result.message,
-              color: "success"
-            })
-          } catch (error) {
-            this.loading = false;
-            this.showSnackbar({
-              message: error.message,
-              color: "error"
-            })
-          }
-        },
-      },
-    });
-  </script>
+        });
+    </script>
 </body>
 
 </html>
