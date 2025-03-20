@@ -39,6 +39,11 @@
                             id="nameId" placeholder="ชื่อ-สกุล" name="nameId" required>
                     </div>
                     <div class="mb-4">
+                        <label for="assist1" class="block text-sm font-medium text-gray-700 mb-1">ชื่อผู้ช่วยที่ชอบ</label>
+                        <input type="text" class="input-field w-full border border-slate-300 p-2 text-md rounded-lg"
+                            id="assist1" placeholder="ชื่อผู้ช่วยที่ชอบ" name="assist1">
+                    </div>
+                    <div class="mb-4">
                         <input type="text" class="input-field w-full border border-slate-300 p-2 text-md rounded-lg"
                             id="keynumberId" placeholder="เลข ท." name="keynumberId" required>
                     </div>
@@ -222,7 +227,7 @@
         }
 
         // กำหนดตัวแปรสำหรับใช้ในฟังก์ชันต่างๆ
-        let url = 'https://script.google.com/macros/s/AKfycbxJz3DSvUpX5O7erZHVS95vuByYGLQGSvVdgBQiho7Xw0fItJ6wErovmwSfdFESZpc1Tg/exec';
+        let url = 'https://script.google.com/macros/s/AKfycbzSerwuPr3tV_kb_bWIayfabD_wCVk_iSVj0gjyBjeek70aeEtIK3aTiHh17VZD0Gtq/exec';
         let userlineIdInput = document.getElementById("userlineId");
         let nameIdInput = document.getElementById("nameId");
         let keynumberIdInput = document.getElementById("keynumberId");
@@ -259,6 +264,7 @@
             const userlineId = userlineIdInput.value.trim();
             const nameId = nameIdInput.value.trim();
             const keynumberId = keynumberIdInput.value.trim();
+            const assist1 = document.getElementById("assist1").value.trim(); // Get value of new field
 
             return userlineId !== '' && nameId !== '' && keynumberId !== '' && !signaturePad.isEmpty();
         }
@@ -287,7 +293,8 @@
                         userlineId: userlineIdInput.value,
                         nameId: nameIdInput.value,
                         keynumberId: keynumberIdInput.value,
-                        signature: signatureData
+                        signature: signatureData,
+                        assist1: document.getElementById("assist1").value // Include the new field value
                     };
 
                     Swal.fire({
