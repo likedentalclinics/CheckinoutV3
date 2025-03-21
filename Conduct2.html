@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ลงทะเบียน</title>
+    <title>ประเมินพนักงาน</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
@@ -25,7 +25,7 @@
         <form>
             <div class="p-8">
                 <div class="mb-5 text-center">
-                    <h2>ลงทะเบียน</h2>
+                    <h2>ประเมินพนักงาน</h2>
                     <div class="mx-auto w-48 text-slate-500 text-xs text-center mt-1">กรุณากรอกข้อมูลให้ครบถ้วน</div>
                 </div>
                 <div class="flex flex-col">
@@ -36,16 +36,16 @@
                     </div>
                     <div class="mb-4">
                         <input type="text" class="input-field w-full border border-slate-300 p-2 text-md rounded-lg"
-                            id="nameId" placeholder="ชื่อ-สกุล" name="nameId" required>
+                            id="nameId" placeholder="ชื่อทันตแพทย์" name="nameId" required>
                     </div>
                     <div class="mb-4">
-                        <label for="assist1" class="block text-sm font-medium text-gray-700 mb-1">ชื่อผู้ช่วยที่ชอบ</label>
+                        <label for="assist1" class="block text-sm font-medium text-gray-700 mb-1">ชื่อผู้ช่วยที่ทำงานดี ผู้ช่วยที่ไม่ดีควรปรับปรุง ไม่ต้องใส่</label>
                         <input type="text" class="input-field w-full border border-slate-300 p-2 text-md rounded-lg"
-                            id="assist1" placeholder="ชื่อผู้ช่วยที่ชอบ" name="assist1">
+                            id="assist1" placeholder="ผู้ช่วยที่ชอบคนที่ 1" name="assist1">
                     </div>
                     <div class="mb-4">
                         <input type="text" class="input-field w-full border border-slate-300 p-2 text-md rounded-lg"
-                            id="keynumberId" placeholder="เลข ท." name="keynumberId" required>
+                            id="keynumberId" placeholder="ผู้ช่วยที่ชอบคนที่ 2" name="keynumberId" required>
                     </div>
                     <div class="mb-6">
                         <label for="signatureCanvas" class="block text-sm font-medium text-gray-700 mb-1">ลายเซ็น</label>
@@ -91,7 +91,7 @@
         async function sendFlexMessage() {
             const flexMessage = {
                 type: 'flex',
-                altText: 'ข้อมูลลงทะเบียน',
+                altText: 'ประเมินพนักงาน',
                 contents: {
                     type: 'bubble',
                     styles: {
@@ -105,7 +105,7 @@
                         contents: [
                             {
                                 type: 'text',
-                                text: 'ข้อมูลลงทะเบียนสำเร็จ',
+                                text: 'ประเมินพนักงานสำเร็จ',
                                 weight: 'bold',
                                 size: 'md',
                                 color: '#000000',
