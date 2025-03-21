@@ -26,7 +26,7 @@
             <div class="p-8">
                 <div class="mb-5 text-center">
                     <h2>ประเมินพนักงาน</h2>
-                    <div class="mx-auto w-48 text-slate-500 text-xs text-center mt-1">กรุณากรอกข้อมูลให้ครบถ้วน</div>
+                    <div class="mx-auto w-48 text-slate-500 text-xs text-center mt-1">หากตรวจพบว่าผู้ที่ไม่ใช่ทันตแพทย์กรอกแบบฟอร์มนี้ บริษัทจะไล่ออกทันทีโดยไม่จ่ายค่าชดเชย</div>
                 </div>
                 <div class="flex flex-col">
                     <div class="mb-4">
@@ -39,13 +39,25 @@
                             id="nameId" placeholder="ชื่อทันตแพทย์" name="nameId" required>
                     </div>
                     <div class="mb-4">
+                        <label for="area" class="block text-sm font-medium text-gray-700 mb-1">สาขา</label>
+                        <select id="area" name="area"
+                            class="input-field w-full border border-slate-300 p-2 text-md rounded-lg" required>
+                            <option value="" disabled selected>เลือกสาขา</option>
+                            <option value="รังสิต">รังสิต</option>
+                            <option value="พระราม9">พระราม9</option>
+                            <option value="สีลม">สีลม</option>
+                            <option value="บางนา">บางนา</option>
+                            <option value="ลาดพร้าว107">ลาดพร้าว107</option>
+                        </select>
+                    </div>
+                    <div class="mb-4">
                         <label for="assist1" class="block text-sm font-medium text-gray-700 mb-1">ชื่อผู้ช่วยที่ทำงานดี ผู้ช่วยที่ไม่ดีควรปรับปรุง ไม่ต้องใส่</label>
                         <input type="text" class="input-field w-full border border-slate-300 p-2 text-md rounded-lg"
                             id="assist1" placeholder="ผู้ช่วยที่ชอบคนที่ 1" name="assist1">
                     </div>
                     <div class="mb-4">
                         <input type="text" class="input-field w-full border border-slate-300 p-2 text-md rounded-lg"
-                            id="keynumberId" placeholder="ผู้ช่วยที่ชอบคนที่ 2" name="keynumberId" required>
+                            id="keynumberId" placeholder="ผู้ช่วยที่ชอบคนที่ 2" name="keynumberId">
                     </div>
                     <div class="mb-6">
                         <label for="signatureCanvas" class="block text-sm font-medium text-gray-700 mb-1">ลายเซ็น</label>
@@ -130,7 +142,7 @@
                                     },
                                     {
                                         type: 'text',
-                                        text: 'ชื่อ-สกุล',
+                                        text: 'ชื่อทันตแพทย์',
                                         size: 'sm',
                                         color: '#555555',
                                         flex: 3,
@@ -174,7 +186,7 @@
                                     },
                                     {
                                         type: 'text',
-                                        text: document.getElementById('keynumberId').value,
+                                        text: document.getElementById('area').value,
                                         size: 'sm',
                                         color: '#111111',
                                         align: 'end',
@@ -263,10 +275,11 @@
         function validateForm() {
             const userlineId = userlineIdInput.value.trim();
             const nameId = nameIdInput.value.trim();
+            const area = document.getElementById("area").value;
             const keynumberId = keynumberIdInput.value.trim();
             const assist1 = document.getElementById("assist1").value.trim(); // Get value of new field
 
-            return userlineId !== '' && nameId !== '' && keynumberId !== '' && !signaturePad.isEmpty();
+            return userlineId !== '' && nameId !== '' && area !== '' && keynumberId !== '' && !signaturePad.isEmpty();
         }
 
         // เพิ่ม event listener สำหรับปุ่มบันทึกข้อมูล
@@ -292,6 +305,7 @@
                     const obj = {
                         userlineId: userlineIdInput.value,
                         nameId: nameIdInput.value,
+                        area: document.getElementById("area").value,
                         keynumberId: keynumberIdInput.value,
                         signature: signatureData,
                         assist1: document.getElementById("assist1").value // Include the new field value
