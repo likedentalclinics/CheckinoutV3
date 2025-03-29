@@ -438,7 +438,7 @@
       const flexMessage = {
         type: 'flex',
         altText: 'จดบันทึกเวลางาน',
-        contents: {
+        contents:{
           type: 'bubble',
           direction: 'ltr',
           body: {
@@ -598,7 +598,32 @@
                     contents: []
                   }
                 ]
+              },
+              {
+                type: 'separator'
+              },
+              {
+              type: 'box',
+              layout: 'vertical',
+              spacing: 'xs',
+              margin: 'sm',
+              contents: [
+              {
+              type: 'text',
+              text: 'สถานที่',
+              weight: 'bold',
+              size: 'sm',
+              margin: 'md',
+              contents: []
+              },
+              {
+              type: 'text',
+              text: fullAddressInput.value ? `${fullAddressInput.value}` : 'ข้อมูลไม่พร้อมแสดง แต่เราเก็บพิกัดของคุณเรียบร้อย',
+              wrap: true,
+              contents: []
               }
+              ]
+              },
             ]
           }
         }
