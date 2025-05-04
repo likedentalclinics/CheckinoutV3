@@ -68,6 +68,7 @@
             <option value="ลาพักร้อน">ลาพักร้อน</option>
             <option value="ลาป่วย">ลาป่วย</option>
             <option value="ลากิจ">ลากิจ</option>
+            <option value="ลาฉุกเฉิน">ลาฉุกเฉิน</option>
             <option value="อื่นๆ">อื่นๆ</option>
           </select>
         </div>
@@ -85,6 +86,7 @@
         <div class="mt-6 mb-5">
           <label for="titleId" class="block text-sm font-medium text-gray-700 mb-1">ชื่อเล่น</label>
           <input type="text" id="titleId" name="titleId" placeholder="ชื่อเล่น" class="w-full p-2 border rounded-lg">
+          <div id="validationErrorMessage" class="text-red-500 text-sm mt-1"></div>
         </div>
         <div class="mt-4 mb-5">
           <label for="detailId" class="block text-sm font-medium text-gray-700 mb-1">รายละเอียด</label>
@@ -233,9 +235,18 @@
         reader.readAsDataURL(file);
       });
     }
-
+    function displayValidationError(message) {
+        const errorDiv = document.getElementById('validationErrorMessage');
+        errorDiv.textContent = message;
+    }
+    
+    function clearValidationError() {
+        const errorDiv = document.getElementById('validationErrorMessage');
+        errorDiv.textContent = '';
+    }
     // ฟังก์ชันสำหรับตรวจสอบความถูกต้องของฟอร์ม
     function validateForm() {
+      clearValidationError(); // เคลียร์ข้อความ error เก่าก่อน
       const userlineId = userlineIdInput.value.trim();
       const nameId = nameIdInput.value.trim();
       const roleIdValue = roleId.value.trim();
@@ -246,94 +257,151 @@
       const detailIdValue = detailId.value.trim();
 
       if (userlineId === '' || nameId === '' || roleIdValue === '' || typeIdValue === '' || startDateIdValue === '' || endDateIdValue === '' || titleIdValue === '' ) {
+        displayValidationError('กรุณากรอกข้อมูลที่จำเป็นให้ครบถ้วน');
         return false;
       }
+      const startDate = new Date(startDateIdValue);
+      const endDate = new Date(endDateIdValue);
+      const today = new Date();
+    today.setHours(0, 0, 0, 0); // ตั้งเวลาเป็นเที่ยงคืนเพื่อเปรียบเทียบเฉพาะวันที่
+
+    // ตรวจสอบวันสิ้นสุดต้องไม่ก่อนวันเริ่มต้น
+    if (endDate < startDate) {
+        displayValidationError('วันที่สิ้นสุดต้องไม่น้อยกว่าวันเริ่มต้น');
+        return false;
+    }
+
+    // --- เงื่อนไขการลา ---
+
+    // 1. ลากิจ ห้ามเป็น ส-อา
+    if (typeIdValue === 'ลากิจ') {
+        let currentDate = new Date(startDate);
+        while (currentDate <= endDate) {
+            const dayOfWeek = currentDate.getDay(); // 0 = Sunday, 6 = Saturday
+            if (dayOfWeek === 0 || dayOfWeek === 6) {
+                displayValidationError('ไม่สามารถ "ลากิจ" ในวันเสาร์หรืออาทิตย์ได้ กรุณาเลือก "ลาพักร้อน" หรือ "ลาฉุกเฉิน"');
+                return false;
+            }
+            currentDate.setDate(currentDate.getDate() + 1);
+        }
+    }
+
+    // 2. ต้องแจ้งล่วงหน้า 30 วัน (ยกเว้น ลาป่วย และ ลาฉุกเฉิน)
+    if (typeIdValue !== 'ลาป่วย' && typeIdValue !== 'ลาฉุกเฉิน') {
+        const diffTime = startDate - today;
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        if (diffDays < 30) {
+            displayValidationError('ต้องแจ้งลาล่วงหน้าอย่างน้อย 30 วัน กรุณาเลือก "ลาฉุกเฉิน" หากต้องการลาภายใน 30 วัน');
+            return false;
+        }
+    }
+
+    // ถ้าผ่านหมด
       return true;
     }
 
-    // ฟังก์ชันสำหรับจัดการคลิกปุ่มส่งข้อมูล
-    submitBtn.addEventListener('click', async (event) => {
-      event.preventDefault();
+    // ฟังก์ชันสำหรับจัดการคลิกปุ่มส่งข้อมูล (ปรับปรุง)
+  submitBtn.addEventListener('click', async (event) => {
+    event.preventDefault();
+    clearValidationError(); // เคลียร์ error ก่อนเสมอ
 
-      if (!validateForm()) {
-        Swal.fire({
-          icon: 'error',
-          title: 'Validation Error',
-          text: 'Please fill in all required fields.',
-        });
+    if (!validateForm()) {
+        // ไม่ต้องทำอะไรเพิ่ม เพราะ validateForm แสดง error แล้ว
         return;
-      }
+    }
 
-      const isConfirmed = await showConfirmationDialog();
+    const isConfirmed = await showConfirmationDialog();
 
-      if (isConfirmed) {
+    if (isConfirmed) {
         submitBtn.disabled = true;
-
-        try {
-          let obj = {
-            userlineId: userlineIdInput.value,
-            nameId: nameIdInput.value,
-            roleId: roleId.value,
-            numberId: numberIdInput.value,
-            typeId: typeId.value,
-            startDateId: startDateId.value,
-            endDateId: endDateId.value,
-            titleId: titleId.value,
-            detailId: detailId.value
-          };
-
-          if (fileInput.files.length > 0) {
-            let file = fileInput.files[0];
-            let base64 = await getBase64(file);
-            obj.base64 = base64;
-            obj.type = file.type;
-            obj.name = file.name;
-          }
-
-          Swal.fire({
-            title: '<div class="text-md">กำลังบันทึก, รอสักครู่...</div>',
+        Swal.fire({ // ย้าย Swal Loading มาตรงนี้
+            title: '<div class="text-md">กำลังตรวจสอบและบันทึก, รอสักครู่...</div>',
             allowOutsideClick: false,
             showConfirmButton: false,
             html: '<div class="swal2-loading"></div>',
-            onBeforeOpen: () => {
-              Swal.showLoading();
+            didOpen: () => { // ใช้ didOpen แทน onBeforeOpen
+                Swal.showLoading();
             }
-          });
+        });
 
-          let response = await fetch(url, {
-            method: "POST",
-            body: JSON.stringify(obj)
-          });
+        try {
+            let obj = {
+                userlineId: userlineIdInput.value,
+                nameId: nameIdInput.value, // ใช้ชื่อจริงในการอ้างอิง Calendar
+                roleId: roleId.value,
+                numberId: numberIdInput.value,
+                typeId: typeId.value,
+                startDateId: startDateId.value, // ส่งเป็น YYYY-MM-DD
+                endDateId: endDateId.value,   // ส่งเป็น YYYY-MM-DD
+                titleId: titleId.value,     // ชื่อเล่นสำหรับ Calendar Title
+                detailId: detailId.value
+            };
 
-          let data = await response.text();
-
-          Swal.fire({
-            title: 'สำเร็จ!',
-            text: 'บันทึกข้อมูลของคุณเรียบร้อย!',
-            icon: 'success',
-            confirmButtonText: 'ปิด',
-          }).then(async (result) => {
-            if (result.isConfirmed) {
-              // Reset form
-              document.querySelector('form').reset();
-              await sendFlexMessage(obj); // ส่งข้อความ Flex Message หลังจากการส่งข้อมูล
+            // จัดการไฟล์แนบ (เหมือนเดิม)
+            if (fileInput.files.length > 0) {
+                let file = fileInput.files[0];
+                let base64 = await getBase64(file);
+                obj.base64 = base64;
+                obj.type = file.type;
+                obj.name = file.name;
             }
-          });
-          console.log(data);
+
+            // ส่งข้อมูลไป Apps Script
+            let response = await fetch(url, {
+                method: "POST",
+                body: JSON.stringify(obj),
+                headers: { // เพิ่ม header เพื่อบอกว่าเป็น JSON
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            // ***สำคัญ***: รับค่าที่อาจจะเป็น JSON จาก Apps Script
+            let result;
+            try {
+                 result = await response.json(); // ลอง parse เป็น JSON
+            } catch (jsonError) {
+                // ถ้าไม่ใช่ JSON อาจเป็นข้อความธรรมดา (กรณี error เก่าๆ หรือ success แบบเดิม)
+                const textResult = await response.text();
+                console.error("Apps Script Response (Not JSON):", textResult);
+                // สร้าง object result จำลองขึ้นมา
+                result = { success: false, error: `เกิดข้อผิดพลาดไม่คาดคิดจาก Server: ${textResult}` };
+            }
+
+
+            // ตรวจสอบผลลัพธ์จาก Apps Script
+            if (result.success) {
+                Swal.fire({
+                    title: 'สำเร็จ!',
+                    text: result.message || 'บันทึกข้อมูลของคุณเรียบร้อย!', // ใช้ข้อความจาก server ถ้ามี
+                    icon: 'success',
+                    confirmButtonText: 'ปิด',
+                }).then(async (dialogResult) => {
+                    if (dialogResult.isConfirmed) {
+                        document.querySelector('form').reset();
+                        fileNameDisplay.textContent = 'ยังไม่ได้เลือกไฟล์'; // รีเซ็ตชื่อไฟล์ด้วย
+                        clearValidationError();
+                        // ส่ง Flex Message ควรส่งข้อมูลที่ *ผ่านการตรวจสอบแล้ว* จาก Server ถ้า Server ส่งกลับมา
+                        // หรือส่งข้อมูลเดิมที่กรอกไปก็ได้ ถ้า Server ไม่ได้แก้ไขอะไร
+                        await sendFlexMessage(obj);
+                    }
+                });
+            } else {
+                // แสดงข้อผิดพลาดจาก Server ที่ validationErrorMessage
+                displayValidationError(result.error || 'เกิดข้อผิดพลาดในการตรวจสอบข้อมูล กรุณาลองใหม่');
+                Swal.close(); // ปิด Loading Swal
+            }
+
         } catch (error) {
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'An error occurred while submitting data.',
-          });
-          console.error(error);
+            Swal.close(); // ปิด Loading Swal กรณี Network error
+            displayValidationError('เกิดข้อผิดพลาดในการเชื่อมต่อ: ' + error.message);
+            console.error(error);
         } finally {
-          submitBtn.disabled = false;
+            submitBtn.disabled = false;
         }
-      } else {
-        Swal.fire('Submission Canceled', 'Your data has not been submitted.', 'info');
-      }
-    });
+    } else {
+         //ไม่ต้องทำอะไร ถ้าผู้ใช้ยกเลิก
+         // Swal.fire('Submission Canceled', 'Your data has not been submitted.', 'info'); // อาจจะไม่ต้องแจ้งก็ได้
+    }
 
     // ฟังก์ชันสำหรับแสดงกล่องยืนยันการส่งข้อมูล
     async function showConfirmationDialog() {
