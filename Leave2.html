@@ -264,9 +264,9 @@
 
     if ((isStartWeekend || isEndWeekend) && typeIdValue !== "ลาป่วย" && typeIdValue !== "ลาพักร้อน") {
       Swal.fire({
-        icon: 'warning',
-        title: 'ไม่สามารถลาในวันเสาร์-อาทิตย์',
-        text: 'การลาในวันเสาร์และวันอาทิตย์อนุญาตเฉพาะการลาป่วยและการลาพักร้อนเท่านั้น',
+        icon: 'error',
+        title: 'ห้ามลาในวันเสาร์-อาทิตย์',
+        text: 'ยกเว้นลาป่วยและพักร้อนเท่านั้น',
       });
       return false;
     }
