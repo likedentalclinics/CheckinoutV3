@@ -234,7 +234,41 @@
         reader.readAsDataURL(file);
       });
     }
+    
+    function isWeekend(dateString) {
+      const date = new Date(dateString);
+      const dayOfWeek = date.getDay(); // 0 คือวันอาทิตย์, 6 คือวันเสาร์
+      return dayOfWeek === 0 || dayOfWeek === 6;
+    }
+    // เพิ่ม event listener ให้กับ input วันเริ่มต้น
+    startDateId.addEventListener('change', function() {
+      const startDateValue = this.value;
+      const leaveType = typeId.value;
 
+      if (isWeekend(startDateValue) && leaveType !== "ลาป่วย" && leaveType !== "ลาพักร้อน") {
+        Swal.fire({
+          icon: 'warning',
+          title: 'ไม่สามารถลาในวันเสาร์-อาทิตย์',
+          text: 'การลาในวันเสาร์และวันอาทิตย์ไม่ได้รับอนุญาต ยกเว้นการลาป่วยหรือลาพักร้อน',
+        });
+        this.value = ''; // เคลียร์วันที่ที่เลือก
+      }
+    });
+    // เพิ่ม event listener ให้กับ input วันสิ้นสุด (ถ้ามี)
+    endDateId.addEventListener('change', function() {
+      const endDateValue = this.value;
+      const leaveType = typeId.value;
+
+      if (isWeekend(endDateValue) && leaveType !== "ลาป่วย" && leaveType !== "ลาพักร้อน") {
+        Swal.fire({
+          icon: 'warning',
+          title: 'ไม่สามารถลาในวันเสาร์-อาทิตย์',
+          text: 'การลาในวันเสาร์และวันอาทิตย์ไม่ได้รับอนุญาต ยกเว้นการลาป่วยหรือลาพักร้อน',
+        });
+        this.value = ''; // เคลียร์วันที่ที่เลือก
+      }
+    });
+    
     // ฟังก์ชันสำหรับตรวจสอบความถูกต้องของฟอร์ม
     function validateForm() {
       const userlineId = userlineIdInput.value.trim();
