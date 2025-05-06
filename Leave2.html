@@ -289,6 +289,22 @@
         return false;
       }
       const startDate = new Date(startDateIdValue);
+      const endDate = new Date(endDateIdValue);
+    // ตรวจสอบว่าเป็นวันเสาร์หรือวันอาทิตย์หรือไม่
+      const startDay = startDate.getDay(); // 0 = Sunday, 6 = Saturday
+      const endDay = endDate.getDay();
+      const isStartWeekend = (startDay === 0 || startDay === 6);
+      const isEndWeekend = (endDay === 0 || endDay === 6);
+
+    if ((isStartWeekend || isEndWeekend) && typeIdValue !== "ลาป่วย" && typeIdValue !== "ลาพักร้อน") {
+      Swal.fire({
+        icon: 'warning',
+        title: 'ไม่สามารถลาในวันเสาร์-อาทิตย์',
+        text: 'การลาในวันเสาร์และวันอาทิตย์อนุญาตเฉพาะการลาป่วยและการลาพักร้อนเท่านั้น',
+      });
+      return false;
+    }
+      
       const today = new Date();
       const diffInDays = Math.ceil((startDate - today) / (1000 * 60 * 60 * 24));
 
