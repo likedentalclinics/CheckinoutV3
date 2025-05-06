@@ -1,770 +1,366 @@
 <!DOCTYPE html>
-<html lang="th">
+<html>
+  <head>
+    <base target="_top">
+    <title>ฟอร์มขอลางาน</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 
-<head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>แจ้งข้อมูลการลา</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
     <style>
-        /* Optional: Add some basic styling for read-only inputs if needed */
-        .input-field[readonly] {
-            /* background-color: transparent !important; */ /* Tailwind class bg-opacity-0 already does this */
-            border: none;
-            outline: none;
-            cursor: default;
-            box-shadow: none;
-            padding-left: 0; /* Adjust as needed */
-            padding-right: 0;/* Adjust as needed */
-        }
-        /* Ensure error messages are visible */
-        #validationErrorMessage {
-             min-height: 1.25em; /* Reserve space for potential error message */
-        }
+      body {
+        font-family: sans-serif;
+        margin: 20px;
+        /* เพิ่มเพื่อให้เนื้อหาไม่ชิดขอบจอเกินไปบนมือถือ */
+        padding: 0 10px;
+      }
+      label {
+        display: block;
+        margin-top: 15px; /* เพิ่มระยะห่างเล็กน้อย */
+        font-weight: bold; /* ทำให้ label ชัดขึ้น */
+      }
+      input[type="text"], input[type="email"], input[type="date"], select {
+        width: 60%;
+        padding: 12px; /* เพิ่ม padding ให้ใหญ่ขึ้น */
+        margin-top: 5px;
+        box-sizing: border-box;
+        border: 1px solid #ccc; /* เพิ่มขอบให้ชัดเจน */
+        border-radius: 4px; /* มุมมนเล็กน้อย */
+        font-size: 1em; /* ปรับ font ให้เหมาะสม */
+      }
+      input[type="checkbox"] {
+        margin-right: 5px;
+        /* ทำให้ checkbox ใหญ่ขึ้นเล็กน้อย */
+        width: 18px;
+        height: 18px;
+        vertical-align: middle; /* จัดให้อยู่กึ่งกลางแนวตั้งกับ label */
+      }
+       /* ทำให้ label ของ checkbox คลิกได้ */
+      label[for="singleDay"] {
+        display: inline-block; /* เปลี่ยนเป็น inline-block */
+        margin-top: 15px; /* จัดระยะห่าง */
+        font-weight: normal; /* ไม่ต้องตัวหนา */
+        vertical-align: middle;
+      }
+
+      /* --- ส่วนที่แก้ไข: สไตล์ปุ่ม --- */
+      button {
+        display: block; /* ทำให้ width 100% ทำงาน */
+        width: 40%; /* ทำให้ปุ่มกว้างเต็มฟอร์ม */
+        padding: 15px 20px; /* เพิ่ม padding แนวตั้งให้ปุ่มสูงขึ้น */
+        margin-top: 30px; /* เพิ่มระยะห่างด้านบน */
+        font-size: 1.2em; /* เพิ่มขนาดตัวอักษร */
+        font-weight: bold; /* ทำให้ตัวอักษรหนา */
+        color: white; /* สีตัวอักษร */
+        background-color: #007bff; /* สีพื้นหลังปุ่ม (ตัวอย่าง: สีน้ำเงิน) */
+        border: none; /* เอาเส้นขอบออก */
+        border-radius: 5px; /* ทำให้มุมมน */
+        cursor: pointer; /* เปลี่ยน cursor เป็นรูปมือ */
+        box-sizing: border-box; /* คำนวณ padding รวมใน width */
+        text-align: center; /* จัดข้อความกึ่งกลาง */
+        transition: background-color 0.2s ease; /* เพิ่ม animation ตอน hover */
+      }
+
+      /* เพิ่ม effect ตอนเอาเมาส์ชี้ (hover) */
+      button:hover {
+        background-color: #0056b3; /* ทำให้สีเข้มขึ้นเล็กน้อย */
+      }
+      /* --- สิ้นสุดการแก้ไข: สไตล์ปุ่ม --- */
+
+      .error { color: red; font-size: 0.9em; margin-top: 5px; }
+      #loading, #status { margin-top: 15px; font-weight: bold; }
+      #loading { display: none; color: blue; }
+      #status.success { color: green; }
+      #status.error { color: red; }
+
+      /* จัดการการแสดงผลของช่อง End Date */
+      #endDateContainer {
+         /* ไม่ต้องซ่อน/แสดงแล้ว แค่จัดการ required ผ่าน JS */
+      }
     </style>
-</head>
+  </head>
+  <body>
+    <h1>แบบฟอร์มขอลางาน</h1>
+    <div id="liffAppContent" style="display: none;"> <form id="leaveForm">
+            <label for="name">ชื่อ-นามสกุล:</label>
+            <input type="text" id="name" name="name" required readonly>
 
-<body>
-    <div class="max-w-md mx-auto p-4 relative">
-        <input type="hidden" id="displayName" name="displayName">
+            <label for="branch">สาขา:</label>
+            <input type="text" id="branch" name="branch" required>
 
-        <div id="loadingOverlay" class="hidden absolute inset-0 flex items-center justify-center bg-gray-800 rounded-lg m-6 bg-opacity-85 z-10">
-            <div class="text-center text-white text-md">กำลังโหลดข้อมูลพนักงาน...</div>
-        </div>
+            <label for="employeeId">เลขประจำตัว:</label>
+            <input type="text" id="employeeId" name="employeeId" required>
 
-        <div class="flex justify-center items-center">
-            <div class="bg-slate-800 rounded-lg shadow-xl p-6 w-full">
-                <div class="flex items-center mb-4">
-                    <img class="w-20 h-20 md:w-24 md:h-24 object-cover rounded-lg mr-4 flex-shrink-0" id="columnEData" src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png" alt="Profile Picture">
-                    <div class="flex-grow min-w-0"> <input type="text" class="input-field bg-transparent text-white text-lg font-bold w-full truncate" id="columnBData" placeholder="ชื่อ-สกุล" name="columnBData" readonly>
-                        <input type="text" class="input-field bg-transparent text-white text-sm w-full truncate" id="columnCData" placeholder="รหัสพนักงาน" name="columnCData" readonly>
-                        <input type="text" class="input-field bg-transparent text-white text-sm w-full truncate" id="columnDData" placeholder="ตำแหน่ง" name="columnDData" readonly>
-                    </div>
-                </div>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
 
-                <div class="pt-4 border-t border-slate-600 rounded-lg">
-                    <div class="flex justify-around text-center">
-                        <div>
-                            <h2 class="font-light text-white text-xs md:text-sm">ลาพักร้อน</h2>
-                            <input type="text" class="input-field text-md bg-transparent text-white font-bold text-center w-full" id="columnGData" placeholder="0" name="columnGData" readonly>
-                        </div>
-                        <div>
-                            <h2 class="font-light text-white text-xs md:text-sm">ลากิจ</h2>
-                            <input type="text" class="input-field text-md bg-transparent text-white font-bold text-center w-full" id="columnHData" placeholder="0" name="columnHData" readonly>
-                        </div>
-                        <div>
-                            <h2 class="font-light text-white text-xs md:text-sm">ลาป่วย</h2>
-                            <input type="text" class="input-field text-md bg-transparent text-white font-bold text-center w-full" id="columnIData" placeholder="0" name="columnIData" readonly>
-                        </div>
-                    </div>
-                </div>
-                <input type="hidden" id="userId" name="userId">
-                </div>
-        </div>
-    </div>
+            <label for="leaveType">ประเภทการลา:</label>
+            <select id="leaveType" name="leaveType" required>
+                <option value="">-- เลือกประเภทการลา --</option>
+                <option value="ลากิจ">ลากิจ</option>
+                <option value="ลาป่วย">ลาป่วย</option>
+                <option value="ลาพักร้อน">ลาพักร้อน</option>
+                <option value="ลาฉุกเฉิน">ลาฉุกเฉิน</option>
+            </select>
+            <div id="leaveTypeError" class="error"></div>
 
-    <div class="max-w-md mx-auto py-4 px-4">
-        <form id="leaveForm">
-            <div class="bg-white relative p-6 md:p-10 shadow-xl rounded-lg w-full mx-auto">
-                <h2 class="text-xl font-semibold mb-6 text-center text-slate-800">กรอกข้อมูลการลา</h2>
+            <label for="startDate">วันที่ต้องการลา:</label>
+            <input type="date" id="startDate" name="startDate" required>
+            <div id="startDateError" class="error"></div>
 
-                <div class="mb-5"> <label for="typeId" class="block text-sm font-medium text-gray-700 mb-1">ประเภทการลา <span class="text-red-500">*</span></label>
-                    <select id="typeId" name="typeId" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-slate-500 focus:border-slate-500">
-                        <option value="ลาพักร้อน">ลาพักร้อน</option>
-                        <option value="ลาป่วย">ลาป่วย</option>
-                        <option value="ลากิจ">ลากิจ</option>
-                        <option value="ลาฉุกเฉิน">ลาฉุกเฉิน</option>
-                        <option value="อื่นๆ">อื่นๆ</option>
-                    </select>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
-                    <div>
-                        <label for="startDateId" class="block text-sm font-medium text-gray-700 mb-1">วันเริ่มต้น <span class="text-red-500">*</span></label>
-                        <input type="text" id="startDateId" name="startDateId" class="date-picker w-full p-2 border border-gray-300 rounded-lg focus:ring-slate-500 focus:border-slate-500" placeholder="เลือกวันที่">
-                    </div>
-                    <div>
-                        <label for="endDateId" class="block text-sm font-medium text-gray-700 mb-1">วันสิ้นสุด <span class="text-red-500">*</span></label>
-                        <input type="text" id="endDateId" name="endDateId" class="date-picker w-full p-2 border border-gray-300 rounded-lg focus:ring-slate-500 focus:border-slate-500" placeholder="เลือกวันที่">
-                    </div>
-                </div>
-
-                <div class="mb-5">
-                    <label for="titleId" class="block text-sm font-medium text-gray-700 mb-1">ชื่อเล่น (สำหรับแสดงในปฏิทิน) <span class="text-red-500">*</span></label>
-                    <input type="text" id="titleId" name="titleId" placeholder="ระบุชื่อเล่น" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-slate-500 focus:border-slate-500">
-                    <div id="validationErrorMessage" class="text-red-600 text-sm mt-1"></div>
-                </div>
-
-                <div class="mb-5">
-                    <label for="detailId" class="block text-sm font-medium text-gray-700 mb-1">รายละเอียด/เหตุผลการลา</label>
-                    <textarea id="detailId" name="detailId" placeholder="ระบุเหตุผลการลา (ถ้ามี)" rows="3" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-slate-500 focus:border-slate-500"></textarea>
-                </div>
-
-                <div class="text-center bg-slate-100 rounded-lg my-5 p-4 border border-dashed border-slate-300">
-                    <label for="file" class="cursor-pointer block">
-                        <span class="text-sm font-medium text-gray-700">อัพโหลดเอกสาร (ถ้ามี)</span>
-                         <input type="file" id="file" name="file" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx" class="hidden">
-                        <div id="fileNameDisplay" class="text-slate-600 text-xs text-center mt-1 truncate">ยังไม่ได้เลือกไฟล์</div>
-                    </label>
-                    <div class="mx-auto text-slate-500 text-xs text-center mt-1">jpg, jpeg, png, pdf, doc, docx</div>
-                </div>
-
-                <button type="button" id="submitBtn" class="bg-slate-800 text-center w-full text-white py-3 px-4 rounded-lg hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 transition duration-150 ease-in-out">
-                    ส่งคำขอลา
-                </button>
+            <div class="checkbox-container">
+                <input type="checkbox" id="singleDay" name="singleDay">
+                <label for="singleDay">ลาวันเดียว</label>
             </div>
+
+            <div id="endDateContainer">
+                <label for="endDate">ลาถึงวันที่:</label>
+                <input type="date" id="endDate" name="endDate">
+                <div id="endDateError" class="error"></div>
+            </div>
+
+            <button type="button" onclick="submitForm()">ส่งคำขอลา</button>
         </form>
+
+    <div id="loading">กำลังประมวลผล...</div>
+    <div id="status"></div>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script src="config.js"></script>
-
+    <div id="liffErrorMessage"></div>
     <script>
-        // Global scope variables for form elements (assign after DOM is loaded)
-        let url; // Will be assigned from config.js
-        let WEB_APP_MEMBER_URL; // Will be assigned from config.js
-        let fileInput, userlineIdInput, nameIdInput, numberIdInput, roleIdInput, typeId, startDateId, endDateId, titleId, detailId, submitBtn, fileNameDisplay;
+        const nameInput = document.getElementById('name');
+        const emailInput = document.getElementById('email'); // เพิ่ม email input element
+        const form = document.getElementById('leaveForm');
+        const loadingDiv = document.getElementById('loading');
+        const statusDiv = document.getElementById('status');
+        const liffAppContent = document.getElementById('liffAppContent');
+        const liffErrorMessage = document.getElementById('liffErrorMessage');
 
-        // --- Initialization ---
-        window.onload = async function () {
-            // Assign elements after DOM is ready
-            fileInput = document.getElementById("file");
-            userlineIdInput = document.getElementById("userId");
-            nameIdInput = document.getElementById("columnBData");
-            numberIdInput = document.getElementById("columnCData");
-            roleIdInput = document.getElementById("columnDData"); // Corrected variable name
-            typeId = document.getElementById("typeId");
-            startDateId = document.getElementById("startDateId");
-            endDateId = document.getElementById("endDateId");
-            titleId = document.getElementById("titleId");
-            detailId = document.getElementById("detailId");
-            submitBtn = document.getElementById("submitBtn");
-            fileNameDisplay = document.getElementById("fileNameDisplay");
-
-            // Assign URLs from config (ensure config.js is loaded first and defines these)
-             if (typeof APP_CONFIG !== 'undefined') { // Assuming config.js defines an object APP_CONFIG
-                 url = APP_CONFIG.submitUrl;
-                 WEB_APP_MEMBER_URL = APP_CONFIG.memberUrl;
-                 console.log("Config loaded:", APP_CONFIG);
-             } else {
-                 console.error("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                 console.error("!!! config.js ไม่ได้โหลดหรือไม่ได้ประกาศ APP_CONFIG !!!");
-                 console.error("!!! ไม่สามารถดึง URL สำหรับส่งข้อมูลได้ !!!");
-                 console.error("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                 // Display error to user maybe?
-                 displayValidationError("เกิดข้อผิดพลาดในการโหลดการตั้งค่า (Config)");
-                 if(submitBtn) submitBtn.disabled = true; // Disable submit if config fails
-                 return; // Stop execution if config is missing
-             }
+         const leaveTypeSelect = document.getElementById('leaveType');
+         const startDateInput = document.getElementById('startDate');
+         const endDateInput = document.getElementById('endDate');
+         const singleDayCheckbox = document.getElementById('singleDay');
+         const endDateContainer = document.getElementById('endDateContainer');
+         const branchInput = document.getElementById('branch');
+         const employeeIdInput = document.getElementById('employeeId');
+         const leaveTypeErrorDiv = document.getElementById('leaveTypeError');
+         const startDateErrorDiv = document.getElementById('startDateError');
+         const endDateErrorDiv = document.getElementById('endDateError');
+        const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyi1SPjIJY0x-AChbRtwLv8A2QR532uqjwluDr3Ym0euh7mqiUcXeS3t2BWQY1SSJfrYQ/exec";
+         const today = new Date();
+         const todayStr = today.toISOString().split('T')[0];
 
 
-            // Initialize LIFF first
-            await initializeLiff('2007047383-kBQ8DBxy'); // Pass LIFF ID here
+      // --- จัดการ Checkbox ลาวันเดียว ---
+      singleDayCheckbox.addEventListener('change', function() {
+        endDateContainer.style.display = this.checked ? 'none' : 'block';
+        endDateInput.required = !this.checked; // ถ้าติ๊ก ไม่ต้องกรอกวันที่สิ้นสุด
+        if (this.checked) {
+          endDateInput.value = ''; // ล้างค่าถ้าติ๊ก
+          endDateErrorDiv.textContent = ''; // ล้าง error
+        } else {
+           endDateInput.required = true; // ถ้าไม่ติ๊ก ให้ required อีกครั้ง
+        }
+      });
 
-            // Initialize Flatpickr after LIFF and DOM are ready
-            console.log('Initializing Flatpickr...');
-            try {
-                flatpickr(".date-picker", {
-                    disableMobile: ("ontouchstart" in window), // More robust mobile detection
-                    dateFormat: "Y-m-d", // Format sent to server
-                    altInput: true,      // User-friendly format
-                    altFormat: "d/m/Y",  // Format displayed to user
-                    locale: { // Optional: Thai locale for display
-                         firstDayOfWeek: 1, // Monday
-                         weekdays: {
-                             shorthand: ["อา", "จ", "อ", "พ", "พฤ", "ศ", "ส"],
-                             longhand: ["อาทิตย์", "จันทร์", "อังคาร", "พุธ", "พฤหัสบดี", "ศุกร์", "เสาร์"],
-                         },
-                         months: {
-                             shorthand: ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."],
-                             longhand: ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"],
-                         },
-                         rangeSeparator: ' ถึง ',
-                     },
-                    // defaultDate: new Date() // Set default date if needed
-                });
-                console.log('Flatpickr initialized.');
-            } catch (fpError) {
-                console.error('Flatpickr initialization error:', fpError);
-                displayValidationError("เกิดข้อผิดพลาดในการโหลดปฏิทิน");
-            }
+      // --- ตรวจสอบวันที่เมื่อมีการเปลี่ยนแปลง ---
+      startDateInput.addEventListener('change', validateLeaveDates);
+      endDateInput.addEventListener('change', validateLeaveDates); // เพิ่มให้เช็ค endDate ด้วย
+      leaveTypeSelect.addEventListener('change', validateLeaveDates);
 
-            // Setup Event Listeners
-            if (fileInput) {
-                fileInput.addEventListener('change', handleFileChange);
-            }
-            if (submitBtn) {
-                 submitBtn.addEventListener('click', handleSubmit);
-            } else {
-                 console.error("Submit button not found!");
-            }
+      function validateLeaveDates() {
+        clearErrors();
+        const leaveType = leaveTypeSelect.value;
+        const startDate = startDateInput.value;
 
-        };
+        if (!startDate) return true; // ยังไม่เลือกวันเริ่ม ไม่ต้อง validate
 
-        // --- LIFF Functions ---
-        async function initializeLiff(liffId) {
-            console.log("Initializing LIFF with ID:", liffId);
-            if (!liffId) {
-                 console.error("LIFF ID is missing!");
-                 displayValidationError("LIFF ID ไม่ถูกต้อง");
-                 return;
-             }
-            try {
-                await liff.init({ liffId: liffId });
-                if (liff.isLoggedIn()) {
-                    console.log("LIFF Initialized and User Logged In.");
-                    await getUserProfile(); // Chain the next step
-                } else {
-                    console.log("User not logged in. Redirecting to login...");
-                    liff.login(); // Redirects to LINE login
-                }
-            } catch (error) {
-                console.error('Error initializing LIFF:', error);
-                displayValidationError(`เกิดข้อผิดพลาดในการเชื่อมต่อ LINE (LIFF): ${error.message}`);
-                // Disable form maybe?
-                 if(submitBtn) submitBtn.disabled = true;
-            }
+        const selectedStartDate = new Date(startDate + 'T00:00:00');
+        const minLeaveDate = new Date(today);
+        minLeaveDate.setHours(0,0,0,0); // กำหนดเวลาเป็น 00:00 เพื่อเปรียบเทียบวันที่เท่านั้น
+        minLeaveDate.setDate(today.getDate() + 30);
+
+        // 1. ตรวจสอบเงื่อนไข 30 วัน สำหรับลากิจ/พักร้อน
+        if ((leaveType === 'ลากิจ' || leaveType === 'ลาพักร้อน') && selectedStartDate < minLeaveDate) {
+          startDateErrorDiv.textContent = 'การ' + leaveType + 'ต้องแจ้งล่วงหน้าอย่างน้อย 30 วัน หากต้องการลาเร็วกว่านี้ โปรดเลือก "ลาฉุกเฉิน"';
+          return false;
         }
 
-        async function getUserProfile() {
-            console.log("Getting user profile...");
+        // 2. ตรวจสอบวันหยุดสุดสัปดาห์สำหรับ "ลากิจ"
+        if (leaveType === 'ลากิจ') {
+           const dayOfWeek = selectedStartDate.getDay();
+           if (dayOfWeek === 0 || dayOfWeek === 6) {
+               startDateErrorDiv.textContent = 'ไม่สามารถ "ลากิจ" ในวันเสาร์-อาทิตย์ได้ กรุณาเลือก "ลาพักร้อน" หรือ "ลาฉุกเฉิน"';
+               return false;
+           }
+           // ตรวจสอบช่วงวันที่ (ถ้ามี end date)
+           if (!singleDayCheckbox.checked && endDateInput.value) {
+               const endDate = new Date(endDateInput.value + 'T00:00:00');
+               if (endDate >= selectedStartDate) { // เช็คว่า endDate ไม่น้อยกว่า startDate ก่อนวน loop
+                  let currentDate = new Date(selectedStartDate);
+                  while (currentDate <= endDate) {
+                      const currentDayOfWeek = currentDate.getDay();
+                      if (currentDayOfWeek === 0 || currentDayOfWeek === 6) {
+                          endDateErrorDiv.textContent = 'ช่วงวันที่ลา มีวันเสาร์-อาทิตย์ ไม่สามารถใช้ "ลากิจ" ได้';
+                          return false;
+                      }
+                      currentDate.setDate(currentDate.getDate() + 1);
+                  }
+               }
+           }
+        }
+
+        // 3. ตรวจสอบวันที่สิ้นสุดต้องไม่น้อยกว่าวันเริ่มต้น
+        if (!singleDayCheckbox.checked && endDateInput.value && startDateInput.value) {
+            const endDate = new Date(endDateInput.value + 'T00:00:00');
+             if (endDate < selectedStartDate) {
+                 endDateErrorDiv.textContent = 'วันที่สิ้นสุดต้องไม่น้อยกว่าวันที่เริ่มต้น';
+                 return false;
+             }
+        }
+
+        return true; // ผ่านการตรวจสอบเบื้องต้น
+      }
+
+      function clearErrors() {
+          startDateErrorDiv.textContent = '';
+          endDateErrorDiv.textContent = '';
+          leaveTypeErrorDiv.textContent = '';
+          statusDiv.textContent = '';
+          statusDiv.className = '';
+      }
+async function main() {
             try {
+             
+                await liff.init({ liffId: "2007047383-kBQ8DBxy" }); // <--- ใส่ LIFF ID ของคุณ
+
+                if (!liff.isLoggedIn()) {
+
+                    liff.login();
+                    return; // หยุดการทำงาน รอ redirect
+                }
+
+                // 3. ดึงข้อมูล Profile (ถ้าทำได้)
                 const profile = await liff.getProfile();
-                const userId = profile.userId;
-                console.log("User Profile:", profile);
-                if(userlineIdInput) userlineIdInput.value = userId;
-                // document.getElementById('displayName').value = profile.displayName; // Not displayed, but can keep
+                nameInput.value = profile.displayName;
+                liffAppContent.style.display = 'block';
+                initializeFormState(); // เรียกฟังก์ชันตั้งค่าเริ่มต้นของฟอร์ม
 
-                // Fetch employee data using the userId
-                await fetchData(userId);
-            } catch (error) {
-                console.error('Error getting LINE profile:', error);
-                displayValidationError(`ไม่สามารถดึงข้อมูลโปรไฟล์ LINE: ${error.message}`);
-                showLoading(false); // Ensure loading stops if profile fetch fails
+            } catch (err) {
+                console.error("LIFF Initialization failed", err);
+                liffErrorMessage.textContent = `เกิดข้อผิดพลาดในการเปิดแอป: ${err.message}. กรุณาลองเปิดใหม่อีกครั้ง`;
             }
         }
 
-        // --- Data Fetching Functions ---
-        async function fetchData(userId) {
-            if (!WEB_APP_MEMBER_URL) {
-                 console.error("WEB_APP_MEMBER_URL is not defined in config.js");
-                 displayValidationError("ไม่พบ URL สำหรับดึงข้อมูลพนักงาน");
-                 return;
-             }
-             if (!userId) {
-                 console.error("Cannot fetch data without userId");
-                 displayValidationError("ไม่พบ User ID สำหรับดึงข้อมูล");
-                 return;
-             }
-
-            console.log("Fetching employee data for userId:", userId);
-            showLoading(true);
-            try {
-                const response = await fetch(WEB_APP_MEMBER_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json', // Specify content type
-                    },
-                    // Ensure your Apps Script expects this structure
-                    body: JSON.stringify({ action: 'fetchData', userId: userId })
-                });
-
-                 if (!response.ok) {
-                     // Handle HTTP errors (like 404, 500)
-                     throw new Error(`HTTP error! status: ${response.status} - ${response.statusText}`);
-                 }
-
-                const data = await response.json(); // Expecting JSON response
-                console.log("Data received from Member App Script:", data);
-
-                 // IMPORTANT: Adapt the logic below based on how your Apps Script returns data
-                 // Assuming Apps Script returns an ARRAY of users, and we need to find one:
-                let row = null;
-                 if (Array.isArray(data)) {
-                     // Assuming the script returns an array of arrays [ [row1col1, row1col2], [row2col1, row2col2] ]
-                     // And assuming userId is in the second column (index 1)
-                     row = data.find(r => Array.isArray(r) && r.length > 1 && r[1] === userId);
-                 } else if (typeof data === 'object' && data !== null && data.userId === userId) {
-                     // Alternative: Assuming script returns a single user object {userId: '...', name: '...', ...}
-                     // We need to convert this object to an array-like structure for displayData
-                     // OR rewrite displayData to use object properties.
-                     // Let's stick to the array assumption for now based on original code.
-                     console.warn("Received object instead of array. Adapt find/display logic if needed.");
-                 }
-
-
-                if (row) {
-                    console.log("Matching employee data found:", row);
-                    displayData(row);
-                } else {
-                    console.log('No data found for userId:', userId);
-                    displayValidationError("ไม่พบข้อมูลพนักงานสำหรับ User ID นี้");
-                    // Clear fields or show default message
-                     clearEmployeeData();
-                }
-            } catch (error) {
-                console.error('Error fetching or processing employee data:', error);
-                displayValidationError(`เกิดข้อผิดพลาดในการดึงข้อมูลพนักงาน: ${error.message}`);
-                clearEmployeeData(); // Clear fields on error
-            } finally {
-                showLoading(false);
-            }
-        }
-
-        // --- UI Functions ---
-        function displayData(row) {
-            // ** CRITICAL: Double-check these indices match your Apps Script **
-            // Example: If Apps Script returns [Timestamp, UserID, Name, EmpID, Position, ImgURL, Status, Vac Bal, Pers Bal, Sick Bal]
-            // Then indices would be:
-            // UserID: row[1]
-            // Name: row[2]
-            // EmpID: row[3]
-            // Position: row[4]
-            // ImgURL: row[5]
-            // Vac Balance: row[7] ?? Check sheet order
-            // Pers Balance: row[8] ?? Check sheet order
-            // Sick Balance: row[9] ?? Check sheet order
-            console.log("Displaying data:", row);
-            if(nameIdInput) nameIdInput.value = row[2] || '';          // Assuming Name is at index 2
-            if(numberIdInput) numberIdInput.value = row[3] || '';       // Assuming Employee ID is at index 3
-            if(roleIdInput) roleIdInput.value = row[4] || '';       // Assuming Position is at index 4
-            const imgElement = document.getElementById('columnEData');
-            if(imgElement) imgElement.src = row[5] || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png'; // Assuming Image URL is at index 5
-
-            // Assuming Leave balances are at these indices (VERIFY!)
-            const vacInput = document.getElementById('columnGData');
-            const persInput = document.getElementById('columnHData');
-            const sickInput = document.getElementById('columnIData');
-            if(vacInput) vacInput.value = row[7] !== undefined ? row[7] : '0';
-            if(persInput) persInput.value = row[8] !== undefined ? row[8] : '0';
-            if(sickInput) sickInput.value = row[9] !== undefined ? row[9] : '0';
-        }
-
-        function clearEmployeeData() {
-             if(nameIdInput) nameIdInput.value = '';
-             if(numberIdInput) numberIdInput.value = '';
-             if(roleIdInput) roleIdInput.value = '';
-             const imgElement = document.getElementById('columnEData');
-             if(imgElement) imgElement.src = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png';
-             const vacInput = document.getElementById('columnGData');
-             const persInput = document.getElementById('columnHData');
-             const sickInput = document.getElementById('columnIData');
-             if(vacInput) vacInput.value = '0';
-             if(persInput) persInput.value = '0';
-             if(sickInput) sickInput.value = '0';
+        // --- ฟังก์ชันตั้งค่าเริ่มต้นฟอร์ม ---
+         function initializeFormState() {
+             endDateContainer.style.display = singleDayCheckbox.checked ? 'none' : 'block';
+             endDateInput.required = !singleDayCheckbox.checked;
          }
 
 
-        function showLoading(isLoading) {
-            const overlay = document.getElementById('loadingOverlay');
-            const formInputs = document.querySelectorAll('#leaveForm input, #leaveForm select, #leaveForm textarea, #leaveForm button'); // Select form inputs
-            if (overlay) {
-                 if (isLoading) {
-                     overlay.classList.remove('hidden');
-                     overlay.classList.add('flex');
-                     // Disable form inputs during loading
-                     formInputs.forEach(input => input.disabled = true);
-                 } else {
-                     overlay.classList.remove('flex');
-                     overlay.classList.add('hidden');
-                      // Re-enable form inputs
-                     formInputs.forEach(input => input.disabled = false);
-                 }
-            } else {
-                 console.warn("Loading overlay element not found.");
+        // --- 4. แก้ไขฟังก์ชัน submitForm ---
+        async function submitForm() {
+            clearErrors();
+            endDateInput.required = !singleDayCheckbox.checked;
+
+            if (!form.checkValidity()) {
+
+                let firstInvalidField = null; Array.from(form.elements).forEach(element => { if (element.willValidate && !element.checkValidity()) { if (!firstInvalidField) firstInvalidField = element; const errorDiv = document.getElementById(element.id + 'Error'); if (errorDiv) { errorDiv.textContent = element.validationMessage; } } }); if (firstInvalidField) { firstInvalidField.focus(); statusDiv.textContent = 'กรุณากรอกข้อมูลให้ครบถ้วนและถูกต้อง'; statusDiv.className = 'error'; } else { statusDiv.textContent = 'กรุณาตรวจสอบข้อมูลในฟอร์มอีกครั้ง'; statusDiv.className = 'error'; }
+                return;
             }
-             // Also handle employee info inputs (read-only, so disabling might not matter visually)
-             // const profileInputs = document.querySelectorAll('.input-field[readonly]');
-             // profileInputs.forEach(input => input.disabled = isLoading); // Optional
-        }
+            if (!validateLeaveDates()) { return; }
 
-        function displayValidationError(message) {
-            const errorDiv = document.getElementById('validationErrorMessage');
-            if (errorDiv) {
-                errorDiv.textContent = message;
-            } else {
-                 console.error("Validation error message div not found!");
-                 // Fallback alert
-                 // alert("Validation Error: " + message);
-            }
-        }
+            loadingDiv.style.display = 'block';
+            statusDiv.textContent = '';
+            statusDiv.className = '';
 
-        function clearValidationError() {
-            const errorDiv = document.getElementById('validationErrorMessage');
-             if (errorDiv) {
-                errorDiv.textContent = '';
-             }
-        }
-
-        function handleFileChange() {
-            if (fileInput && fileNameDisplay) {
-                 if (fileInput.files.length > 0) {
-                     fileNameDisplay.textContent = fileInput.files[0].name;
-                 } else {
-                     fileNameDisplay.textContent = 'ยังไม่ได้เลือกไฟล์';
-                 }
-             }
-        }
-
-        // --- Form Validation and Submission ---
-        function validateForm() {
-            clearValidationError(); // Clear previous errors
-
-            // Check if essential elements exist
-             if (!userlineIdInput || !nameIdInput || !roleIdInput || !typeId || !startDateId || !endDateId || !titleId) {
-                 console.error("Form validation cannot proceed: One or more required form elements not found.");
-                 displayValidationError("เกิดข้อผิดพลาด: ไม่พบองค์ประกอบฟอร์มที่จำเป็น");
-                 return false;
-             }
-
-
-            const userlineIdValue = userlineIdInput.value.trim();
-            const nameIdValue = nameIdInput.value.trim(); // This comes from fetched data, should be present
-            const roleIdValue = roleIdInput.value.trim(); // This comes from fetched data
-            const typeIdValue = typeId.value.trim();
-            const startDateIdValue = startDateId.value.trim(); // Format YYYY-MM-DD from flatpickr
-            const endDateIdValue = endDateId.value.trim();     // Format YYYY-MM-DD from flatpickr
-            const titleIdValue = titleId.value.trim();       // Nickname
-
-             // Basic required field checks
-            if (/* userlineIdValue === '' ||*/ nameIdValue === '' || /* roleIdValue === '' || */ // UserID/Name/Role should be filled by fetchData
-                typeIdValue === '' || startDateIdValue === '' || endDateIdValue === '' || titleIdValue === '') {
-                displayValidationError('กรุณากรอกข้อมูลที่มีเครื่องหมาย * ให้ครบถ้วน');
-                return false;
-            }
-
-            // Date parsing and validation
-            let startDate, endDate;
-            try {
-                 startDate = new Date(startDateIdValue + 'T00:00:00'); // Add time part to avoid timezone issues
-                 endDate = new Date(endDateIdValue + 'T00:00:00');
-                 if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
-                     throw new Error("Invalid date format");
-                 }
-             } catch (e) {
-                 displayValidationError('รูปแบบวันที่เริ่มต้นหรือสิ้นสุดไม่ถูกต้อง');
-                 return false;
-             }
-
-             const today = new Date();
-             today.setHours(0, 0, 0, 0); // Compare date part only
-
-             if (endDate < startDate) {
-                 displayValidationError('วันที่สิ้นสุดต้องไม่น้อยกว่าวันเริ่มต้น');
-                 return false;
-             }
-
-             // --- Specific Leave Type Rules ---
-
-             // 1. Personal Leave (ลากิจ) cannot be on Sat/Sun
-             if (typeIdValue === 'ลากิจ') {
-                 let currentDate = new Date(startDate);
-                 while (currentDate <= endDate) {
-                     const dayOfWeek = currentDate.getDay(); // 0 = Sunday, 6 = Saturday
-                     if (dayOfWeek === 0 || dayOfWeek === 6) {
-                         displayValidationError('ไม่สามารถ "ลากิจ" ในวันเสาร์หรืออาทิตย์ได้ กรุณาเลือก "ลาพักร้อน" หรือ "ลาฉุกเฉิน"');
-                         return false;
-                     }
-                     // Move to the next day
-                     currentDate.setDate(currentDate.getDate() + 1);
-                 }
-             }
-
-             // 2. Advance Notice (30 days) - Exclude Sick and Emergency Leave
-             if (typeIdValue !== 'ลาป่วย' && typeIdValue !== 'ลาฉุกเฉิน') {
-                 const diffTime = startDate.getTime() - today.getTime(); // Use getTime() for accuracy
-                 const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // Calculate full days difference
-
-                 // Check if start date is at least 30 days in the future
-                 if (diffDays < 30) {
-                     displayValidationError('ต้องแจ้งลาล่วงหน้าอย่างน้อย 30 วัน กรุณาเลือก "ลาฉุกเฉิน" หากต้องการลาภายใน 30 วัน');
-                     return false;
-                 }
-             }
-
-             // If all checks pass
-            console.log("Client-side validation passed.");
-            return true;
-        }
-
-        async function handleSubmit(event) {
-            event.preventDefault(); // Prevent default form submission
-            console.log("Submit button clicked.");
-
-            if (!validateForm()) {
-                console.log("Validation failed.");
-                Swal.fire({ // Give feedback even if validation fails
-                     icon: 'warning',
-                     title: 'ข้อมูลไม่ถูกต้อง',
-                     text: 'กรุณาตรวจสอบข้อความแจ้งเตือนในฟอร์ม',
-                 });
-                return; // Stop if validation fails
-            }
-
-            // Check if URLs are defined
-            if (!url) {
-                 console.error("Submit URL is not defined in config.js");
-                 displayValidationError("เกิดข้อผิดพลาด: ไม่พบ URL สำหรับส่งข้อมูลการลา");
-                 return;
-             }
-
-            // Confirmation Dialog
-            const isConfirmed = await showConfirmationDialog();
-            if (!isConfirmed) {
-                 console.log("Submission cancelled by user.");
-                 // Swal.fire('ยกเลิก', 'การส่งข้อมูลถูกยกเลิก', 'info'); // Optional feedback
-                 return;
-             }
-
-            // Disable button and show loading
-            if(submitBtn) submitBtn.disabled = true;
-            Swal.fire({
-                title: '<div class="text-md">กำลังตรวจสอบและบันทึก, รอสักครู่...</div>',
-                allowOutsideClick: false,
-                showConfirmButton: false,
-                html: '<div class="swal2-loading" style="display: block;"></div>', // Ensure spinner shows
-                didOpen: () => {
-                    Swal.showLoading();
-                }
-            });
+            const formData = {
+                
+                name: nameInput.value.trim(),
+                branch: branchInput.value.trim(),
+                employeeId: employeeIdInput.value.trim(),
+                email: emailInput.value.trim(),
+                leaveType: leaveTypeSelect.value,
+                startDate: startDateInput.value,
+                endDate: singleDayCheckbox.checked ? startDateInput.value : endDateInput.value,
+                singleDay: singleDayCheckbox.checked,
+        
+            };
 
             try {
-                // Prepare data object
-                let formDataObject = {
-                    // Data fetched from profile/sheet
-                    userlineId: userlineIdInput ? userlineIdInput.value : '',
-                    nameId: nameIdInput ? nameIdInput.value : '', // Use actual name for server checks
-                    numberId: numberIdInput ? numberIdInput.value : '',
-                    roleId: roleIdInput ? roleIdInput.value : '',
 
-                    // Data from form inputs
-                    typeId: typeId ? typeId.value : '',
-                    startDateId: startDateId ? startDateId.value : '', // YYYY-MM-DD
-                    endDateId: endDateId ? endDateId.value : '',     // YYYY-MM-DD
-                    titleId: titleId ? titleId.value : '',         // Nickname
-                    detailId: detailId ? detailId.value : ''
-                };
+                const response = await fetch(GAS_WEB_APP_URL, {
+                    method: 'POST',
 
-                // Handle file attachment
-                if (fileInput && fileInput.files.length > 0) {
-                    let file = fileInput.files[0];
-                    try {
-                        let base64 = await getBase64(file);
-                        formDataObject.base64 = base64;
-                        formDataObject.type = file.type;
-                        formDataObject.name = file.name;
-                    } catch (fileError) {
-                         console.error("Error reading file:", fileError);
-                         throw new Error("ไม่สามารถอ่านไฟล์ที่แนบได้"); // Throw to be caught below
-                    }
-                }
-
-                console.log("Sending data to Apps Script:", formDataObject);
-
-                // Send data to Google Apps Script
-                const response = await fetch(url, {
-                    method: "POST",
                     headers: {
-                        'Content-Type': 'application/json', // Important for Apps Script doPost(e)
+
+                        'Content-Type': 'application/json; charset=utf-8', // ส่งเป็น JSON
                     },
-                    body: JSON.stringify(formDataObject)
+                    body: JSON.stringify(formData) 
                 });
 
-                 // Process response from Apps Script
-                 let result;
-                 const responseText = await response.text(); // Get raw text first
-                 console.log("Raw response from Apps Script:", responseText);
+                 loadingDiv.style.display = 'none';
 
+              
                  if (!response.ok) {
-                    // Handle HTTP errors (e.g., 4xx, 5xx) from Apps Script itself
-                    // Try to parse error message if server sent JSON error
+                 
+                    let errorMsg = `เกิดข้อผิดพลาดจากเซิร์ฟเวอร์: ${response.status} ${response.statusText}`;
                      try {
-                         result = JSON.parse(responseText);
-                     } catch (e) {
-                         result = { success: false, error: `Server Error (${response.status}): ${responseText}` };
-                     }
-                    throw new Error(result.error || `เกิดข้อผิดพลาดจาก Server (${response.status})`);
+                        const errorData = await response.json();
+                        errorMsg = `เกิดข้อผิดพลาด: ${errorData.message || errorMsg}`;
+                     } catch (e) { /* ไม่สามารถ parse JSON ได้ ใช้ข้อความเดิม */ }
+                     statusDiv.textContent = errorMsg;
+                     statusDiv.className = 'error';
+                     return;
                  }
 
+                const result = await response.json();
 
-                 // Try to parse the response as JSON (expecting {success: true/false, ...})
-                 try {
-                     result = JSON.parse(responseText);
-                 } catch (jsonError) {
-                     console.error("Response from Apps Script was not valid JSON:", responseText);
-                     // Treat non-JSON success response as a potential issue or basic success
-                     // Original script might return plain text on success
-                     if (responseText.toLowerCase().includes("อัปโหลดข้อมูลเรียบร้อยแล้ว")) {
-                          result = { success: true, message: responseText };
-                     } else {
-                          result = { success: false, error: `การตอบกลับจาก Server ไม่ถูกต้อง: ${responseText}` };
-                     }
-
-                 }
-                console.log("Parsed result from Apps Script:", result);
-
-                // Handle success or failure based on parsed result
                 if (result.success) {
-                    Swal.fire({
-                        title: 'สำเร็จ!',
-                        text: result.message || 'บันทึกข้อมูลของคุณเรียบร้อย!',
-                        icon: 'success',
-                        confirmButtonText: 'ปิด',
-                        allowOutsideClick: false // Prevent closing until user clicks OK
-                    }).then(async (dialogResult) => {
-                        // Reset form only after successful dialog close
-                         document.getElementById('leaveForm').reset();
-                         handleFileChange(); // Reset file display name
-                         clearValidationError();
-                        if (dialogResult.isConfirmed) {
-                             // Send Flex Message only after successful submission and confirmation
-                             // Use the *original* data sent, as server might not return it
-                             await sendFlexMessage(formDataObject);
-                             // LIFF Close Window is now within sendFlexMessage
+                    statusDiv.innerHTML = result.message.replace(/\n/g, '<br>') || 'ส่งคำขอลางานสำเร็จ!';
+                    statusDiv.className = 'success';
+                    form.reset();
+                    initializeFormState();
+                    if (liff.isInClient()) {
+                        try {
+                            await liff.sendMessages([
+                                {
+                                    type: 'text',
+                                    text: `ส่งคำขอลางานประเภท "${formData.leaveType}" วันที่ ${formData.startDate} สำเร็จแล้ว (Event ID: ${result.message.split('Event ID: ')[1] || 'N/A'})` // อาจจะต้อง parse event id จาก message
+                                }
+                            ]);
+                            // หน่วงเวลาเล็กน้อยก่อนปิด เพื่อให้ user เห็นข้อความสำเร็จบนหน้าจอ
+                             setTimeout(() => {
+                                 liff.closeWindow();
+                             }, 3000);
+
+                        } catch (sendErr) {
+                             console.error("Error sending message or closing LIFF:", sendErr);
                         }
-                    });
-                } else {
-                    // Display server-side validation error
-                    displayValidationError(result.error || 'เกิดข้อผิดพลาดในการตรวจสอบข้อมูลฝั่ง Server');
-                    Swal.close(); // Close the loading Swal to show the form error
-                }
-
-            } catch (error) {
-                // Catch network errors, file errors, JSON parsing errors, etc.
-                console.error("Error during submission:", error);
-                Swal.close(); // Close loading Swal
-                displayValidationError(`เกิดข้อผิดพลาด: ${error.message}`);
-                 // Optional: Show a generic error Swal
-                 // Swal.fire('เกิดข้อผิดพลาด', error.message, 'error');
-            } finally {
-                // Re-enable submit button regardless of success or error
-                 if(submitBtn) submitBtn.disabled = false;
-            }
-        }
-
-        async function showConfirmationDialog() {
-            const confirmation = await Swal.fire({
-                title: 'ยืนยันการส่งข้อมูล',
-                html: "กรุณาตรวจสอบข้อมูลให้ถูกต้อง<br/>ก่อนกดยืนยันการส่งคำขอลา", // Use html for line break
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'ใช่, ส่งข้อมูล!',
-                cancelButtonText: 'ไม่, ยกเลิก'
-            });
-            return confirmation.isConfirmed;
-        }
-
-        // --- Helper Functions ---
-        function getBase64(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = () => {
-                     // result includes "data:mime/type;base64," prefix, remove it
-                     const base64String = reader.result.split(',')[1];
-                     if (!base64String) {
-                          reject(new Error("Could not extract base64 string from file reader result."));
-                          return;
-                      }
-                     resolve(base64String);
-                 };
-                reader.onerror = error => reject(error);
-                 // Ensure file is valid before reading
-                 if (file && typeof file.type === 'string' && typeof file.name === 'string') {
-                     reader.readAsDataURL(file);
-                 } else {
-                      reject(new Error("Invalid file object provided."));
-                 }
-
-            });
-        }
-
-        function formatDateForDisplay(dateString) {
-            // Input format assumed: YYYY-MM-DD
-             if (!dateString || typeof dateString !== 'string' || !dateString.includes('-')) return '';
-             try {
-                 const date = new Date(dateString + 'T00:00:00'); // Avoid timezone shifts
-                 if (isNaN(date.getTime())) return ''; // Invalid date
-                 const day = String(date.getDate()).padStart(2, '0');
-                 const month = String(date.getMonth() + 1).padStart(2, '0'); // Month is 0-indexed
-                 const year = date.getFullYear();
-                 return `${day}/${month}/${year}`;
-             } catch (e) {
-                  console.error("Error formatting date for display:", e);
-                  return ''; // Return empty on error
-             }
-        }
-
-        // --- LINE Messaging ---
-        async function sendFlexMessage(data) {
-             // Check if LIFF context is available
-            if (!liff || !liff.isInClient()) {
-                 console.log("Not in LIFF client, cannot send message. Closing window.");
-                 liff.closeWindow(); // Close even if message not sent
-                 return;
-             }
-
-            console.log("Preparing Flex Message with data:", data);
-            const flexMessage = {
-                type: "flex",
-                altText: "คำขออนุมัติการลา (รออนุมัติ)", // Clearer alt text
-                contents: {
-                    type: "bubble",
-                    body: {
-                        type: "box",
-                        layout: "vertical",
-                        contents: [
-                            { type: "text", text: "📋 คำขออนุมัติการลา", weight: "bold", size: "md", color: "#1DB446", margin: "md", wrap: true },
-                            { type: "separator", margin: "lg" },
-                            {
-                                type: "box", layout: "vertical", margin: "lg", spacing: "sm",
-                                contents: [
-                                    { type: "box", layout: "baseline", spacing: "sm", contents: [
-                                        { type: "text", text: "ผู้ขอ:", color: "#aaaaaa", size: "sm", flex: 2 },
-                                        { type: "text", text: data.nameId || 'N/A', wrap: true, color: "#666666", size: "sm", flex: 5 }
-                                    ]},
-                                    { type: "box", layout: "baseline", spacing: "sm", contents: [
-                                        { type: "text", text: "ประเภท:", color: "#aaaaaa", size: "sm", flex: 2 },
-                                        { type: "text", text: data.typeId || 'N/A', wrap: true, color: "#666666", size: "sm", flex: 5 }
-                                    ]},
-                                    { type: "box", layout: "baseline", spacing: "sm", contents: [
-                                        { type: "text", text: "วันที่:", color: "#aaaaaa", size: "sm", flex: 2 },
-                                        // Format dates for display here
-                                        { type: "text", text: `${formatDateForDisplay(data.startDateId)} - ${formatDateForDisplay(data.endDateId)}`, wrap: true, color: "#666666", size: "sm", flex: 5 }
-                                    ]},
-                                     // Optional: Add detail if not too long
-                                     ...(data.detailId ? [{ type: "box", layout: "baseline", spacing: "sm", contents: [
-                                         { type: "text", text: "เหตุผล:", color: "#aaaaaa", size: "sm", flex: 2 },
-                                         { type: "text", text: data.detailId, wrap: true, color: "#666666", size: "sm", flex: 5 }
-                                     ]}] : []),
-                                    { type: "separator", margin: "lg" },
-                                    { type: "text", text: "⏳ รอการอนุมัติ", color: '#2d63c7', size: 'sm', align: 'center', margin: 'md' }
-                                ]
-                            }
-                        ]
                     }
-                    // Optional Footer or Quick Reply for approver could be added if sent to specific chat
+
+                } else {
+          
+                    statusDiv.textContent = 'เกิดข้อผิดพลาด: ' + result.message;
+                    statusDiv.className = 'error';
+                     // แสดง error ที่ field ถ้ามี
+                     if (result.field) {
+                        const errorDiv = document.getElementById(result.field + 'Error');
+                        if (errorDiv) { errorDiv.textContent = result.message; }
+                         const fieldToFocus = document.getElementById(result.field);
+                         if(fieldToFocus) fieldToFocus.focus();
+                    }
                 }
-            };
-            try {
-                console.log("Sending Flex message:", JSON.stringify(flexMessage, null, 2));
-                await liff.sendMessages([flexMessage]);
-                console.log("Flex message sent successfully.");
-                liff.closeWindow(); // Close window after sending
+
             } catch (error) {
-                console.error("Error sending Flex message:", error);
-                // Don't close window if sending fails, user might want to retry or see error
-                 Swal.fire('เกิดข้อผิดพลาด', 'ไม่สามารถส่งข้อความแจ้งเตือนใน LINE ได้', 'error');
-                 // Consider not closing the window here:
-                 // liff.closeWindow();
+                loadingDiv.style.display = 'none';
+                statusDiv.textContent = 'เกิดข้อผิดพลาดในการเชื่อมต่อ: ' + error.message;
+                statusDiv.className = 'error';
+                console.error('Fetch Error:', error);
             }
         }
+
+        document.addEventListener('DOMContentLoaded', main);
 
     </script>
-</body>
+  </body>
 </html>
