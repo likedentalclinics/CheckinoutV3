@@ -119,6 +119,7 @@
         dateFormat: "Y-m-d",
         altInput: true,
         altFormat: "d-m-Y",
+        locale: "th",
         defaultDate: new Date()
       });
     };
@@ -246,6 +247,11 @@
       const detailIdValue = detailId.value.trim();
 
       if (userlineId === '' || nameId === '' || roleIdValue === '' || typeIdValue === '' || startDateIdValue === '' || endDateIdValue === '' || titleIdValue === '' ) {
+        Swal.fire({
+          icon: 'error',
+          title: 'ข้อมูลไม่ครบ',
+          text: 'กรอกข้อมูลในช่องที่จำเป็นให้ครบ',
+        });
         return false;
       }
       const startDate = new Date(startDateIdValue);
@@ -270,7 +276,6 @@
       event.preventDefault();
 
       if (!validateForm()) {
-       
         return;
       }
 
