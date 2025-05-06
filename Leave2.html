@@ -248,6 +248,20 @@
       if (userlineId === '' || nameId === '' || roleIdValue === '' || typeIdValue === '' || startDateIdValue === '' || endDateIdValue === '' || titleIdValue === '' ) {
         return false;
       }
+      const startDate = new Date(startDateIdValue);
+      const today = new Date();
+      const diffInDays = Math.ceil((startDate - today) / (1000 * 60 * 60 * 24));
+
+      if (typeIdValue === "ลาพักร้อน" || typeIdValue === "ลากิจ") {
+        if (diffInDays < 30) {
+          Swal.fire({
+            icon: 'error',
+            title: 'วันที่ไม่ถูกต้อง',
+            text: 'สำหรับการลาพักร้อนและลากิจ กรุณาเลือกวันเริ่มต้นล่วงหน้าอย่างน้อย 30 วัน',
+          });
+          return false;
+        }
+      }
       return true;
     }
 
