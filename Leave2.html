@@ -234,6 +234,27 @@
         reader.readAsDataURL(file);
       });
     }
+    
+    async function checkCalendarOverlap(startDate, endDate) {
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action: 'checkOverlap',
+          startDate: startDate.toISOString().slice(0, 10), // ส่งในรูปแบบ YYYY-MM-DD
+          endDate: endDate.toISOString().slice(0, 10),   // ส่งในรูปแบบ YYYY-MM-DD
+        }),
+      });
+      const data = await response.json();
+      return data.hasOverlap; // ข้อมูลที่ Backend ส่งกลับมา (true/false)
+    } catch (error) {
+      console.error('Error checking calendar overlap:', error);
+      return false;
+    }
+  }
    
     // ฟังก์ชันสำหรับตรวจสอบความถูกต้องของฟอร์ม
     function validateForm() {
@@ -274,8 +295,8 @@
       const today = new Date();
       const diffInDays = Math.ceil((startDate - today) / (1000 * 60 * 60 * 24));
 
-      if (typeIdValue === "ลาพักร้อน" || typeIdValue === "ลากิจ") {
-        if (diffInDays < 30) {
+    if (typeIdValue === "ลาพักร้อน" || typeIdValue === "ลากิจ") {
+       if (diffInDays < 30) {
           Swal.fire({
             icon: 'error',
             title: 'วันที่ไม่ถูกต้อง',
@@ -284,6 +305,17 @@
           return false;
         }
       }
+      
+    const hasOverlap = await checkCalendarOverlap(startDate, endDate);
+    if (hasOverlap) {
+      Swal.fire({
+        icon: 'error',
+        title: 'ไม่สามารถลาได้',
+        text: 'มีการลาในวันที่เลือกแล้ว (อย่างน้อย 2)',
+      });
+      return false;
+    }
+
       return true;
     }
 
