@@ -306,7 +306,7 @@
           return false;
         }
       }
-      
+      const hasOverlap = await checkCalendarOverlap(startDate, endDate);
     if (hasOverlap) {
       Swal.fire({
         icon: 'error',
