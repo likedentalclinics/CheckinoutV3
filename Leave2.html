@@ -105,6 +105,7 @@
 
   <script>
     // --- START: กำหนดค่า URL ของ Google Apps Script Web App ---
+    const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwcPFUMKYG_6r4DPbws4Z-fDRi0aU3q172xULjGMS6-G7GJBIp9VCZOFkymOg0vhcmv0Q/exec';
     // **สำคัญมาก: แทนที่ 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE' ด้วย URL จริงที่คุณได้จากการ Deploy Google Apps Script**
     // URL นี้จะใช้สำหรับทั้งการตรวจสอบการลาซ้ำ (doGet) และการบันทึกข้อมูลการลา (doPost)
      
@@ -309,7 +310,7 @@
         return false;
       }
     }
-    const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwcPFUMKYG_6r4DPbws4Z-fDRi0aU3q172xULjGMS6-G7GJBIp9VCZOFkymOg0vhcmv0Q/exec';
+    
     
     async function validateForm() {
       const userlineId = userlineIdInput.value.trim();
