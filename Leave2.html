@@ -14,6 +14,7 @@
   <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
   <!-- นำเข้า flatpickr CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
+<script src="https://npmcdn.com/flatpickr/dist/l10n/th.js"></script>
 </head>
 
 <body>
@@ -234,7 +235,56 @@
         reader.readAsDataURL(file);
       });
     }
-   
+    
+   async function checkDuplicateLeaveOnClient() {
+      const leaveTypeValue = typeId.value;
+      const startDateValue = startDateId.value; // รูปแบบ YYYY-MM-DD จาก flatpickr
+      const endDateValue = endDateId.value;     // รูปแบบ YYYY-MM-DD จาก flatpickr
+
+      if (leaveTypeValue === "ลาป่วย") {
+        return true; 
+      }
+      if (!startDateValue || !endDateValue) {
+
+        return false;
+      }
+      Swal.fire({
+        title: 'กำลังตรวจสอบวันลาซ้ำ...',
+        text: 'กรุณารอสักครู่',
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        }
+      });
+
+      return new Promise((resolve) => {
+        google.script.run
+          .withSuccessHandler(function(isDuplicate) {
+            Swal.close(); 
+            if (isDuplicate) {
+              Swal.fire({
+                icon: 'error',
+                title: 'ไม่สามารถลาได้',
+                text: 'มีการลาในวันที่ท่านเลือกไว้แล้ว กรุณาเลือกวันอื่น',
+              });
+              resolve(false);
+            } else {
+              resolve(true);
+            }
+          })
+          .withFailureHandler(function(error) {
+            Swal.close();
+            console.error('Error calling checkExistingLeave: ', error);
+            Swal.fire({
+              icon: 'error',
+              title: 'เกิดข้อผิดพลาด',
+              text: 'ไม่สามารถตรวจสอบข้อมูลการลาซ้ำได้จาก Server: ' + error.message,
+            });
+            resolve(false);
+          })
+          .checkExistingLeave(startDateValue, endDateValue, leaveTypeValue); // เรียกฟังก์ชันใน Google Apps Script
+      });
+    }
     // ฟังก์ชันสำหรับตรวจสอบความถูกต้องของฟอร์ม
    async function validateForm() {
       const userlineId = userlineIdInput.value.trim();
@@ -245,51 +295,6 @@
       const endDateIdValue = endDateId.value.trim();
       const titleIdValue = titleId.value.trim();
       const detailIdValue = detailId.value.trim();
-     
-  if (typeIdValue !== "ลาป่วย") {
-                try {
-                    const gasWebAppUrl = 'https://script.google.com/macros/s/AKfycbz97-E93by2pTmW_yZ9kI-xo4Esvvtidf1UgJEO1skbQo-zIKB4eqPT_qL5Caiz4ZYE/exec'; // Replace with your deployed GAS web app URL
-                    const response = await fetch(gasWebAppUrl, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded', // Or 'application/json' depending on how you want to send data
-                        },
-                        // Send data as URL-encoded parameters
-                        body: new URLSearchParams({
-                            startDateId: startDateIdValue,
-                            endDateId: endDateIdValue
-                        }).toString(),
-                    });
-
-                    if (!response.ok) {
-                        console.error('Error calling GAS web app for calendar check:', response.status);
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'เกิดข้อผิดพลาด',
-                            text: 'ไม่สามารถตรวจสอบปฏิทินได้ในขณะนี้',
-                        });
-                        return false;
-                    }
-
-                    const data = await response.json();
-                    if (data.hasConflict) {
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'ไม่สามารถลาได้',
-                            text: 'เนื่องจากมีอีเวนท์ในปฏิทินในช่วงวันที่ที่คุณเลือก',
-                        });
-                        return false;
-                    }
-                } catch (error) {
-                    console.error('Error checking calendar conflict with GAS web app:', error);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'เกิดข้อผิดพลาด',
-                        text: 'ไม่สามารถตรวจสอบปฏิทินได้ในขณะนี้',
-                    });
-                    return false;
-                }
-            }
 
       if (userlineId === '' || nameId === '' || roleIdValue === '' || typeIdValue === '' || startDateIdValue === '' || endDateIdValue === '' || titleIdValue === '' ) {
         Swal.fire({
@@ -301,22 +306,48 @@
       }
       const startDate = new Date(startDateIdValue);
       const endDate = new Date(endDateIdValue);
+     
+     if (endDate < startDate) {
+        Swal.fire({
+            icon: 'error',
+            title: 'วันที่ไม่ถูกต้อง',
+            text: 'วันสิ้นสุดการลาต้องไม่น้อยกว่าวันเริ่มต้นการลา',
+        });
+        return false;
+      }
+     const isLeaveSlotAvailable = await checkDuplicateLeaveOnClient();
+      if (!isLeaveSlotAvailable) {
+        return false; // หยุดการทำงานถ้ามีการลาซ้ำ หรือเกิดข้อผิดพลาดในการตรวจสอบกับ Server
+      }
+     
     // ตรวจสอบว่าเป็นวันเสาร์หรือวันอาทิตย์หรือไม่
-      const startDay = startDate.getDay(); // 0 = Sunday, 6 = Saturday
-      const endDay = endDate.getDay();
-      const isStartWeekend = (startDay === 0 || startDay === 6);
-      const isEndWeekend = (endDay === 0 || endDay === 6);
-
-    if ((isStartWeekend || isEndWeekend) && typeIdValue !== "ลาป่วย" && typeIdValue !== "ลาพักร้อน") {
-      Swal.fire({
-        icon: 'error',
-        title: 'ห้ามลาในวันเสาร์-อาทิตย์',
-        text: 'ยกเว้นลาป่วยและพักร้อนเท่านั้น',
-      });
-      return false;
-    }
+     if (typeIdValue !== "ลาป่วย" && typeIdValue !== "ลาพักร้อน") {
+        let currentDate = new Date(startDate);
+        while (currentDate <= endDate) {
+            const dayOfWeek = currentDate.getDay(); // 0 = Sunday, 6 = Saturday
+            if (dayOfWeek === 0 || dayOfWeek === 6) { 
+                 Swal.fire({
+                    icon: 'error',
+                    title: 'ห้ามลาในวันหยุดสุดสัปดาห์',
+                    text: `ประเภทการลา "${typeIdValue}" ไม่สามารถใช้ในวันเสาร์หรือวันอาทิตย์ได้`,
+                });
+                return false;
+            }
+            currentDate.setDate(currentDate.getDate() + 1);
+        }
+      }
       
       const today = new Date();
+      today.setHours(0,0,0,0);
+     
+     if (typeIdValue !== "ลาป่วย" && startDate < today) {
+          Swal.fire({
+              icon: 'error',
+              title: 'วันที่ไม่ถูกต้อง',
+              text: 'วันเริ่มต้นการลาต้องไม่เป็นวันที่ผ่านมา (ยกเว้นกรณีลาป่วย)',
+          });
+          return false;
+      }
       const diffInDays = Math.ceil((startDate - today) / (1000 * 60 * 60 * 24));
 
     if (typeIdValue === "ลาพักร้อน" || typeIdValue === "ลากิจ") {
@@ -324,7 +355,7 @@
           Swal.fire({
             icon: 'error',
             title: 'วันที่ไม่ถูกต้อง',
-            text: 'สำหรับการลาพักร้อนและลากิจ กรุณาเลือกวันเริ่มต้นล่วงหน้าอย่างน้อย 30 วัน',
+            text: 'รลาพักร้อนและลากิจ เลือกวันเริ่มต้นล่วงหน้าอย่างน้อย 30 วัน',
           });
           return false;
         }
@@ -337,14 +368,15 @@
     submitBtn.addEventListener('click', async (event) => {
       event.preventDefault();
 
-      if (!validateForm()) {
-        return;
+      const isValid = await validateForm(); 
+      if (!isValid) {
+        return; // ถ้า validateForm คืนค่า false ให้หยุดการทำงาน
       }
 
       const isConfirmed = await showConfirmationDialog();
 
       if (isConfirmed) {
-        submitBtn.disabled = true;
+        submitBtn.disabled = true; // ปิดการใช้งานปุ่มขณะส่งข้อมูล
 
         try {
           let obj = {
@@ -368,47 +400,70 @@
           }
 
           Swal.fire({
-            title: '<div class="text-md">กำลังบันทึก, รอสักครู่...</div>',
+            title: '<div class="text-md">กำลังบันทึกข้อมูล, กรุณารอสักครู่...</div>',
             allowOutsideClick: false,
             showConfirmButton: false,
-            html: '<div class="swal2-loading"></div>',
-            onBeforeOpen: () => {
+            didOpen: () => { 
               Swal.showLoading();
             }
           });
 
-          let response = await fetch(url, {
+          // ส่งข้อมูลไปยัง Google Apps Script Web App ที่ใช้สำหรับ *บันทึกข้อมูล*
+          let response = await fetch(url, { 
             method: "POST",
-            body: JSON.stringify(obj)
+            mode: 'cors', // เพิ่ม mode cors หาก GAS Web App อนุญาต
+            cache: 'no-cache',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(obj),
+            redirect: 'follow' 
           });
-
-          let data = await response.text();
+          
+          // Google Apps Script ที่ใช้ doPost แบบ text/plain จะ return text
+          // หาก GAS return JSON ให้ใช้ response.json()
+          let responseText = await response.text(); 
 
           Swal.fire({
-            title: 'สำเร็จ!',
-            text: 'บันทึกข้อมูลของคุณเรียบร้อย!',
+            title: 'บันทึกสำเร็จ!',
+            text: 'ข้อมูลการลาของคุณถูกบันทึกเรียบร้อยแล้ว!',
             icon: 'success',
-            confirmButtonText: 'ปิด',
+            confirmButtonText: 'ปิดหน้าต่าง',
           }).then(async (result) => {
             if (result.isConfirmed) {
-              // Reset form
-              document.querySelector('form').reset();
-              await sendFlexMessage(obj); // ส่งข้อความ Flex Message หลังจากการส่งข้อมูล
+              document.querySelector('form').reset(); // Reset ค่าในฟอร์ม
+              fileNameDisplay.textContent = 'ยังไม่ได้เลือกไฟล์'; // Reset ชื่อไฟล์ที่แสดง
+              // Reset ค่า flatpickr ให้เป็นวันปัจจุบัน
+              const flatpickrInstances = document.querySelectorAll(".date-picker");
+              flatpickrInstances.forEach(fpElement => {
+                  if (fpElement._flatpickr) { 
+                      fpElement._flatpickr.setDate(new Date(), true); 
+                  }
+              });
+              
+              // หลังจากบันทึกสำเร็จ ให้ส่ง Flex Message
+              // ตรวจสอบให้แน่ใจว่า liff พร้อมใช้งานก่อนเรียก sendMessages
+              if (liff && liff.isLoggedIn()) {
+                await sendFlexMessage(obj); // ส่งข้อมูล 'obj' ที่ใช้บันทึกไปสร้าง Flex Message
+              } else {
+                // อาจจะปิดหน้าต่างเฉยๆ หากไม่สามารถส่ง Flex ได้ (เช่น ทดสอบนอก LINE)
+                if(liff && typeof liff.closeWindow === 'function') liff.closeWindow();
+              }
             }
           });
-          console.log(data);
+          console.log('Response from server:', responseText);
         } catch (error) {
           Swal.fire({
             icon: 'error',
-            title: 'Error',
-            text: 'An error occurred while submitting data.',
+            title: 'เกิดข้อผิดพลาด',
+            text: 'พบปัญหาในการบันทึกข้อมูล: ' + error.message,
           });
-          console.error(error);
+          console.error('Error during submission:', error);
         } finally {
-          submitBtn.disabled = false;
+          submitBtn.disabled = false; // เปิดการใช้งานปุ่มอีกครั้ง
         }
       } else {
-        Swal.fire('Submission Canceled', 'Your data has not been submitted.', 'info');
+        Swal.fire('ยกเลิกการบันทึก', 'ข้อมูลของคุณยังไม่ได้ถูกบันทึก', 'info');
       }
     });
 
