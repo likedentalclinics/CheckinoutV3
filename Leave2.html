@@ -236,7 +236,7 @@
     }
    
     // ฟังก์ชันสำหรับตรวจสอบความถูกต้องของฟอร์ม
-   function validateForm() {
+   async function validateForm() {
       const userlineId = userlineIdInput.value.trim();
       const nameId = nameIdInput.value.trim();
       const roleIdValue = roleId.value.trim();
@@ -245,6 +245,51 @@
       const endDateIdValue = endDateId.value.trim();
       const titleIdValue = titleId.value.trim();
       const detailIdValue = detailId.value.trim();
+     
+  if (typeIdValue !== "ลาป่วย") {
+                try {
+                    const gasWebAppUrl = 'https://script.google.com/macros/s/AKfycbz97-E93by2pTmW_yZ9kI-xo4Esvvtidf1UgJEO1skbQo-zIKB4eqPT_qL5Caiz4ZYE/exec'; // Replace with your deployed GAS web app URL
+                    const response = await fetch(gasWebAppUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded', // Or 'application/json' depending on how you want to send data
+                        },
+                        // Send data as URL-encoded parameters
+                        body: new URLSearchParams({
+                            startDateId: startDateIdValue,
+                            endDateId: endDateIdValue
+                        }).toString(),
+                    });
+
+                    if (!response.ok) {
+                        console.error('Error calling GAS web app for calendar check:', response.status);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'เกิดข้อผิดพลาด',
+                            text: 'ไม่สามารถตรวจสอบปฏิทินได้ในขณะนี้',
+                        });
+                        return false;
+                    }
+
+                    const data = await response.json();
+                    if (data.hasConflict) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'ไม่สามารถลาได้',
+                            text: 'เนื่องจากมีอีเวนท์ในปฏิทินในช่วงวันที่ที่คุณเลือก',
+                        });
+                        return false;
+                    }
+                } catch (error) {
+                    console.error('Error checking calendar conflict with GAS web app:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'เกิดข้อผิดพลาด',
+                        text: 'ไม่สามารถตรวจสอบปฏิทินได้ในขณะนี้',
+                    });
+                    return false;
+                }
+            }
 
       if (userlineId === '' || nameId === '' || roleIdValue === '' || typeIdValue === '' || startDateIdValue === '' || endDateIdValue === '' || titleIdValue === '' ) {
         Swal.fire({
