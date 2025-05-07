@@ -249,6 +249,7 @@
         }),
       });
       const data = await response.json();
+      const hasOverlap = await checkCalendarOverlap(startDate, endDate);
       return data.hasOverlap; // ข้อมูลที่ Backend ส่งกลับมา (true/false)
     } catch (error) {
       console.error('Error checking calendar overlap:', error);
@@ -306,7 +307,6 @@
         }
       }
       
-    const hasOverlap = await checkCalendarOverlap(startDate, endDate);
     if (hasOverlap) {
       Swal.fire({
         icon: 'error',
