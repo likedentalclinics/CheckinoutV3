@@ -107,121 +107,68 @@
     // --- START: กำหนดค่า URL ของ Google Apps Script Web App ---
     // **สำคัญมาก: แทนที่ 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE' ด้วย URL จริงที่คุณได้จากการ Deploy Google Apps Script**
     // URL นี้จะใช้สำหรับทั้งการตรวจสอบการลาซ้ำ (doGet) และการบันทึกข้อมูลการลา (doPost)
-    const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwcPFUMKYG_6r4DPbws4Z-fDRi0aU3q172xULjGMS6-G7GJBIp9VCZOFkymOg0vhcmv0Q/exec'; 
+     
     // --- END: กำหนดค่า URL ---
 
     // --- START: LIFF และข้อมูลผู้ใช้ ---
-    const LIFF_ID = '2007047383-kBQ8DBxy'; // LIFF ID ของคุณ
-
     window.onload = async function () {
-      try {
-        await initializeLiff();
-        initializeFlatpickr();
-      } catch (error) {
-        console.error("Error on window.onload:", error);
-        Swal.fire('เกิดข้อผิดพลาด', 'ไม่สามารถเริ่มต้นหน้าเว็บได้อย่างถูกต้อง: ' + error.message, 'error');
-      }
-    };
-
-    function initializeFlatpickr() {
+      await initializeLiff();
+      // ตั้งค่า flatpickr ให้กับ input ที่ใช้เลือกวัน
       flatpickr(".date-picker", {
         disableMobile: true,
-        dateFormat: "Y-m-d", // รูปแบบที่ส่งไป server
+        dateFormat: "Y-m-d",
         altInput: true,
-        altFormat: "d-m-Y", // รูปแบบที่แสดงให้ผู้ใช้
+        altFormat: "d-m-Y",
         locale: "th",
-        defaultDate: new Date(),
-        minDate: "today" // ป้องกันการเลือกวันที่ผ่านมา (ยกเว้นกรณีจะแก้เงื่อนไขสำหรับลาป่วยทีหลัง)
+        defaultDate: new Date()
       });
-    }
+    };
 
+    // ฟังก์ชันสำหรับเริ่มการทำงานของ LIFF
     async function initializeLiff() {
       try {
-        console.log("Initializing LIFF with ID:", LIFF_ID);
-        await liff.init({ liffId: LIFF_ID });
+        await liff.init({ liffId: '2007047383-kBQ8DBxy' });
         if (liff.isLoggedIn()) {
-          console.log("LIFF: Logged in.");
-          await getUserProfile();
+          getUserProfile();
         } else {
-          console.log("LIFF: Not logged in. Calling liff.login().");
-          liff.login(); // จะ redirect ไปหน้า login ของ LINE แล้วกลับมา
+          liff.login();
         }
       } catch (error) {
         console.error('Error initializing LIFF:', error);
-        Swal.fire('LIFF Error', 'ไม่สามารถเริ่มต้น LIFF ได้: ' + error.message, 'error');
-        throw error; // Rethrow error to be caught by onload
       }
     }
 
+    // ฟังก์ชันสำหรับดึงข้อมูลโปรไฟล์ผู้ใช้
     async function getUserProfile() {
       try {
         const profile = await liff.getProfile();
-        console.log("LIFF Profile:", profile);
-        document.getElementById('userId').value = profile.userId;
+        const userId = profile.userId;
+        document.getElementById('userId').value = userId;
         document.getElementById('displayName').value = profile.displayName;
-        // หาก WEB_APP_MEMBER_URL ถูกกำหนดใน config.js และต้องการดึงข้อมูลสมาชิก
-        if (typeof WEB_APP_MEMBER_URL !== 'undefined' && WEB_APP_MEMBER_URL) {
-             await fetchData(profile.userId, WEB_APP_MEMBER_URL);
-        } else {
-            console.warn("WEB_APP_MEMBER_URL is not defined in config.js or is empty. Skipping fetchData for member details.");
-            // ถ้าไม่มี WEB_APP_MEMBER_URL ก็อาจจะใช้ข้อมูลจาก LIFF profile ไปแสดงบางส่วนได้
-            document.getElementById('columnBData').value = profile.displayName; // แสดงชื่อจาก LIFF ถ้าไม่มีข้อมูลจาก Sheet
-        }
+        await fetchData(userId);
       } catch (error) {
         console.error('Error getting profile data:', error);
-        Swal.fire('Profile Error', 'ไม่สามารถดึงข้อมูลโปรไฟล์ผู้ใช้ได้: ' + error.message, 'error');
       }
     }
-    
-    async function fetchData(userId, memberAppUrl) {
-      showLoading(true, "กำลังดึงข้อมูลผู้ใช้...");
-      try {
-        const response = await fetch(memberAppUrl, { // ใช้ memberAppUrl ที่ส่งมา
-          method: 'POST', // หรือ 'GET' ขึ้นอยู่กับ GAS ของคุณ
-          // mode: 'cors', // อาจจำเป็น
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ action: 'fetchData', userId: userId }) // หรือส่งเป็น query params ถ้าเป็น GET
-        });
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`Server error (${response.status}): ${errorText}`);
-        }
-        const data = await response.json();
-        if (data.error) {
-            throw new Error(data.message || "Unknown error from server.");
-        }
-        
-        // โค้ดเดิมของคุณคือ data เป็น array of arrays และมีการ sort
-        // หาก GAS สำหรับ fetchData return object โดยตรง หรือ array of objects ก็ต้องปรับส่วนนี้
-        if (Array.isArray(data) && data.length > 0 && Array.isArray(data[0])) { // สมมติว่า data คือ array of arrays
-            data.sort((a, b) => { // ตรวจสอบว่า index 6 เป็นวันที่จริงหรือไม่
-                const dateA = new Date(a[6]);
-                const dateB = new Date(b[6]);
-                if (isNaN(dateA.getTime()) || isNaN(dateB.getTime())) return 0;
-                return dateB - dateA;
-            });
-            const row = data.find(r => r[1] === userId); // สมมติ index 1 คือ userId
-            if (row) {
-              displayData(row);
-            } else {
-              console.log('No data found in Member sheet for userId:', userId);
-              // อาจจะแจ้งผู้ใช้ว่าไม่พบข้อมูลสมาชิก หรือใช้ข้อมูลจาก LIFF profile แทน
-               document.getElementById('columnBData').value = document.getElementById('displayName').value || "N/A";
-            }
-        } else if (data.data && typeof data.data === 'object' && !Array.isArray(data.data)) { // ถ้า GAS return { data: { ...member_info... } }
-            displayDataFromObject(data.data); // สร้างฟังก์ชันนี้ใหม่
-        }
-         else {
-            console.log('No data or unexpected data format received from fetchData:', data);
-            document.getElementById('columnBData').value = document.getElementById('displayName').value || "N/A";
-        }
 
+    // ฟังก์ชันสำหรับดึงข้อมูลจาก Google Sheets
+    async function fetchData(userId) {
+      showLoading(true);
+      try {
+        const response = await fetch(WEB_APP_MEMBER_URL, {
+          method: 'POST',
+          body: JSON.stringify({ action: 'fetchData', userId: userId })
+        });
+        const data = await response.json();
+        data.sort((a, b) => new Date(b[6]) - new Date(a[6]));
+        const row = data.find(row => row[1] === userId);
+        if (row) {
+          displayData(row);
+        } else {
+          console.log('No data found for userId:', userId);
+        }
       } catch (error) {
         console.error('Error fetching data:', error);
-        Swal.fire('Fetch Data Error', 'เกิดข้อผิดพลาดในการดึงข้อมูลสมาชิก: ' + error.message, 'error');
-        document.getElementById('columnBData').value = document.getElementById('displayName').value || "N/A"; // Fallback
       } finally {
         showLoading(false);
       }
@@ -309,7 +256,7 @@
         return false; 
       }
       
-      if (!GAS_WEB_APP_URL || GAS_WEB_APP_URL === 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE') {
+      if (!GAS_WEB_APP_URL || GAS_WEB_APP_URL === 'https://script.google.com/macros/s/AKfycbwcPFUMKYG_6r4DPbws4Z-fDRi0aU3q172xULjGMS6-G7GJBIp9VCZOFkymOg0vhcmv0Q/exec') {
           console.error('GAS_WEB_APP_URL is not configured correctly.');
           Swal.fire('เกิดข้อผิดพลาดในการตั้งค่า', 'ไม่ได้กำหนด URL สำหรับการตรวจสอบข้อมูล (GAS_WEB_APP_URL)', 'error');
           return false;
@@ -362,6 +309,7 @@
         return false;
       }
     }
+    const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwcPFUMKYG_6r4DPbws4Z-fDRi0aU3q172xULjGMS6-G7GJBIp9VCZOFkymOg0vhcmv0Q/exec';
     
     async function validateForm() {
       const userlineId = userlineIdInput.value.trim();
@@ -426,7 +374,7 @@
     submitBtn.addEventListener('click', async (event) => {
       event.preventDefault(); 
 
-      if (!GAS_WEB_APP_URL || GAS_WEB_APP_URL === 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE') {
+      if (!GAS_WEB_APP_URL || GAS_WEB_APP_URL === 'https://script.google.com/macros/s/AKfycbwcPFUMKYG_6r4DPbws4Z-fDRi0aU3q172xULjGMS6-G7GJBIp9VCZOFkymOg0vhcmv0Q/exec') {
           console.error('GAS_WEB_APP_URL is not configured correctly for submission.');
           Swal.fire('เกิดข้อผิดพลาดในการตั้งค่า', 'ไม่ได้กำหนด URL สำหรับการส่งข้อมูล (GAS_WEB_APP_URL)', 'error');
           return;
