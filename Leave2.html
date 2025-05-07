@@ -186,17 +186,10 @@
       document.getElementById('columnIData').value = row[9] || '0'; // Sick
     }
 
-    // Optional: ถ้า GAS สำหรับ fetchData return object แทน array
-    /* function displayDataFromObject(dataObj) {
-        document.getElementById('columnAData').value = dataObj.userIdField || '';
-        document.getElementById('columnBData').value = dataObj.nameField || '';
-        // ... map object properties to form fields ...
-    } */
-
     function showLoading(isLoading, message = "ค้นหารายชื่อ..") {
       const overlay = document.getElementById('loadingOverlay');
-      const loadingText = overlay.querySelector('div'); // เอา div ที่แสดง text
-      const profileInputs = document.querySelectorAll('.input-field'); // Profile display inputs
+      const loadingText = overlay.querySelector('div'); 
+      const profileInputs = document.querySelectorAll('.input-field');
 
       if (loadingText) loadingText.textContent = message;
 
@@ -218,12 +211,12 @@
     const userlineIdInput = document.getElementById("userId");
     const nameIdInput = document.getElementById("columnBData");
     const numberIdInput = document.getElementById("columnCData");
-    const roleIdInput = document.getElementById("columnDData"); // เปลี่ยน roleId เป็น roleIdInput
-    const typeIdSelect = document.getElementById("typeId"); // เปลี่ยน typeId เป็น typeIdSelect
-    const startDateIdInput = document.getElementById("startDateId"); // เปลี่ยน startDateId เป็น startDateIdInput
-    const endDateIdInput = document.getElementById("endDateId"); // เปลี่ยน endDateId เป็น endDateIdInput
-    const titleIdInput = document.getElementById("titleId"); // เปลี่ยน titleId เป็น titleIdInput
-    const detailIdTextarea = document.getElementById("detailId"); // เปลี่ยน detailId เป็น detailIdTextarea
+    const roleIdInput = document.getElementById("columnDData"); 
+    const typeIdSelect = document.getElementById("typeId"); 
+    const startDateIdInput = document.getElementById("startDateId"); 
+    const endDateIdInput = document.getElementById("endDateId"); 
+    const titleIdInput = document.getElementById("titleId"); 
+    const detailIdTextarea = document.getElementById("detailId"); 
     const submitBtn = document.getElementById("submitBtn");
     const fileNameDisplay = document.getElementById("fileNameDisplay");
 
@@ -253,12 +246,12 @@
         return true; 
       }
       if (!startDateValue || !endDateValue) {
-        // This should be caught by validateForm's initial checks
         return false; 
       }
       
-      if (!GAS_WEB_APP_URL || GAS_WEB_APP_URL === 'https://script.google.com/macros/s/AKfycbwcPFUMKYG_6r4DPbws4Z-fDRi0aU3q172xULjGMS6-G7GJBIp9VCZOFkymOg0vhcmv0Q/exec') {
-          console.error('GAS_WEB_APP_URL is not configured correctly.');
+      // ตรวจสอบ GAS_WEB_APP_URL ก่อนใช้งาน
+      if (!GAS_WEB_APP_URL || GAS_WEB_APP_URL === 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE') { // เพิ่มการตรวจสอบ placeholder อีกครั้งเผื่อกรณี copy-paste ผิด
+          console.error('GAS_WEB_APP_URL is not configured correctly for checking leave.');
           Swal.fire('เกิดข้อผิดพลาดในการตั้งค่า', 'ไม่ได้กำหนด URL สำหรับการตรวจสอบข้อมูล (GAS_WEB_APP_URL)', 'error');
           return false;
       }
@@ -284,7 +277,7 @@
         const result = await response.json();
         showLoading(false);
 
-        if (result.error) {
+        if (result.error) { // ตรวจสอบ error flag จาก JSON response ของ GAS
             throw new Error(result.message || 'Unknown server error during duplicate check.');
         }
 
@@ -311,7 +304,6 @@
       }
     }
     
-    
     async function validateForm() {
       const userlineId = userlineIdInput.value.trim();
       const nameId = nameIdInput.value.trim();
@@ -320,7 +312,6 @@
       const startDateIdValue = startDateIdInput.value.trim();
       const endDateIdValue = endDateIdInput.value.trim();
       const titleIdValue = titleIdInput.value.trim();
-      // const detailIdValue = detailIdTextarea.value.trim(); // Detail might be optional
 
       if (!userlineId || !nameId || !roleIdValue || !typeIdValue || !startDateIdValue || !endDateIdValue || !titleIdValue ) {
         Swal.fire('ข้อมูลไม่ครบถ้วน', 'กรุณากรอกข้อมูลในช่องที่จำเป็นให้ครบทุกช่อง (ยกเว้นรายละเอียดเพิ่มเติมและไฟล์แนบ)', 'warning');
@@ -335,10 +326,12 @@
         return false;
       }
 
+      // --- START: เรียกใช้การตรวจสอบการลาซ้ำกับ Server ---
       const isLeaveSlotAvailable = await checkDuplicateLeaveOnClient();
       if (!isLeaveSlotAvailable) {
         return false; 
       }
+      // --- END: เรียกใช้การตรวจสอบการลาซ้ำกับ Server ---
       
       if (typeIdValue !== "ลาป่วย" && typeIdValue !== "ลาพักร้อน") {
         let currentDate = new Date(startDate);
@@ -354,7 +347,7 @@
     
       const today = new Date();
       today.setHours(0,0,0,0); 
-      const flatpickrStartDate = startDateIdInput._flatpickr.selectedDates[0]; // Get date from flatpickr instance
+      const flatpickrStartDate = startDateIdInput._flatpickr.selectedDates[0]; 
 
       if (typeIdValue !== "ลาป่วย" && flatpickrStartDate < today) {
           Swal.fire('วันที่ไม่ถูกต้อง', 'วันเริ่มต้นการลาต้องไม่เป็นวันที่ผ่านมา (ยกเว้นกรณีลาป่วย)', 'error');
@@ -375,7 +368,8 @@
     submitBtn.addEventListener('click', async (event) => {
       event.preventDefault(); 
 
-      if (!GAS_WEB_APP_URL || GAS_WEB_APP_URL === 'https://script.google.com/macros/s/AKfycbwcPFUMKYG_6r4DPbws4Z-fDRi0aU3q172xULjGMS6-G7GJBIp9VCZOFkymOg0vhcmv0Q/exec') {
+      // ตรวจสอบ GAS_WEB_APP_URL ก่อน submit
+      if (!GAS_WEB_APP_URL || GAS_WEB_APP_URL === 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE') {
           console.error('GAS_WEB_APP_URL is not configured correctly for submission.');
           Swal.fire('เกิดข้อผิดพลาดในการตั้งค่า', 'ไม่ได้กำหนด URL สำหรับการส่งข้อมูล (GAS_WEB_APP_URL)', 'error');
           return;
@@ -402,8 +396,8 @@
           roleId: roleIdInput.value,
           numberId: numberIdInput.value,
           typeId: typeIdSelect.value,
-          startDateId: startDateIdInput.value, // YYYY-MM-DD
-          endDateId: endDateIdInput.value,   // YYYY-MM-DD
+          startDateId: startDateIdInput.value, 
+          endDateId: endDateIdInput.value,   
           titleId: titleIdInput.value,
           detailId: detailIdTextarea.value
         };
@@ -415,21 +409,17 @@
           obj.name = file.name;
         }
         
-        // ส่งข้อมูลไปยัง doPost ของ GAS_WEB_APP_URL
         const response = await fetch(GAS_WEB_APP_URL, { 
           method: "POST",
-          // mode: 'cors', // Usually not needed if GAS is set up for 'Anyone'
-          // cache: 'no-cache',
-          // headers: { 'Content-Type': 'text/plain' }, // GAS doPost(e) parses e.postData.contents as string
           body: JSON.stringify(obj) 
         });
 
         if (!response.ok) {
-            const errorText = await response.text();
+            const errorText = await response.text(); // พยายามอ่าน text จาก error response
             throw new Error(`Server error (${response.status}): ${errorText}`);
         }
 
-        const resultFromServer = await response.json();
+        const resultFromServer = await response.json(); // คาดหวัง JSON จาก doPost ที่แก้ไขแล้ว
         showLoading(false);
 
         if (resultFromServer.status === "success") {
@@ -457,7 +447,8 @@
             }
           });
         } else {
-          throw new Error(resultFromServer.message || "การบันทึกข้อมูลล้มเหลว (Server Response)");
+          // กรณี Server ตอบกลับมาว่า status ไม่ใช่ "success" (เช่น {status: "error", message: "..."})
+          throw new Error(resultFromServer.message || "การบันทึกข้อมูลล้มเหลว (Server Response Error)");
         }
       } catch (error) {
         showLoading(false);
@@ -482,7 +473,7 @@
       return result.isConfirmed;
     }
 
-    async function sendFlexMessage(data) { // 'data' is the 'obj' with leave details
+    async function sendFlexMessage(data) { 
       const flexMessage = {
         type: "flex",
         altText: `คำขออนุมัติการลา: ${data.typeId} โดย ${data.nameId}`,
@@ -500,8 +491,8 @@
                   createFlexTextLine("ชื่อผู้ลา:", data.nameId),
                   createFlexTextLine("ประเภท:", data.typeId),
                   createFlexTextLine("หัวข้อ:", data.titleId),
-                  createFlexTextLine("เริ่มวันที่:", formatDateForDisplay(data.startDateId)), // ใช้ YYYY-MM-DD
-                  createFlexTextLine("ถึงวันที่:", formatDateForDisplay(data.endDateId)),   // ใช้ YYYY-MM-DD
+                  createFlexTextLine("เริ่มวันที่:", formatDateForDisplay(data.startDateId)), 
+                  createFlexTextLine("ถึงวันที่:", formatDateForDisplay(data.endDateId)),   
                   { type: "box", layout: "baseline", spacing:"sm", margin:"md", contents: [
                        { type: "text", text: "สถานะ:", color:"#aaaaaa", size:"sm", flex: 2},
                        { type: "text", text: "📋 รอการอนุมัติ", color: '#2d63c7', size: "sm", weight:"bold", flex:5 }
@@ -539,13 +530,13 @@
         };
     }
 
-    function formatDateForDisplay(dateString_YYYYMMDD) { // สำหรับแสดงผลใน Flex
+    function formatDateForDisplay(dateString_YYYYMMDD) { 
       if (!dateString_YYYYMMDD) return "N/A";
       const parts = dateString_YYYYMMDD.split('-');
       if (parts.length === 3) {
-        return `${parts[2]}/${parts[1]}/${parts[0]}`; // DD/MM/YYYY
+        return `${parts[2]}/${parts[1]}/${parts[0]}`; 
       }
-      return dateString_YYYYMMDD; // fallback
+      return dateString_YYYYMMDD; 
     }
     // --- END: การจัดการฟอร์มลา ---
 
