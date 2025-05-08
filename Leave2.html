@@ -249,12 +249,6 @@
         return false; 
       }
       
-      // ตรวจสอบ GAS_WEB_APP_URL ก่อนใช้งาน
-      if (!GAS_WEB_APP_URL || GAS_WEB_APP_URL === 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE') { // เพิ่มการตรวจสอบ placeholder อีกครั้งเผื่อกรณี copy-paste ผิด
-          console.error('GAS_WEB_APP_URL is not configured correctly for checking leave.');
-          Swal.fire('เกิดข้อผิดพลาดในการตั้งค่า', 'ไม่ได้กำหนด URL สำหรับการตรวจสอบข้อมูล (GAS_WEB_APP_URL)', 'error');
-          return false;
-      }
 
       showLoading(true, "กำลังตรวจสอบวันลาซ้ำ...");
 
