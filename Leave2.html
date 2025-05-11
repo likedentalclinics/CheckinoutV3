@@ -84,9 +84,6 @@
         <div class="mt-4 mb-5">
           <label for="detailId" class="block text-sm font-medium text-gray-700 mb-1">รายละเอียดเพิ่มเติม (ถ้ามี)</label>
           <textarea id="detailId" name="detailId" placeholder="ระบุรายละเอียดเพิ่มเติม" class="w-full p-2 border rounded-lg"></textarea>
-          <div id="loadingOverlay" class="hidden absolute inset-0 flex items-center justify-center bg-gray-800 rounded-lg m-6 bg-opacity-85 z-10">
-      <div class="text-center text-white text-md">ค้นหารายชื่อ..</div>
-          </div>
         </div>
         <div class="text-center bg-slate-100 rounded-lg my-5 p-4">
           <label for="file" class="cursor-pointer justify-between items-center">
@@ -233,6 +230,20 @@
         reader.readAsDataURL(file);
       });
     }
+
+    function calculateDays(startDate, endDate) {
+            const oneDay = 1000 * 60 * 60 * 24; // milliseconds in one day
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            // Set time to noon to avoid issues with daylight saving or timezone
+            start.setHours(12, 0, 0, 0);
+            end.setHours(12, 0, 0, 0);
+
+            const diffInTime = end.getTime() - start.getTime();
+            // Calculate the number of days difference and add 1 (inclusive)
+            const diffInDays = Math.round(diffInTime / oneDay) + 1;
+            return diffInDays;
+        }
     
     async function checkDuplicateLeaveOnClient() {
       const leaveTypeValue = typeIdSelect.value;
@@ -315,7 +326,18 @@
         Swal.fire('วันที่ไม่ถูกต้อง', 'วันสิ้นสุดการลาต้องไม่น้อยกว่าวันเริ่มต้นการลา', 'error');
         return false;
       }
-
+      
+  const leaveDurationDays = calculateDays(startDate, endDate); // คำนวณวันลา
+  const fileUploaded = fileInput.files.length > 0;
+  if (typeIdValue === 'ลาป่วย' && leaveDurationDays > 2 && !fileUploaded) {
+    Swal.fire({
+        icon: 'warning',
+        title: 'ต้องการเอกสารรับรอง',
+        text: `ป่วยตั้งแต่ 3 วันขึ้นไป (${leaveDurationDays} วัน) ต้องอัพใบรับรองแพทย์`,
+    });
+    return false;
+  }
+      
       // --- START: เรียกใช้การตรวจสอบการลาซ้ำกับ Server ---
       const isLeaveSlotAvailable = await checkDuplicateLeaveOnClient();
       if (!isLeaveSlotAvailable) {
