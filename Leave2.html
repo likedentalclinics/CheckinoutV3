@@ -330,11 +330,7 @@
   const leaveDurationDays = calculateDays(startDate, endDate); // คำนวณวันลา
   const fileUploaded = fileInput.files.length > 0;
   if (typeIdValue === 'ลาป่วย' && leaveDurationDays > 2 && !fileUploaded) {
-    Swal.fire({
-        icon: 'warning',
-        title: 'ต้องการเอกสารรับรอง',
-        text: `ป่วยตั้งแต่ 3 วันขึ้นไป (${leaveDurationDays} วัน) ต้องอัพใบรับรองแพทย์`,
-    });
+    Swal.fire('ต้องการเอกสารรับรอง',`ป่วยตั้งแต่ 3 วันขึ้นไป (${leaveDurationDays} วัน) ต้องอัพใบรับรองแพทย์`,'warning');
     return false;
   }
       
