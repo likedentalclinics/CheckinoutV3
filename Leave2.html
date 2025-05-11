@@ -110,12 +110,12 @@
     window.onload = async function () {
       await initializeLiff();
       // ตั้งค่า flatpickr ให้กับ input ที่ใช้เลือกวัน
-      flatpickr("#date-picker", {
+      flatpickr(".date-picker", {
+        locale: "th",
         disableMobile: true,
         dateFormat: "Y-m-d",
         altInput: true,
         altFormat: "d-m-Y",
-        locale: "th",
         defaultDate: new Date()
       });
     };
