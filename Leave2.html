@@ -250,11 +250,12 @@
       const leaveTypeValue = typeIdSelect.value;
       const startDateValue = startDateIdInput.value;
       const endDateValue = endDateIdInput.value;
+      const roleIdValue = roleIdInput.value.trim();
 
       if (leaveTypeValue === "ลาป่วย") {
         return true; 
       }
-      if (!startDateValue || !endDateValue) {
+      if (!startDateValue || !endDateValue || !roleIdValue) {
         return false; 
       }
       
@@ -264,6 +265,7 @@
         action: 'checkLeave',
         startDate: startDateValue,
         endDate: endDateValue,
+        roleId: roleIdValue,
         leaveType: leaveTypeValue
       });
       const requestUrl = `${GAS_WEB_APP_URL}?${params.toString()}`;
