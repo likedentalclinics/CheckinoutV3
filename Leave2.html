@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -327,6 +327,10 @@
 
       const startDate = new Date(startDateIdValue);
       const endDate = new Date(endDateIdValue);
+      if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+        Swal.fire('รูปแบบวันที่ไม่ถูกต้อง', 'กรุณาเลือกวันที่เริ่มต้นและสิ้นสุดให้ถูกต้อง', 'error');
+        return false;
+      }
       
       if (endDate < startDate) {
         Swal.fire('วันที่ไม่ถูกต้อง', 'วันสิ้นสุดการลาต้องไม่น้อยกว่าวันเริ่มต้นการลา', 'error');
