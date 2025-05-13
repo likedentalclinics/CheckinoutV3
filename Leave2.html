@@ -256,6 +256,8 @@
         return true; 
       }
       if (!startDateValue || !endDateValue || !roleIdValue) {
+        console.warn("checkDuplicateLeaveOnClient called with empty startDate, endDate, or roleId.");
+        Swal.fire('ข้อมูลไม่ครบ', 'กรุณาเลือกวันที่และตรวจสอบข้อมูลตำแหน่ง', 'warning');
         return false; 
       }
       
@@ -290,11 +292,11 @@
           Swal.fire({
             icon: 'warning',
             title: 'ไม่สามารถเลือกวันลานี้ได้',
-            text:  `มีการลาซ้ำซ้อน หรือโควต้าสำหรับตำแหน่ง "${roleIdValue}" มีการลาในวันที่ท่านเลือกไว้แล้ว กรุณาเลือกวันอื่น'
+            text: result.message || `มีการลาซ้ำซ้อน หรือโควต้าสำหรับตำแหน่ง "${roleIdValue}" เต็มแล้วในวันที่เลือก กรุณาเลือกวันอื่น`,
           });
           return false; 
         } else {
-          return true; 
+          return true; // ไม่ซ้ำ
         }
 
       } catch (error) {
