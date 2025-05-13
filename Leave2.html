@@ -280,6 +280,7 @@
 
         const result = await response.json();
         showLoading(false);
+        console.log("Response from checkLeave GAS:", result);
 
         if (result.error) { // ตรวจสอบ error flag จาก JSON response ของ GAS
             throw new Error(result.message || 'Unknown server error during duplicate check.');
@@ -289,7 +290,7 @@
           Swal.fire({
             icon: 'warning',
             title: 'ไม่สามารถเลือกวันลานี้ได้',
-            text: 'มีการลาในวันที่ท่านเลือกไว้แล้ว กรุณาเลือกวันอื่น',
+            text:  `มีการลาซ้ำซ้อน หรือโควต้าสำหรับตำแหน่ง "${roleIdValue}" มีการลาในวันที่ท่านเลือกไว้แล้ว กรุณาเลือกวันอื่น'
           });
           return false; 
         } else {
