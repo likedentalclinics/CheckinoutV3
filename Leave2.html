@@ -252,7 +252,7 @@
       const endDateValue = endDateIdInput.value;
       const roleIdValue = roleIdInput.value.trim();
 
-      if (leaveTypeValue === "ลาป่วย") {
+      if (leaveTypeValue === "ลาป่วย" || leaveTypeValue === "อื่นๆ") {
         return true; 
       }
       if (!startDateValue || !endDateValue || !roleIdValue) {
@@ -351,12 +351,12 @@
       }
       // --- END: เรียกใช้การตรวจสอบการลาซ้ำกับ Server ---
       
-      if (typeIdValue !== "ลาป่วย" && typeIdValue !== "ลาพักร้อน") {
+      if (typeIdValue === "ลากิจ") {
         let currentDate = new Date(startDate);
         while (currentDate <= endDate) {
             const dayOfWeek = currentDate.getDay(); 
             if (dayOfWeek === 0 || dayOfWeek === 6) { 
-                 Swal.fire('ห้ามลาในวันหยุดสุดสัปดาห์', `ประเภท "${typeIdValue}" ไม่อนุมติในวันเสาร์หรือวันอาทิตย์`, 'error');
+                 Swal.fire('ห้ามลาในวันหยุดสุดสัปดาห์', `ไม่อนุมติลากิจในวันเสาร์วันอาทิตย์`, 'error');
                 return false;
             }
             currentDate.setDate(currentDate.getDate() + 1);
