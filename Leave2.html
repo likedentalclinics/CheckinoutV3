@@ -12,20 +12,6 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/th.js"></script>
-    <style>
-    /* Optional: เพิ่มสไตล์สำหรับ spinner ถ้าต้องการปรับแต่งนอกเหนือจาก Tailwind */
-    .button-spinner svg {
-      animation: spin 1s linear infinite;
-    }
-    @keyframes spin {
-      from {
-        transform: rotate(0deg);
-      }
-      to {
-        transform: rotate(360deg);
-      }
-    }
-  </style>
 </head>
 
 <body>
@@ -228,8 +214,6 @@
     const detailIdTextarea = document.getElementById("detailId"); 
     const submitBtn = document.getElementById("submitBtn");
     const fileNameDisplay = document.getElementById("fileNameDisplay");
-    const originalSubmitBtnText = submitBtn.innerHTML; // เก็บข้อความเดิมของปุ่ม
-    const originalSubmitBtnClasses = submitBtn.className;
 
     fileInput.addEventListener('change', function () {
       if (fileInput.files.length > 0) {
@@ -277,16 +261,7 @@
         return false; 
       }
     showLoading(true, "กำลังตรวจสอบวันลาซ้ำ...");
-    submitBtn.innerHTML = `
-        <svg class="animate-spin inline-block mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-        </svg>
-        กำลังตรวจสอบ...
-      `;
-      submitBtn.className = "bg-yellow-500 text-center w-full text-white py-4 px-4 rounded-lg cursor-not-allowed flex items-center justify-center"; // สีเหลือง และ disable
-      submitBtn.disabled = true;
-      
+
       const params = new URLSearchParams({
         action: 'checkLeave',
         startDate: startDateValue,
@@ -332,9 +307,7 @@
           text: 'ไม่สามารถตรวจสอบข้อมูลการลาซ้ำได้: ' + error.message,
         });
         return false;
-      } submitBtn.innerHTML = originalSubmitBtnText;
-        submitBtn.className = originalSubmitBtnClasses;
-        submitBtn.disabled = false;
+      } 
     }
     
     async function validateForm() {
