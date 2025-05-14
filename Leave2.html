@@ -104,8 +104,9 @@
   <script src="config.js"></script> 
 
   <script>
-    // --- START: กำหนดค่า URL ของ Google Apps Script Web App ---
     const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwcPFUMKYG_6r4DPbws4Z-fDRi0aU3q172xULjGMS6-G7GJBIp9VCZOFkymOg0vhcmv0Q/exec';
+    const originalSubmitBtnText = submitBtn.innerHTML; // เก็บข้อความเดิมของปุ่ม
+    const originalSubmitBtnClasses = submitBtn.className; // เก็บ class เดิมของปุ่ม
     // --- START: LIFF และข้อมูลผู้ใช้ ---
     window.onload = async function () {
       await initializeLiff();
@@ -261,8 +262,16 @@
         return false; 
       }
       
-      showLoading(true, "กำลังตรวจสอบวันลาซ้ำ...");
-
+   submitBtn.innerHTML = `
+        <svg class="animate-spin inline-block mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        กำลังตรวจสอบ...
+      `;
+      submitBtn.className = "bg-yellow-500 text-center w-full text-white py-4 px-4 rounded-lg cursor-not-allowed flex items-center justify-center"; // สีเหลือง และ disable
+      submitBtn.disabled = true;
+     
       const params = new URLSearchParams({
         action: 'checkLeave',
         startDate: startDateValue,
@@ -281,7 +290,6 @@
         }
 
         const result = await response.json();
-        showLoading(false);
         console.log("Response from checkLeave GAS:", result);
 
         if (result.error) { // ตรวจสอบ error flag จาก JSON response ของ GAS
@@ -300,7 +308,6 @@
         }
 
       } catch (error) {
-        showLoading(false);
         console.error('Error in checkDuplicateLeaveOnClient: ', error);
         Swal.fire({
           icon: 'error',
@@ -308,6 +315,12 @@
           text: 'ไม่สามารถตรวจสอบข้อมูลการลาซ้ำได้: ' + error.message,
         });
         return false;
+      } finally {
+        // --- คืนค่า UI ปุ่ม Submit ---
+        submitBtn.innerHTML = originalSubmitBtnText;
+        submitBtn.className = originalSubmitBtnClasses;
+        submitBtn.disabled = false;
+        // --- สิ้นสุดการคืนค่า UI ปุ่ม ---
       }
     }
     
@@ -396,9 +409,19 @@
         Swal.fire('ยกเลิกการบันทึก', 'ข้อมูลของคุณยังไม่ได้ถูกบันทึก', 'info');
         return;
       }
-      
+     
+      const submitOriginalText = submitBtn.innerHTML;
+      const submitOriginalClasses = submitBtn.className;
+      submitBtn.innerHTML = `
+        <svg class="animate-spin inline-block mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        กำลังบันทึก...
+      `;
+      // อาจจะไม่เปลี่ยนสีปุ่มตอน submit หรือเปลี่ยนเป็นสีอื่น เช่น เขียวอ่อน
+      submitBtn.className = "bg-slate-700 text-center w-full text-white py-4 px-4 rounded-lg cursor-not-allowed flex items-center justify-center"; 
       submitBtn.disabled = true; 
-      showLoading(true, "กำลังบันทึกข้อมูล...");
 
       try {
         let obj = {
@@ -431,7 +454,6 @@
         }
 
         const resultFromServer = await response.json(); // คาดหวัง JSON จาก doPost ที่แก้ไขแล้ว
-        showLoading(false);
 
         if (resultFromServer.status === "success") {
           Swal.fire({
@@ -462,10 +484,11 @@
           throw new Error(resultFromServer.message || "การบันทึกข้อมูลล้มเหลว (Server Response Error)");
         }
       } catch (error) {
-        showLoading(false);
         Swal.fire('เกิดข้อผิดพลาด (ส่งข้อมูล)', 'พบปัญหาในการบันทึกข้อมูล: ' + error.message, 'error');
         console.error('Error during submission:', error);
       } finally {
+        submitBtn.innerHTML = submitOriginalText; // ใช้ originalSubmitBtnText ที่เก็บไว้สำหรับ submit
+        submitBtn.className = submitOriginalClasses; // ใช้ originalSubmitBtnClasses
         submitBtn.disabled = false; 
       }
     });
