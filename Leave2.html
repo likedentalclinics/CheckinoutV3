@@ -277,7 +277,7 @@
       `;
       submitBtn.className = "bg-yellow-500 text-center w-full text-white py-4 px-4 rounded-lg cursor-not-allowed flex items-center justify-center"; // สีเหลือง และ disable
       submitBtn.disabled = true;
-      showLoading(true, "กำลังตรวจสอบวันลาซ้ำ...");
+
 
       const params = new URLSearchParams({
         action: 'checkLeave',
@@ -316,7 +316,7 @@
         }
 
       } catch (error) {
-        showLoading(false);
+
         console.error('Error in checkDuplicateLeaveOnClient: ', error);
         Swal.fire({
           icon: 'error',
