@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -94,7 +94,7 @@
           </label>
           <div class="mx-auto text-slate-800 text-xs text-center mt-1">รูปแบบที่รองรับ: jpg, jpeg, png, pdf, doc, docx</div>
         </div>
-        <button type="button" id="" class="bg-slate-800 text-center w-full text-white py-4 px-4 rounded-lg hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-opacity-50">
+        <button type="button" id="submitBtn" class="bg-slate-800 text-center w-full text-white py-4 px-4 rounded-lg hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-opacity-50">
           บันทึกข้อมูลการลา
         </button>
       </div>
@@ -260,7 +260,8 @@
         Swal.fire('ข้อมูลไม่ครบ', 'กรุณาเลือกวันที่และตรวจสอบข้อมูลตำแหน่ง', 'warning');
         return false; 
       }
-    showLoading(true, "กำลังตรวจสอบวันลาซ้ำ...");
+      
+      showLoading(true, "กำลังตรวจสอบวันลาซ้ำ...");
 
       const params = new URLSearchParams({
         action: 'checkLeave',
@@ -307,7 +308,7 @@
           text: 'ไม่สามารถตรวจสอบข้อมูลการลาซ้ำได้: ' + error.message,
         });
         return false;
-      } 
+      }
     }
     
     async function validateForm() {
