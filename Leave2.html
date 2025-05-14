@@ -105,8 +105,6 @@
 
   <script>
     const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwcPFUMKYG_6r4DPbws4Z-fDRi0aU3q172xULjGMS6-G7GJBIp9VCZOFkymOg0vhcmv0Q/exec';
-    const originalSubmitBtnText = submitBtn.innerHTML; // เก็บข้อความเดิมของปุ่ม
-    const originalSubmitBtnClasses = submitBtn.className; // เก็บ class เดิมของปุ่ม
     // --- START: LIFF และข้อมูลผู้ใช้ ---
     window.onload = async function () {
       await initializeLiff();
@@ -252,6 +250,8 @@
       const startDateValue = startDateIdInput.value;
       const endDateValue = endDateIdInput.value;
       const roleIdValue = roleIdInput.value.trim();
+    const originalSubmitBtnText = submitBtn.innerHTML; // เก็บข้อความเดิมของปุ่ม
+    const originalSubmitBtnClasses = submitBtn.className; // เก็บ class เดิมของปุ่ม
 
       if (leaveTypeValue === "ลาป่วย" || leaveTypeValue === "อื่นๆ") {
         return true; 
