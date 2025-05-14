@@ -337,7 +337,18 @@
         Swal.fire('ข้อมูลไม่ครบถ้วน', 'กรุณากรอกข้อมูลในช่องที่จำเป็นให้ครบทุกช่อง (ยกเว้นรายละเอียดเพิ่มเติมและไฟล์แนบ)', 'warning');
         return false;
       }
-
+     
+     const usedVacationDays = parseInt(columnGDataInput.value) || 0;
+     const usedPersonalDays = parseInt(columnHDataInput.value) || 0;
+     if (typeIdValue === "ลาพักร้อน") {
+     if (usedVacationDays >= 3) {
+      Swal.fire('ไม่สามารถลาพักร้อนได้', `คุณได้ใช้สิทธิ์ลาพักร้อนครบแล้ว)`, 'error'); return false;}
+      }
+     else if (typeIdValue === "ลากิจ") {
+      if (usedPersonalDays >= 3) {
+       Swal.fire('ไม่สามารถลากิจได้', `คุณได้ใช้สิทธิ์ลากิจครบแล้ว)`, 'error'); return false;}
+     }
+     
       const startDate = new Date(startDateIdValue);
       const endDate = new Date(endDateIdValue);
       if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
