@@ -277,9 +277,12 @@
         startDate: startDateValue,
         endDate: endDateValue,
         roleId: roleIdValue,
-        leaveType: leaveTypeValue
+        leaveType: leaveTypeValue,
+        numberId: numberIdValue,          // *** ส่ง numberId ***
+        requestedDays: requestedDaysValue
       });
       const requestUrl = `${GAS_WEB_APP_URL}?${params.toString()}`;
+     console.log("Requesting URL for checkLeave:", requestUrl);
 
       try {
         const response = await fetch(requestUrl, { method: 'GET' });
