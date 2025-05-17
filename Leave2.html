@@ -109,8 +109,11 @@
     window.onload = async function () {
       await initializeLiff();
       flatpickr(".date-picker", {
-        locale: "th",
-       firstDayOfWeek: 0,
+        locale: {weekdays: {
+      longhand: ["อาทิตย์","จันทร์","อังคาร","พุธ","พฤหัสบดี","ศุกร์","เสาร์"]}, 
+          months: {
+      longhand: ["มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม",],},
+        firstDayOfWeek: 0},
         disableMobile: true,
         dateFormat: "Y-m-d",
         altInput: true,
