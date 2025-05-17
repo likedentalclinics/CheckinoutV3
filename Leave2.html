@@ -110,12 +110,13 @@
       await initializeLiff();
       flatpickr(".date-picker", {
         locale: "th",
+        firstDayOfWeek: 0,
         disableMobile: true,
         dateFormat: "Y-m-d",
         altInput: true,
         altFormat: "d-m-Y",
-        defaultDate: new Date(),
-        firstDayOfWeek: 0
+        defaultDate: new Date()
+        
       });
     };
 
