@@ -109,7 +109,8 @@
     window.onload = async function () {
       await initializeLiff();
       flatpickr(".date-picker", {
-        locale: {"th",firstDayOfWeek: 0},
+        locale: "th",
+       firstDayOfWeek: 0,
         disableMobile: true,
         dateFormat: "Y-m-d",
         altInput: true,
