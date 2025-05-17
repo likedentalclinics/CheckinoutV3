@@ -108,14 +108,14 @@
     // --- START: LIFF และข้อมูลผู้ใช้ ---
     window.onload = async function () {
       await initializeLiff();
-      // ตั้งค่า flatpickr ให้กับ input ที่ใช้เลือกวัน
       flatpickr(".date-picker", {
         locale: "th",
         disableMobile: true,
         dateFormat: "Y-m-d",
         altInput: true,
         altFormat: "d-m-Y",
-        defaultDate: new Date()
+        defaultDate: new Date(),
+        firstDayOfWeek: 0
       });
     };
 
@@ -280,8 +280,8 @@
         roleId: roleIdValue,
         leaveType: leaveTypeValue,
        titleId: titleIdFromFormValue
-   
       });
+     
       const requestUrl = `${GAS_WEB_APP_URL}?${params.toString()}`;
      console.log("Requesting URL for checkLeave:", requestUrl);
 
@@ -438,7 +438,6 @@
         </svg>
         กำลังบันทึก...
       `;
-      // อาจจะไม่เปลี่ยนสีปุ่มตอน submit หรือเปลี่ยนเป็นสีอื่น เช่น เขียวอ่อน
       submitBtn.className = "bg-yellow-500 text-center w-full text-white py-4 px-4 rounded-lg cursor-not-allowed flex items-center justify-center"; 
       submitBtn.disabled = true; 
 
