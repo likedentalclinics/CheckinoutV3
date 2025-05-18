@@ -389,12 +389,13 @@
     Swal.fire('ต้องการเอกสารรับรอง',`ป่วยตั้งแต่ 3 วันขึ้นไป (${leaveDurationDays} วัน) ต้องอัพใบรับรองแพทย์`,'warning');
     return false;
   }
-
-     if (typeIdValue === 'ลาคลอด' && leaveDurationDays > 90) {
-    Swal.fire('ต้องการเอกสารรับรอง',`ลาได้มากสุด 90 วัน และอัพใบรับรองแพทย์`,'warning');
+     
+  if (typeIdValue === 'ลาคลอด') {
+      if (leaveDurationDays > 1 || !fileUploaded) {
+        Swal.fire('ต้องการเอกสารรับรอง',`ให้ลงเฉพาะวันเริ่มลา และอัพใบรับรองแพทย์`,'warning');
     return false;
-  }
-      // --- START: เรียกใช้การตรวจสอบการลาซ้ำกับ Server ---
+  }}
+             
       const isLeaveSlotAvailable = await checkDuplicateLeaveOnClient();
       if (!isLeaveSlotAvailable) {
         return false; 
