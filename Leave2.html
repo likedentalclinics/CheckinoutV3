@@ -544,7 +544,19 @@
       return result.isConfirmed;
     }
 
-    async function sendFlexMessage(data) { 
+    async function sendFlexMessage(data) {
+     let displayEndDateForFlex = data.endDateId; // Default คือ endDate ที่ผู้ใช้เลือก
+
+      if (data.typeId === "ลาคลอด") {
+        const startDateForMaternity = new Date(data.startDateId);
+        if (!isNaN(startDateForMaternity.getTime())) {
+          const maternityLeaveActualEnd = new Date(startDateForMaternity);
+          maternityLeaveActualEnd.setDate(startDateForMaternity.getDate() + 89); // วันที่ 90 ของการลา
+          const year = maternityLeaveActualEnd.getFullYear();
+          const month = String(maternityLeaveActualEnd.getMonth() + 1).padStart(2, '0');
+          const day = String(maternityLeaveActualEnd.getDate()).padStart(2, '0');
+          displayEndDateForFlex = `${year}-${month}-${day}`;
+        }}
       const flexMessage = {
         type: "flex",
         altText: `คำขออนุมัติการลา: ${data.typeId} โดย ${data.nameId}`,
@@ -560,7 +572,7 @@
                   { type: "text", text: `ชื่อ: ${data.nameId}` },
                   { type: "text", text: `เรื่อง: ${data.typeId}` },
                   { type: "text", text: `วันเริ่มต้น: ${formatDateForDisplay(data.startDateId)}` },
-                  { type: "text", text: `วันสิ้นสุด: ${formatDateForDisplay(data.endDateId)}` },  
+                  { type: "text", text: `วันสิ้นสุด: ${formatDateForDisplay(displayEndDateForFlex)}` },  
                   { type: "text", color: '#2d63c7', text: `📋รอการอนุมัติ` }
                 ]
               }
@@ -586,7 +598,6 @@
       return dateString_YYYYMMDD; 
     }
     // --- END: การจัดการฟอร์มลา ---
-
   </script>
 </body>
 </html>
