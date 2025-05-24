@@ -261,7 +261,7 @@
     const originalSubmitBtnText = submitBtn.innerHTML; // เก็บข้อความเดิมของปุ่ม
     const originalSubmitBtnClasses = submitBtn.className; // เก็บ class เดิมของปุ่ม
 
-      if (leaveTypeValue === "ลาป่วย" || leaveTypeValue === "อื่นๆ") {
+      if (leaveTypeValue === "ลาป่วย" || leaveTypeValue === "อื่นๆ" || leaveTypeValue === "ลาคลอด") {
         return true; 
       }
       if (!startDateValue || !endDateValue || !roleIdValue) {
