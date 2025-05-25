@@ -350,7 +350,7 @@
       }
 
      const usedVacationDays = document.getElementById('columnGData').value.trim();
-     const usedPersonalDays = parseInt(columnHDataInput.value) || 0;
+
      const usedSickDays = document.getElementById('columnIData').value.trim();
      const startDate = new Date(startDateIdValue);
      const endDate = new Date(endDateIdValue);
@@ -362,6 +362,7 @@
       }
      }
      else if (typeIdValue === "ลากิจ") {
+    const usedPersonalDays = parseInt(columnHData.value) || 0;
       if ((usedPersonalDays + leaveDurationDays) > 3) {
        Swal.fire('ไม่สามารถลากิจได้', `คุณได้ใช้สิทธิ์ลากิจครบแล้ว)`, 'error'); 
        return false;
