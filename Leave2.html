@@ -354,7 +354,7 @@
      const endDate = new Date(endDateIdValue);
      const leaveDurationDays = calculateDays(startDate, endDate); // คำนวณวันลา
      if (typeIdValue === "ลาพักร้อน") {
-     const usedVacationDays = document.getElementById('columnGData').value.trim();
+     const usedVacationDays = parseInt(columnGData.value) || 0;
      if ((usedVacationDays + leaveDurationDays) > 3) {
       Swal.fire('ไม่สามารถลาพักร้อนได้', `คุณได้ใช้สิทธิ์ลาพักร้อนครบแล้ว`, 'error'); 
       return false;
