@@ -350,7 +350,7 @@
       }
 
      const usedVacationDays = document.getElementById('columnGData').value.trim();
-     const usedPersonalDays = document.getElementById('columnHData').value.trim();
+     const usedPersonalDays = parseInt(columnHDataInput.value) || 0;
      const usedSickDays = document.getElementById('columnIData').value.trim();
      const startDate = new Date(startDateIdValue);
      const endDate = new Date(endDateIdValue);
