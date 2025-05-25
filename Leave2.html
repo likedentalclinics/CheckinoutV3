@@ -349,7 +349,7 @@
         return false;
       }
 
-     const usedSickDays = document.getElementById('columnIData').value.trim();
+     const usedSickDays = parseInt(columnIData.value) || 0;
      const startDate = new Date(startDateIdValue);
      const endDate = new Date(endDateIdValue);
      const leaveDurationDays = calculateDays(startDate, endDate); // คำนวณวันลา
@@ -368,8 +368,8 @@
       }
      }
     else if (typeIdValue === "ลาป่วย") {
-      if (usedPersonalDays >= 30) {
-       Swal.fire('ไม่สามารถลาป่วยได้', `คุณได้ใช้สิทธิ์ลาป่วยครบแล้ว)`, 'error'); 
+      if ((usedSickDays + leaveDurationDays) > 30) {
+       Swal.fire('ไม่สามารถลาป่วยได้', `ลาป่วยรวมเกิน 30 วันจะเป็นลาฉุกเฉิน`, 'error'); 
        return false;
       }
      }
