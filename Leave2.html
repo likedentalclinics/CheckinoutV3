@@ -362,7 +362,7 @@
       }
      }
      else if (typeIdValue === "ลากิจ") {
-      if ((usedPersonalDays + leaveDurationDays) >= 3) {
+      if ((usedPersonalDays + leaveDurationDays) > 3) {
        Swal.fire('ไม่สามารถลากิจได้', `คุณได้ใช้สิทธิ์ลากิจครบแล้ว)`, 'error'); 
        return false;
       }
