@@ -349,22 +349,21 @@
         return false;
       }
 
-     const usedVacationDays = document.getElementById('columnGData').value.trim();
-
      const usedSickDays = document.getElementById('columnIData').value.trim();
      const startDate = new Date(startDateIdValue);
      const endDate = new Date(endDateIdValue);
      const leaveDurationDays = calculateDays(startDate, endDate); // คำนวณวันลา
      if (typeIdValue === "ลาพักร้อน") {
-     if (usedVacationDays >= 3) {
-      Swal.fire('ไม่สามารถลาพักร้อนได้', `คุณได้ใช้สิทธิ์ลาพักร้อนครบแล้ว)`, 'error'); 
+     const usedVacationDays = document.getElementById('columnGData').value.trim();
+     if ((usedVacationDays + leaveDurationDays) > 3) {
+      Swal.fire('ไม่สามารถลาพักร้อนได้', `คุณได้ใช้สิทธิ์ลาพักร้อนครบแล้ว`, 'error'); 
       return false;
       }
      }
      else if (typeIdValue === "ลากิจ") {
     const usedPersonalDays = parseInt(columnHData.value) || 0;
       if ((usedPersonalDays + leaveDurationDays) > 3) {
-       Swal.fire('ไม่สามารถลากิจได้', `คุณได้ใช้สิทธิ์ลากิจครบแล้ว)`, 'error'); 
+       Swal.fire('ไม่สามารถลากิจได้', `คุณได้ใช้สิทธิ์ลากิจครบแล้ว`, 'error'); 
        return false;
       }
      }
@@ -386,7 +385,6 @@
       }
       
   const fileUploaded = fileInput.files.length > 0;
-
   if (typeIdValue === 'ลาป่วย' && leaveDurationDays > 2 && !fileUploaded) {
     Swal.fire('ต้องการเอกสารรับรอง',`ป่วยตั้งแต่ 3 วันขึ้นไป (${leaveDurationDays} วัน) ต้องอัพใบรับรองแพทย์`,'warning');
     return false;
