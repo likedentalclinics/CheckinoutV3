@@ -54,6 +54,31 @@
                         <input type="text" class="input-field w-full border border-slate-300 p-2 text-md rounded-lg"
                             id="keynumber2Id" placeholder="ตำแหน่ง" name="keynumber2Id" required>
                     </div>
+                    <div class="mb-6">
+                        <input type="text" class="input-field w-full border border-slate-300 p-2 text-md rounded-lg"
+                            id="nicknameId" placeholder="ชื่อเล่นที่ไม่ซ้ำเพื่อน" name="nicknameId" required>
+                    </div>
+                    <div class="mb-6">
+                        <!-- ฟิลด์สำหรับใส่หยุดประจำวัน? -->
+                      <label for="dayoffId" class="block text-sm font-medium text-gray-700 mb-1">หยุดประจำวัน?</label>
+                        <select id="dayoffId" name="dayoffId"
+                            class="input-field w-full border border-slate-300 p-2 text-md rounded-lg" required>
+                            <option value="" disabled selected>หยุดประจำวัน?</option>
+                            <option value="จันทร์">จันทร์</option>
+                            <option value="อังคาร">อังคาร</option>
+                            <option value="พุธ">พุธ</option>
+                            <option value="พฤหัส">พฤหัส</option>
+                            <option value="ศุกร์">ศุกร์</option>
+                        </select>
+                    </div>
+                    <div class="mb-6">
+                        <input type="text" class="input-field w-full border border-slate-300 p-2 text-md rounded-lg"
+                            id="EmailId" placeholder="อีเมล" name="EmailId">
+                    </div>
+                    <div class="mb-6">
+                        <input type="text" class="input-field w-full border border-slate-300 p-2 text-md rounded-lg"
+                            id="BeginworkdateId" placeholder="วันเริ่มงาน" name="BeginworkdateId" required>
+                    </div>
                 </div>
                 <!-- ปุ่มสำหรับบันทึกข้อมูล -->
                 <button type="button" id="submitBtn"
@@ -239,6 +264,10 @@
         let nameIdInput = document.getElementById("nameId");
         let keynumberIdInput = document.getElementById("keynumberId");
         let keynumber2IdInput = document.getElementById("keynumber2Id");
+        let nicknameIdInput = document.getElementById("nicknameId");
+        let dayoffIdInput = document.getElementById("dayoffId");
+        let EmailIdInput = document.getElementById("EmailId");
+        let BeginworkdateIdInput = document.getElementById("BeginworkdateId");
         let submitBtn = document.getElementById("submitBtn");
 
         // ฟังก์ชันสำหรับแปลงไฟล์เป็น Base64
