@@ -222,6 +222,7 @@
     const detailIdTextarea = document.getElementById("detailId"); 
     const submitBtn = document.getElementById("submitBtn");
     const fileNameDisplay = document.getElementById("fileNameDisplay");
+    const BeginworkdateInput = document.getElementById('BeginworkdateId');
 
     fileInput.addEventListener('change', function () {
       if (fileInput.files.length > 0) {
@@ -345,16 +346,18 @@
       const startDateIdValue = startDateIdInput.value.trim();
       const endDateIdValue = endDateIdInput.value.trim();
       const titleIdValue = titleIdInput.value.trim();
+      const BeginworkdateValue = BeginworkdateInput.value.trim();
 
       if (!userlineId || !nameId || !roleIdValue || !typeIdValue || !startDateIdValue || !endDateIdValue || !titleIdValue ) {
         Swal.fire('ข้อมูลไม่ครบถ้วน', 'กรุณากรอกข้อมูลในช่องที่จำเป็นให้ครบทุกช่อง (ยกเว้นรายละเอียดเพิ่มเติมและไฟล์แนบ)', 'warning');
         return false;
       }
-
+     
      const usedSickDays = parseInt(columnIData.value) || 0;
      const startDate = new Date(startDateIdValue);
      const endDate = new Date(endDateIdValue);
      const leaveDurationDays = calculateDays(startDate, endDate); // คำนวณวันลา
+
      if (typeIdValue === "ลาพักร้อน") {
      const usedVacationDays = parseInt(columnGData.value) || 0;
      if ((usedVacationDays + leaveDurationDays) > 3) {
@@ -426,12 +429,23 @@
       }
 
       const diffInDays = Math.ceil((flatpickrStartDate - today) / (1000 * 60 * 60 * 24));
+     const beginWorkDate = new Date(BeginworkdateValue);
+     const workDurationMillis = startDate.getTime() - beginWorkDate.getTime();
+        const workDurationDays = Math.floor(workDurationMillis / (1000 * 60 * 60 * 24));
 
       if (typeIdValue === "ลาพักร้อน" || typeIdValue === "ลากิจ") {
         if (diffInDays < 30) { 
           Swal.fire('เงื่อนไขการแจ้งล่วงหน้า', 'สำหรับการลาพักร้อนและลากิจ กรุณาเลือกวันเริ่มต้นการลาล่วงหน้าอย่างน้อย 30 วัน', 'warning');
           return false;
         }
+       else if (workDurationDays < 180) {
+            Swal.fire({
+              icon: 'error',
+              title: 'ไม่สามารถลากิจได้',
+              text: `คุณต้องมีอายุงานอย่างน้อย 180 วัน จึงจะสามารถใช้สิทธิ์ลากิจได้`,
+            });
+            return false;
+          }
       }
       return true;
     }
