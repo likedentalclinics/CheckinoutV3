@@ -50,6 +50,7 @@
           </div>
         </div>
         <input type="hidden" id="userId" name="userId">
+        <input type="hidden" id="BeginworkdateId" name="BeginworkdateId">
         <input type="hidden" id="columnAData" name="columnAData">
       </div>
     </div>
@@ -185,6 +186,7 @@
       document.getElementById('columnHData').value = row[8] || '0'; // Personal
       document.getElementById('columnIData').value = row[9] || '0'; // Sick
      document.getElementById('titleId').value = row[13] || '';
+     document.getElementById('BeginworkdateId').value = row[16] || '';
     }
 
     function showLoading(isLoading, message = "ค้นหารายชื่อ..") {
