@@ -433,12 +433,12 @@
      const workDurationMillis = startDate.getTime() - beginWorkDate.getTime();
         const workDurationDays = Math.floor(workDurationMillis / (1000 * 60 * 60 * 24));
 
-      if (typeIdValue === "ลาพักร้อน" || typeIdValue === "ลากิจ") {
+    if (typeIdValue === "ลาพักร้อน" || typeIdValue === "ลากิจ") {
         if (diffInDays < 30) { 
           Swal.fire('เงื่อนไขการแจ้งล่วงหน้า', 'สำหรับการลาพักร้อนและลากิจ กรุณาเลือกวันเริ่มต้นการลาล่วงหน้าอย่างน้อย 30 วัน', 'warning');
           return false;
         }
-       else if (workDurationDays < 180) {
+       else if ((typeIdValue === "ลากิจ")&&(workDurationDays < 180)) {
             Swal.fire({
               icon: 'error',
               title: 'ไม่สามารถลากิจได้',
@@ -446,7 +446,14 @@
             });
             return false;
           }
-      }
+       else if ((typeIdValue === "ลาพักร้อน")&&(workDurationDays < 365)) {
+            Swal.fire({
+              icon: 'error',
+              title: 'ไม่สามารถลากิจได้',
+              text: `คุณต้องมีอายุงานอย่างน้อย 365 วัน จึงจะสามารถใช้สิทธิ์ลากิจได้`,
+            });
+            return false;
+      } }
       return true;
     }
 
