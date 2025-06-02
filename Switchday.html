@@ -334,13 +334,18 @@
     // ฟังก์ชันสำหรับตรวจสอบความถูกต้องของฟอร์ม
     function validateForm() {
       const selectedEmployeeName = document.getElementById('selectedEmployeeName').value.trim();
+      const selectedEmployeeEmail = document.getElementById('selectedEmployeeEmail').value.trim();
       const comeDateIdValue = comeDateId.value.trim();
       const offDateIdValue = offDateId.value.trim();
       const roleIdValue = roleId.value.trim(); // ตำแหน่งของผู้จัดการที่กรอกข้อมูล
 
-     if (selectedEmployeeName === '' || comeDateIdValue === '' || offDateIdValue === '' || roleIdValue !== 'ผจก') {
+     if (selectedEmployeeName === '' || selectedEmployeeEmail === '' || comeDateIdValue === '' || offDateIdValue === '' || roleIdValue !== 'ผจก') {
          return false;
          }
+    if (comeDateIdValue === offDateIdValue) {
+        Swal.fire('กรอกวันผิด','วันที่จะให้มา และ วันที่จะให้หยุด ต้องไม่เป็นวันเดียวกัน','error');
+        return false;
+        }
        return true;
         }
 
