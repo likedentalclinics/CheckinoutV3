@@ -59,9 +59,14 @@
         </div>
 
         <div class="mt-6 mb-5">
-          <label for="titleId" class="block text-sm font-medium text-gray-700 mb-1">ชื่อพนักงาน</label>
-          <input type="text" id="titleId" name="titleId" placeholder="ชื่อพนักงาน" class="w-full p-2 border rounded-lg">
+ <label class="block text-sm font-medium text-gray-700 mb-2">เลือกพนักงาน:</label>
+     <div id="employeeList" class="border rounded-lg p-2 max-h-60 overflow-y-auto">
+    </div>
+   <input type="hidden" id="selectedEmployeeName" name="selectedEmployeeName">
+  <input type="hidden" id="selectedEmployeeNumber" name="selectedEmployeeNumber">
+  <input type="hidden" id="selectedEmployeeEmail" name="selectedEmployeeEmail">
         </div>
+        
         <div class="mt-4 mb-5">
           <label for="detailId" class="block text-sm font-medium text-gray-700 mb-1">รายละเอียด</label>
           <textarea id="detailId" name="detailId" placeholder="รายละเอียด" class="w-full p-2 border rounded-lg"></textarea>
@@ -84,6 +89,7 @@
   <script src="config.js"></script>
 
   <script>
+    const SWAP_APP_URL = "https://script.google.com/macros/s/AKfycbyGzQ14z0zaIBfRe5b0zAjx2J0ag2-Wt9MYbZ_D7UE49Qr3PahQFeTokCwgZZvYujM0Uw/exec";
     // เริ่มการทำงานเมื่อโหลดหน้าเว็บ
     window.onload = async function () {
       await initializeLiff();
@@ -124,62 +130,175 @@
         const userId = profile.userId;
         document.getElementById('userId').value = userId;
         document.getElementById('displayName').value = profile.displayName;
-        await fetchData(userId);
+        await fetchUserDataAndCheckRole(userId);
       } catch (error) {
         console.error('Error getting profile data:', error);
+        Swal.fire({icon: 'error',
+                    title: 'Profile Error',
+                    text: 'ไม่สามารถดึงข้อมูลโปรไฟล์ผู้ใช้ได้ '});
       }
     }
 
     // ฟังก์ชันสำหรับดึงข้อมูลจาก Google Sheets
-    async function fetchData(userId) {
-      showLoading(true);
-      try {
-        const response = await fetch(WEB_APP_MEMBER_URL, {
-          method: 'POST',
-          body: JSON.stringify({ action: 'fetchData', userId: userId })
-        });
-        const data = await response.json();
-        data.sort((a, b) => new Date(b[6]) - new Date(a[6]));
-        const row = data.find(row => row[1] === userId);
-        if (row) {
-          displayData(row);
-        } else {
-          console.log('No data found for userId:', userId);
+   async function fetchUserDataAndCheckRole(userId) {
+            showLoading(true);
+            try {
+                const response = await fetch(SWAP_APP_URL, { // ใช้ WEB_APP_URL เดียว
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'fetchUserData', userId: userId }) // ส่ง action: 'fetchUserData'
+                });
+                const data = await response.json();
+
+                if (data.success && data.userRole) {
+                    displayCurrentUserProfile(data.userRole);
+                    if (data.userRole[4] === 'ผจก') { // ตรวจสอบ roleId (Column D ของ Sheet)
+                        await fetchEmployeeData(); // ถ้าเป็น ผจก ให้ดึงข้อมูลพนักงาน
+                    } else {
+                        // ไม่ใช่ ผจก ให้แสดงข้อความและซ่อนฟอร์ม
+                        document.querySelector('form').classList.add('hidden');
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'ไม่ได้รับอนุญาต',
+                            text: 'คุณไม่มีสิทธิ์เข้าถึงหน้านี้',
+                            allowOutsideClick: false,
+                            showConfirmButton: false,
+                        });
+                    }
+                } else {
+                    console.log('No user data or role found for userId:', userId);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'ข้อมูลผู้ใช้ไม่พบ',
+                        text: 'ไม่พบข้อมูลโปรไฟล์ของคุณในระบบ',
+                    });
+                }
+            } catch (error) {
+                console.error('Error fetching user data or checking role:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Data Error',
+                    text: 'เกิดข้อผิดพลาดในการดึงข้อมูลผู้ใช้หรือตรวจสอบบทบาท: ' + error.message,
+                });
+            } finally {
+                showLoading(false);
+            }
         }
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      } finally {
-        showLoading(false);
-      }
-    }
 
     // ฟังก์ชันสำหรับแสดงข้อมูลบนหน้าเว็บ
-    function displayData(row) {
+    function displayCurrentUserProfile(row) {
       //document.getElementById('columnAData').value = row[1] || '';
       document.getElementById('columnBData').value = row[2] || '';
       document.getElementById('columnCData').value = row[3] || '';
       document.getElementById('columnDData').value = row[4] || '';
       document.getElementById('columnEData').src = row[5] || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png';
-
     }
+    
+  async function fetchEmployeeData() {
+            showLoading(true);
+            try {
+                const response = await fetch(SWAP_APP_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'fetchAllEmployees' }) // ส่ง action: 'fetchAllEmployees'
+                });
+                const data = await response.json();
 
+                if (data.success && data.employees) {
+                    displayEmployeeList(data.employees);
+                } else {
+                    console.log('No employee data found.');
+                    document.getElementById('employeeList').innerHTML = '<p class="text-gray-500">ไม่พบข้อมูลพนักงาน</p>';
+                }
+            } catch (error) {
+                console.error('Error fetching employee data:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Employee Data Error',
+                    text: 'เกิดข้อผิดพลาดในการดึงข้อมูลพนักงาน: ' + error.message,
+                });
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // ฟังก์ชันสำหรับแสดงข้อมูลพนักงานในตาราง
+        function displayEmployeeList(employees) {
+            const employeeListDiv = document.getElementById('employeeList');
+            let tableHtml = `
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">เลือก</th>
+                            <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ชื่อ-สกุล</th>
+                            <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">รหัสประจำตัว</th>
+                            <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">วันหยุดประจำสัปดาห์</th>
+                            <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+            `;
+
+            employees.forEach(employee => {
+                // employee[2] = ชื่อสกุล (C), employee[3] = รหัสประจำตัว (D), employee[14] = วันหยุดประจำสัปดาห์ (O), employee[15] = Email (P)
+                tableHtml += `
+                    <tr>
+                        <td class="px-3 py-2 whitespace-nowrap">
+                            <input type="checkbox" name="employeeCheckbox"
+                                data-name="${employee[2] || ''}"
+                                data-id="${employee[3] || ''}"
+                                data-email="${employee[15] || ''}"
+                                onchange="handleCheckboxChange(this)">
+                        </td>
+                        <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-900">${employee[2] || ''}</td>
+                        <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-900">${employee[3] || ''}</td>
+                        <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-900">${employee[14] || ''}</td>
+                        <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-900">${employee[15] || ''}</td>
+                    </tr>
+                `;
+            });
+
+            tableHtml += `
+                    </tbody>
+                </table>
+            `;
+            employeeListDiv.innerHTML = tableHtml;
+        }
+
+        // ฟังก์ชันจัดการ Checkbox ให้เลือกได้เพียง 1 ช่อง
+        function handleCheckboxChange(checkbox) {
+            const checkboxes = document.querySelectorAll('input[name="employeeCheckbox"]');
+            checkboxes.forEach((item) => {
+                if (item !== checkbox) {
+                    item.checked = false;
+                }
+            });
+
+            // อัปเดตค่าใน hidden input fields
+            if (checkbox.checked) {
+                document.getElementById('selectedEmployeeName').value = checkbox.dataset.name;
+                document.getElementById('selectedEmployeeNumber').value = checkbox.dataset.id;
+                document.getElementById('selectedEmployeeEmail').value = checkbox.dataset.email;
+            } else {
+                document.getElementById('selectedEmployeeName').value = '';
+                document.getElementById('selectedEmployeeNumber').value = '';
+                document.getElementById('selectedEmployeeEmail').value = '';
+            }
+        }
+    
     // ฟังก์ชันสำหรับแสดง/ซ่อนการโหลดข้อมูล
     function showLoading(isLoading) {
       const overlay = document.getElementById('loadingOverlay');
-      const inputs = document.querySelectorAll('.input-field');
-      if (isLoading) {
-        overlay.classList.remove('hidden');
-        overlay.classList.add('flex');
-        inputs.forEach(input => input.disabled = true);
+      const form = document.querySelector('form');
+        if (isLoading) {
+                overlay.classList.remove('hidden');
+                overlay.classList.add('flex');
+                form.classList.add('opacity-50', 'pointer-events-none'); // Dim and disable form
       } else {
-        overlay.classList.remove('flex');
-        overlay.classList.add('hidden');
-        inputs.forEach(input => input.disabled = false);
-      }
+                overlay.classList.remove('flex');
+                overlay.classList.add('hidden');
+                form.classList.remove('opacity-50', 'pointer-events-none'); // Re-enable form
+            }
     }
 
-    // ตัวแปรสำหรับการส่งข้อมูล
-    let url = "";
     let fileInput = document.getElementById("file");
     let userlineIdInput = document.getElementById("userId");
     let nameIdInput = document.getElementById("columnBData");
@@ -214,20 +333,16 @@
 
     // ฟังก์ชันสำหรับตรวจสอบความถูกต้องของฟอร์ม
     function validateForm() {
-      const userlineId = userlineIdInput.value.trim();
-      const nameId = nameIdInput.value.trim();
-      const roleIdValue = roleId.value.trim();
-      const typeIdValue = typeId.value.trim();
+      const selectedEmployeeName = document.getElementById('selectedEmployeeName').value.trim();
       const comeDateIdValue = comeDateId.value.trim();
       const offDateIdValue = offDateId.value.trim();
-      const titleIdValue = titleId.value.trim();
-      const detailIdValue = detailId.value.trim();
+      const roleIdValue = roleId.value.trim(); // ตำแหน่งของผู้จัดการที่กรอกข้อมูล
 
-      if (userlineId === '' || nameId === '' || roleIdValue === '' || typeIdValue === '' || comeDateIdValue === '' || offDateIdValue === '' || titleIdValue === '') {
-        return false;
-      }
-      return true;
-    }
+     if (selectedEmployeeName === '' || comeDateIdValue === '' || offDateIdValue === '' || roleIdValue !== 'ผจก') {
+         return false;
+         }
+       return true;
+        }
 
     // ฟังก์ชันสำหรับจัดการคลิกปุ่มส่งข้อมูล
     submitBtn.addEventListener('click', async (event) => {
@@ -249,15 +364,18 @@
 
         try {
           let obj = {
-            userlineId: userlineIdInput.value,
-            nameId: nameIdInput.value,
-            roleId: roleId.value,
-            numberId: numberIdInput.value,
-            typeId: typeId.value,
-            comeDateIdValue: comeDateId.value,
-            offDateIdValue: offDateId.value,
-            titleId: titleId.value,
-            detailId: detailId.value
+         action: 'submitSwapHoliday', // เพิ่ม action เพื่อบอก GAS ว่าทำอะไร
+          managerLineId: userlineIdInput.value,
+         managerName: nameIdInput.value,
+           managerNumber: numberIdInput.value,
+         managerRole: roleId.value,
+          employeeName: document.getElementById('selectedEmployeeName').value,
+         employeeNumber: document.getElementById('selectedEmployeeNumber').value,
+          employeeEmail: document.getElementById('selectedEmployeeEmail').value,
+            requestType: typeId.value,
+             comeDate: comeDateId.value,
+      offDate: offDateId.value,
+          detail: detailId.value
           };
 
           if (fileInput.files.length > 0) {
@@ -278,40 +396,48 @@
             }
           });
 
-          let response = await fetch(url, {
+          let response = await fetch(SWAP_APP_URL, {
             method: "POST",
             body: JSON.stringify(obj)
           });
 
-          let data = await response.text();
+          let result = await response.json();
 
-          Swal.fire({
-            title: 'สำเร็จ!',
-            text: 'บันทึกข้อมูลของคุณเรียบร้อย!',
-            icon: 'success',
-            confirmButtonText: 'ปิด',
-          }).then(async (result) => {
-            if (result.isConfirmed) {
-              // Reset form
-              document.querySelector('form').reset();
-              await sendFlexMessage(obj); // ส่งข้อความ Flex Message หลังจากการส่งข้อมูล
+                    if (result.success) {
+                        Swal.fire({
+                            title: 'สำเร็จ!',
+                            text: 'บันทึกข้อมูลของคุณเรียบร้อย!',
+                            icon: 'success',
+                            confirmButtonText: 'ปิด',
+                        }).then(async (res) => {
+                            if (res.isConfirmed) {
+                                document.querySelector('form').reset();
+                                // ส่ง Flex Message ไปยังผู้จัดการ (ผู้กรอกข้อมูล)
+                                await sendFlexMessage(obj);
+                                liff.closeWindow(); // ปิด LIFF window หลังจากส่งข้อมูลและ Flex Message
+                            }
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'เกิดข้อผิดพลาด!',
+                            text: result.message || 'เกิดข้อผิดพลาดในการบันทึกข้อมูล',
+                        });
+                    }
+                } catch (error) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'An error occurred while submitting data: ' + error.message,
+                    });
+                    console.error(error);
+                } finally {
+                    submitBtn.disabled = false;
+                }
+            } else {
+                Swal.fire('Submission Canceled', 'ข้อมูลของคุณไม่ถูกส่ง', 'info');
             }
-          });
-          console.log(data);
-        } catch (error) {
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'An error occurred while submitting data.',
-          });
-          console.error(error);
-        } finally {
-          submitBtn.disabled = false;
-        }
-      } else {
-        Swal.fire('Submission Canceled', 'Your data has not been submitted.', 'info');
-      }
-    });
+        });
 
     // ฟังก์ชันสำหรับแสดงกล่องยืนยันการส่งข้อมูล
     async function showConfirmationDialog() {
@@ -330,7 +456,7 @@
     async function sendFlexMessage(data) {
       const flexMessage = {
         type: "flex",
-        altText: "คำขออนุมัติการลา",
+        altText: "คำขออนุมัติการสลับวันหยุด",
         contents: {
           type: "bubble",
           body: {
@@ -340,11 +466,11 @@
               { type: "text", text: "🟢 คำขออนุมัติการลา", weight: "bold", size: "md", color: "#1DB446" },
               {
                 type: "box", layout: "vertical", margin: "lg", spacing: "sm", contents: [
-                  { type: "text", text: `ชื่อ: ${data.titleId}` },
-                  { type: "text", text: `เรื่อง: ${data.typeId}` },
-                  { type: "text", text: `วันที่จะให้มา: ${formatDate(data.comeDateId)}` },
-                  { type: "text", text: `วันที่จะให้หยุด: ${formatDate(data.offDateId)}` },
-                  { type: "text", color: '#2d63c7', text: `📋รอการอนุมัติ` }
+                  { type: "text", text: `พนักงาน: ${data.employeeName}` },
+                  { type: "text", text: `ประเภท: ${data.requestType}` },
+                  { type: "text", text: `วันที่จะให้มา: ${formatDate(data.comeDate)}` },
+                  { type: "text", text: `วันที่จะให้หยุด: ${formatDate(data.offDate)}` },
+                  { type: "text", color: '#2d63c7', text: `📋รอการยืนยันจากพนักงาน` }
                 ]
               }
             ]
@@ -353,7 +479,6 @@
       };
       try {
         await liff.sendMessages([flexMessage]);
-        liff.closeWindow();
         console.log("Flex message sent");
       } catch (error) {
         console.error("Error sending Flex message:", error);
