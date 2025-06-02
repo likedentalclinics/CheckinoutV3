@@ -59,8 +59,8 @@
         </div>
 
         <div class="mt-6 mb-5">
-          <label for="titleId" class="block text-sm font-medium text-gray-700 mb-1">หัวข้อเรื่อง</label>
-          <input type="text" id="titleId" name="titleId" placeholder="หัวข้อเรื่อง" class="w-full p-2 border rounded-lg">
+          <label for="titleId" class="block text-sm font-medium text-gray-700 mb-1">ชื่อพนักงาน</label>
+          <input type="text" id="titleId" name="titleId" placeholder="ชื่อพนักงาน" class="w-full p-2 border rounded-lg">
         </div>
         <div class="mt-4 mb-5">
           <label for="detailId" class="block text-sm font-medium text-gray-700 mb-1">รายละเอียด</label>
@@ -340,10 +340,10 @@
               { type: "text", text: "🟢 คำขออนุมัติการลา", weight: "bold", size: "md", color: "#1DB446" },
               {
                 type: "box", layout: "vertical", margin: "lg", spacing: "sm", contents: [
-                  { type: "text", text: `ชื่อ: ${data.nameId}` },
+                  { type: "text", text: `ชื่อ: ${data.titleId}` },
                   { type: "text", text: `เรื่อง: ${data.typeId}` },
-                  { type: "text", text: `วันเริ่มต้น: ${formatDate(data.comeDateId)}` },
-                  { type: "text", text: `วันสิ้นสุด: ${formatDate(data.offDateId)}` },
+                  { type: "text", text: `วันที่จะให้มา: ${formatDate(data.comeDateId)}` },
+                  { type: "text", text: `วันที่จะให้หยุด: ${formatDate(data.offDateId)}` },
                   { type: "text", color: '#2d63c7', text: `📋รอการอนุมัติ` }
                 ]
               }
