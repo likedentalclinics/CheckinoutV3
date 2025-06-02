@@ -6,14 +6,12 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>สำหรับ ผจก</title>
-
   <script src="https://cdn.tailwindcss.com"></script>
-
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
   <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
-  
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/th.js"></script>
 </head>
 
 <body>
@@ -32,28 +30,11 @@
           <img class="mx-auto w-24 h-24 object-cover rounded-lg mr-4" id="columnEData" src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png">
           <div>
             <input type="text" class="input-field bg-slate-50 text-white text-md font-bold bg-opacity-0" id="columnBData" placeholder="ชื่อ" name="columnBData" readonly>
-            <input type="text" class="input-field text-white text-md bg-white bg-opacity-0" id="columnCData" placeholder="เลข ท." name="columnCData" readonly>
+            <input type="text" class="input-field text-white text-md bg-white bg-opacity-0" id="columnCData" placeholder="เลขประจำตัว" name="columnCData" readonly>
             <input type="text" class="input-field text-white text-md bg-white bg-opacity-0" id="columnDData" placeholder="ตำแหน่ง" name="columnDData" readonly>
           </div>
         </div>
-
-        <div class="pt-4 border rounded-lg">
-          <div class="flex justify-between">
-            <div>
-              <h1 class="font-light text-white text-center text-sm">ลาพักร้อน</h1>
-              <input type="text" class="input-field text-md bg-white text-white text-bold text-center bg-opacity-0 py-1 w-full" id="columnGData" placeholder="0" name="columnGData" readonly>
-            </div>
-            <div>
-              <h1 class="font-light text-white text-center text-sm">ลากิจ</h1>
-              <input type="text" class="input-field text-md bg-white text-white text-bold text-center bg-opacity-0 py-1 w-full" id="columnHData" placeholder="0" name="columnHData" readonly>
-            </div>
-            <div>
-              <h1 class="font-light text-white text-center text-sm">ลาป่วย</h1>
-              <input type="text" class="input-field text-md bg-white text-white text-bold text-center bg-opacity-0 py-1 w-full" id="columnIData" placeholder="0" name="columnIData" readonly>
-            </div>
-          </div>
-        </div>
-        <input type="hidden" id="userId" name="userId">
+       <input type="hidden" id="userId" name="userId">
         <input type="hidden" id="columnAData" name="columnAData">
       </div>
     </div>
@@ -62,23 +43,19 @@
   <div class="max-w-md mx-auto py-4">
     <form>
       <div class="bg-white relative p-10 shadow-xl rounded-lg w-6/6 mx-auto">
-        <div class="w-32 mb-5">
-          <label for="typeId" class="block text-sm font-medium text-gray-700 mb-1">ประเภท</label>
-          <select id="typeId" name="typeId" class="w-full p-2 border rounded-lg">
-            <option value="ลาพักร้อน">ลาพักร้อน</option>
-            <option value="ลาป่วย">ลาป่วย</option>
-            <option value="ลากิจ">ลากิจ</option>
-            <option value="อื่นๆ">อื่นๆ</option>
-          </select>
-        </div>
+       <div class="mb-4">
+ <input type="text"
+    class="input-field w-full  bg-slate-200 p-2 text-slate-500 text-sm text-center rounded-lg"
+    id="typeId" placeholder="สลับวันหยุดให้พนง" name="typeId" readonly>
+  </div>
         <div class="mt-4 flex justify-between mb-5">
           <div class="w-1/2 mr-2">
-            <label for="startDateId" class="block text-sm font-medium text-gray-700 mb-1">วันเริ่มต้น</label>
-            <input type="text" id="startDateId" name="startDateId" class="date-picker w-full mr-2 p-2 border rounded-lg">
+            <label for="startDateId" class="block text-sm font-medium text-gray-700 mb-1">วันที่จะให้มา</label>
+            <input type="text" id="comeDateId" name="comeDateId" class="date-picker w-full mr-2 p-2 border rounded-lg">
           </div>
           <div class="w-1/2 ml-2">
-            <label for="endDateId" class="block text-sm font-medium text-gray-700 mb-1">วันสิ้นสุด</label>
-            <input type="text" id="endDateId" name="endDateId" class="date-picker w-full p-2 border rounded-lg">
+            <label for="endDateId" class="block text-sm font-medium text-gray-700 mb-1">วันที่จะให้หยุด</label>
+            <input type="text" id="offDateId" name="offDateId" class="date-picker w-full p-2 border rounded-lg">
           </div>
         </div>
 
@@ -105,22 +82,26 @@
     </form>
   </div>
 
-  <!-- นำเข้า flatpickr JS -->
-  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script src="config.js"></script>
 
   <script>
     // เริ่มการทำงานเมื่อโหลดหน้าเว็บ
     window.onload = async function () {
       await initializeLiff();
-      // ตั้งค่า flatpickr ให้กับ input ที่ใช้เลือกวัน
+      
       flatpickr(".date-picker", {
+       locale: {weekdays: {
+      shorthand: ["อา", "จ", "อ", "พ", "พฤ", "ศ", "ส"],
+      longhand: ["อาทิตย์","จันทร์","อังคาร","พุธ","พฤหัสบดี","ศุกร์","เสาร์"]}, 
+          months: {
+      shorthand: ["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค.",],
+      longhand: ["มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม",],},
+        firstDayOfWeek: 0},
         disableMobile: true,
         dateFormat: "Y-m-d",
         altInput: true,
         altFormat: "d-m-Y",
-        defaultDate: new Date()
-      });
+});
     };
 
     // ฟังก์ชันสำหรับเริ่มการทำงานของ LIFF
