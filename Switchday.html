@@ -343,7 +343,9 @@
          return false;
          }
     if (comeDateIdValue === offDateIdValue) {
-        Swal.fire('กรอกวันผิด','วันที่จะให้มา และ วันที่จะให้หยุด ต้องไม่เป็นวันเดียวกัน','error');
+        Swal.fire({icon: 'error',
+                title: 'Validation Error',
+                text: 'วันที่จะให้มา และ วันที่จะให้หยุด ต้องไม่เป็นวันเดียวกัน',});
         return false;
         }
        return true;
