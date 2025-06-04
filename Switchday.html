@@ -348,21 +348,21 @@
                 text: 'วันที่จะให้มา และ วันที่จะให้หยุด ต้องไม่เป็นวันเดียวกัน',});
         return false;
         }
+
+    if (comeDateIdValue < new Date() || offDateIdValue < new Date()) {
+        Swal.fire({
+          icon: 'error',
+          title: 'ต้องลงล่วงหน้า',
+          text: 'Please fill in all required fields.',
+        });
+        return false;
+      }
        return true;
         }
 
     // ฟังก์ชันสำหรับจัดการคลิกปุ่มส่งข้อมูล
     submitBtn.addEventListener('click', async (event) => {
       event.preventDefault();
-
-      if (!validateForm()) {
-        Swal.fire({
-          icon: 'error',
-          title: 'Validation Error',
-          text: 'Please fill in all required fields.',
-        });
-        return;
-      }
 
       const isConfirmed = await showConfirmationDialog();
 
