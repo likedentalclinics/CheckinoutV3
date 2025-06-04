@@ -396,8 +396,8 @@
     return false;
   }
 
-  if (typeIdValue === 'ลาทำหมัน' && !fileUploaded) {
-    Swal.fire('ต้องการเอกสารรับรอง',`เป็นใบนัดหรือใบรับรองแพทย์ ที่ออกโดยรพ.`,'warning');
+  if (typeIdValue === 'ลาทำหมัน' && leaveDurationDays >0 && !fileUploaded) {
+    Swal.fire('ขอการเอกสารรับรอง',`เป็นใบนัดหรือใบรับรองแพทย์ ที่ออกโดยรพ.`,'warning');
     return false;
   }
      
