@@ -338,18 +338,21 @@
       const comeDateIdValue = comeDateId.value.trim();
       const offDateIdValue = offDateId.value.trim();
       const roleIdValue = roleId.value.trim(); // ตำแหน่งของผู้จัดการที่กรอกข้อมูล
+      const today = new Date();
+      const comeDate = new Date(comeDateIdValue);
+      const offDate = new Date(offDateIdValue);
 
      if (selectedEmployeeName === '' || selectedEmployeeEmail === '' || comeDateIdValue === '' || offDateIdValue === '' || roleIdValue !== 'ผจก') {
          return false;
          }
-    if (comeDateId === offDateId) {
+    if (comeDate === offDate) {
         Swal.fire({icon: 'error',
                 title: 'Validation Error',
                 text: 'วันที่จะให้มา และ วันที่จะให้หยุด ต้องไม่เป็นวันเดียวกัน',});
         return false;
         }
 
-    if (comeDateId < new Date() || offDateId < new Date()) {
+    if (comeDate < today || offDate < today) {
         Swal.fire({
           icon: 'error',
           title: 'ต้องลงล่วงหน้า',
