@@ -361,11 +361,20 @@
         return false;
       }
        return true;
-        }
+      }
 
     // ฟังก์ชันสำหรับจัดการคลิกปุ่มส่งข้อมูล
     submitBtn.addEventListener('click', async (event) => {
       event.preventDefault();
+      
+    if (!validateForm()) {
+      Swal.fire({
+        icon: 'error',
+       title: 'Validation Error',
+       text: 'กรุณากรอกข้อมูลให้ครบถ้วนและเลือกพนักงานที่จะสลับวันหยุด',
+         });
+        return;
+        }
 
       const isConfirmed = await showConfirmationDialog();
 
