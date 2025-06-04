@@ -342,14 +342,14 @@
      if (selectedEmployeeName === '' || selectedEmployeeEmail === '' || comeDateIdValue === '' || offDateIdValue === '' || roleIdValue !== 'ผจก') {
          return false;
          }
-    if (comeDateIdValue === offDateIdValue) {
+    if (comeDateId === offDateId) {
         Swal.fire({icon: 'error',
                 title: 'Validation Error',
                 text: 'วันที่จะให้มา และ วันที่จะให้หยุด ต้องไม่เป็นวันเดียวกัน',});
         return false;
         }
 
-    if (comeDateIdValue < new Date() || offDateIdValue < new Date()) {
+    if (comeDateId < new Date() || offDateId < new Date()) {
         Swal.fire({
           icon: 'error',
           title: 'ต้องลงล่วงหน้า',
