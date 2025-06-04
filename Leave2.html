@@ -360,7 +360,7 @@
 
      if (typeIdValue === "ลาพักร้อน") {
      const usedVacationDays = parseInt(columnGData.value) || 0;
-     if ((usedVacationDays + leaveDurationDays) > 3) {
+     if ((usedVacationDays - leaveDurationDays) < 0) {
       Swal.fire('ไม่สามารถลาพักร้อนได้', `คุณได้ใช้สิทธิ์ลาพักร้อนครบแล้ว`, 'error'); 
       return false;
       }
