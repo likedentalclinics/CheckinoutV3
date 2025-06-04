@@ -345,14 +345,14 @@
      if (selectedEmployeeName === '' || selectedEmployeeEmail === '' || comeDateIdValue === '' || offDateIdValue === '' || roleIdValue !== 'ผจก') {
          return false;
          }
-    if (comeDate === offDate) {
+    else if (comeDate === offDate) {
         Swal.fire({icon: 'error',
                 title: 'Validation Error',
                 text: 'วันที่จะให้มา และ วันที่จะให้หยุด ต้องไม่เป็นวันเดียวกัน',});
         return false;
         }
 
-    if (comeDate < today || offDate < today) {
+    else if (comeDate < today || offDate < today) {
         Swal.fire({
           icon: 'error',
           title: 'ต้องลงล่วงหน้า',
