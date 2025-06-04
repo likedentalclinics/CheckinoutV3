@@ -66,6 +66,7 @@
             <option value="ลาป่วย">ลาป่วย</option>
             <option value="ลากิจ">ลากิจ</option>
             <option value="ลาคลอด">ลาคลอด</option>
+           <option value="ลาคลอด">ลาทำหมัน</option>
             <option value="อื่นๆ">อื่นๆ</option>
           </select>
         </div>
@@ -264,7 +265,7 @@
     const originalSubmitBtnText = submitBtn.innerHTML; // เก็บข้อความเดิมของปุ่ม
     const originalSubmitBtnClasses = submitBtn.className; // เก็บ class เดิมของปุ่ม
 
-      if (leaveTypeValue === "ลาป่วย" || leaveTypeValue === "อื่นๆ" || leaveTypeValue === "ลาคลอด") {
+      if (leaveTypeValue === "ลาป่วย" || leaveTypeValue === "อื่นๆ" || leaveTypeValue === "ลาคลอด" || leaveTypeValue === "ลาทำหมัน") {
         return true; 
       }
       if (!startDateValue || !endDateValue || !roleIdValue) {
@@ -392,6 +393,11 @@
   const fileUploaded = fileInput.files.length > 0;
   if (typeIdValue === 'ลาป่วย' && leaveDurationDays > 2 && !fileUploaded) {
     Swal.fire('ต้องการเอกสารรับรอง',`ป่วยตั้งแต่ 3 วันขึ้นไป (${leaveDurationDays} วัน) ต้องอัพใบรับรองแพทย์`,'warning');
+    return false;
+  }
+
+  if (typeIdValue === 'ลาทำหมัน' && !fileUploaded) {
+    Swal.fire('ต้องการเอกสารรับรอง',`เป็นใบนัดหรือใบรับรองแพทย์ ที่ออกโดยรพ.`,'warning');
     return false;
   }
      
@@ -574,7 +580,7 @@
         const startDateForMaternity = new Date(data.startDateId);
         if (!isNaN(startDateForMaternity.getTime())) {
           const maternityLeaveActualEnd = new Date(startDateForMaternity);
-          maternityLeaveActualEnd.setDate(startDateForMaternity.getDate() + 89); // วันที่ 90 ของการลา
+          maternityLeaveActualEnd.setDate(startDateForMaternity.getDate() + 97); // วันที่ 90 ของการลา
           const year = maternityLeaveActualEnd.getFullYear();
           const month = String(maternityLeaveActualEnd.getMonth() + 1).padStart(2, '0');
           const day = String(maternityLeaveActualEnd.getDate()).padStart(2, '0');
