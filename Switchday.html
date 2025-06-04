@@ -332,7 +332,7 @@
     }
 
     // ฟังก์ชันสำหรับตรวจสอบความถูกต้องของฟอร์ม
-    function validateForm() {
+    async function validateForm() {
       const selectedEmployeeName = document.getElementById('selectedEmployeeName').value.trim();
       const selectedEmployeeEmail = document.getElementById('selectedEmployeeEmail').value.trim();
       const comeDateIdValue = comeDateId.value.trim();
@@ -366,19 +366,12 @@
     // ฟังก์ชันสำหรับจัดการคลิกปุ่มส่งข้อมูล
     submitBtn.addEventListener('click', async (event) => {
       event.preventDefault();
-      
-    if (!validateForm()) {
-      Swal.fire({
-        icon: 'error',
-       title: 'Validation Error',
-       text: 'กรุณากรอกข้อมูลให้ครบถ้วนและเลือกพนักงานที่จะสลับวันหยุด',
-         });
-        return;
-        }
 
-      const isConfirmed = await showConfirmationDialog();
+    const isValid = await validateForm();
+    if (!isValid) { return; }
 
-      if (isConfirmed) {
+    const isConfirmed = await showConfirmationDialog();
+    if (isConfirmed) {
         submitBtn.disabled = true;
 
         try {
