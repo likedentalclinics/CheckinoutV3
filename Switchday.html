@@ -338,25 +338,34 @@
       const comeDateIdValue = comeDateId.value.trim();
       const offDateIdValue = offDateId.value.trim();
       const roleIdValue = roleId.value.trim(); // ตำแหน่งของผู้จัดการที่กรอกข้อมูล
-      const today = new Date();
-      const comeDate = new Date(comeDateIdValue);
-      const offDate = new Date(offDateIdValue);
 
      if (selectedEmployeeName === '' || selectedEmployeeEmail === '' || comeDateIdValue === '' || offDateIdValue === '' || roleIdValue !== 'ผจก') {
+       Swal.fire({
+                icon: 'error',
+                title: 'Validation Error',
+                text: 'กรุณากรอกข้อมูลให้ครบถ้วนและเลือกพนักงานที่จะสลับวันหยุด',
+            });
          return false;
          }
-    else if (comeDate === offDate) {
+
+     const today = new Date();
+      const comeDate = new Date(comeDateIdValue);
+      const offDate = new Date(offDateIdValue);
+       today.setHours(0, 0, 0, 0);
+        comeDate.setHours(0, 0, 0, 0);
+        offDate.setHours(0, 0, 0, 0);
+   if (comeDate.getTime() === offDate.getTime()) {
         Swal.fire({icon: 'error',
                 title: 'Validation Error',
                 text: 'วันที่จะให้มา และ วันที่จะให้หยุด ต้องไม่เป็นวันเดียวกัน',});
         return false;
         }
 
-    else if (comeDate < today || offDate < today) {
+    if (comeDate < today || offDate < today) {
         Swal.fire({
           icon: 'error',
           title: 'ต้องลงล่วงหน้า',
-          text: 'Please fill in all required fields.',
+          text: 'วันที่จะให้มา และ วันที่จะให้หยุด ต้องเป็นวันในอนาคต',
         });
         return false;
       }
