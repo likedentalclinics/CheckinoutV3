@@ -367,14 +367,14 @@
      }
      else if (typeIdValue === "ลากิจ") {
     const usedPersonalDays = parseInt(columnHData.value) || 0;
-      if ((usedPersonalDays + leaveDurationDays) > 3) {
+      if ((usedPersonalDays - leaveDurationDays) < 0) {
        Swal.fire('ไม่สามารถลากิจได้', `คุณได้ใช้สิทธิ์ลากิจครบแล้ว`, 'error'); 
        return false;
       }
      }
     else if (typeIdValue === "ลาป่วย") {
-      if ((usedSickDays + leaveDurationDays) > 30) {
-       Swal.fire('ไม่สามารถลาป่วยได้', `ลาป่วยรวมเกิน 30 วันจะเป็นลาฉุกเฉิน`, 'error'); 
+      if ((usedSickDays - leaveDurationDays) < 0) {
+       Swal.fire('ไม่สามารถลาป่วยได้', `ลาป่วยรวมเกิน 30 วัน ให้ใช้ลาฉุกเฉิน`, 'error'); 
        return false;
       }
      }
