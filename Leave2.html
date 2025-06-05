@@ -395,11 +395,6 @@
     Swal.fire('ต้องการเอกสารรับรอง',`ป่วยตั้งแต่ 3 วันขึ้นไป (${leaveDurationDays} วัน) ต้องอัพใบรับรองแพทย์`,'warning');
     return false;
   }
-
-  if (typeIdValue === 'ลาทำหมัน' && leaveDurationDays >0 && !fileUploaded) {
-    Swal.fire('ขอการเอกสารรับรอง',`เป็นใบนัดหรือใบรับรองแพทย์ ที่ออกโดยรพ.`,'warning');
-    return false;
-  }
      
   if (typeIdValue === 'ลาคลอด') {
       if (leaveDurationDays > 1 || !fileUploaded) {
@@ -424,7 +419,13 @@
             currentDate.setDate(currentDate.getDate() + 1);
         }
       }
-    
+
+     
+  if (typeIdValue === 'ลาทำหมัน' && !fileUploaded) {
+    Swal.fire('ขอการเอกสารรับรอง',`เป็นใบนัดหรือใบรับรองแพทย์ ที่ออกโดยรพ.`,'warning');
+    return false;
+  }
+     
       const today = new Date();
       today.setHours(0,0,0,0); 
       const flatpickrStartDate = startDateIdInput._flatpickr.selectedDates[0]; 
