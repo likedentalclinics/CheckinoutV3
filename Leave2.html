@@ -66,7 +66,7 @@
             <option value="ลาป่วย">ลาป่วย</option>
             <option value="ลากิจ">ลากิจ</option>
             <option value="ลาคลอด">ลาคลอด</option>
-           <option value="ลาคลอด">ลาทำหมัน</option>
+           <option value="ลาทำหมัน">ลาทำหมัน</option>
             <option value="อื่นๆ">อื่นๆ</option>
           </select>
         </div>
@@ -403,10 +403,10 @@
      }
      }
      
-  if (typeIdValue === 'ลาทำหมัน'){ if(!fileUploaded) {
+  if (typeIdValue === 'ลาทำหมัน' && !fileUploaded) {
     Swal.fire('ขอการเอกสารรับรอง',`เป็นใบนัดหรือใบรับรองแพทย์ ที่ออกโดยรพ.`,'warning');
     return false;
-  } }
+  } 
      
       const isLeaveSlotAvailable = await checkDuplicateLeaveOnClient();
       if (!isLeaveSlotAvailable) {
