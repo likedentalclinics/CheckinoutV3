@@ -400,7 +400,12 @@
       if (leaveDurationDays > 1 || !fileUploaded) {
         Swal.fire('อัพใบรับรองแพทย์',`ให้ลงวันสิ้นสุด เป็นวันเดียวกับวันเริ่มต้นลา`,'warning');
     return false;
-  }}
+  }
+  else if (typeIdValue === 'ลาทำหมัน' && !fileUploaded) {
+    Swal.fire('ขอการเอกสารรับรอง',`เป็นใบนัดหรือใบรับรองแพทย์ ที่ออกโดยรพ.`,'warning');
+    return false;
+  }
+     }
              
       const isLeaveSlotAvailable = await checkDuplicateLeaveOnClient();
       if (!isLeaveSlotAvailable) {
@@ -420,12 +425,6 @@
         }
       }
 
-     
-  if (typeIdValue === 'ลาทำหมัน' && !fileUploaded) {
-    Swal.fire('ขอการเอกสารรับรอง',`เป็นใบนัดหรือใบรับรองแพทย์ ที่ออกโดยรพ.`,'warning');
-    return false;
-  }
-     
       const today = new Date();
       today.setHours(0,0,0,0); 
       const flatpickrStartDate = startDateIdInput._flatpickr.selectedDates[0]; 
