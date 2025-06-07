@@ -6,28 +6,22 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ลงทะเบียน</title>
-    <!-- นำเข้า Tailwind CSS สำหรับการออกแบบ -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- นำเข้า SweetAlert2 สำหรับการแสดงการแจ้งเตือน -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <!-- นำเข้า LIFF SDK สำหรับการเชื่อมต่อกับ LINE -->
     <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
-  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-  <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/th.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/th.js"></script>
 </head>
 
 <body class="bg-slate-50 min-h-screen">
     <div class="max-w-md m-auto p-2">
-        <form id="registrationForm">
-            <div class="p-8">
+        <form id="registrationForm"> <div class="p-8">
                 <div class="mb-5 text-center">
-                    <!-- แสดงภาพโปรไฟล์ที่อัพโหลด -->
                     <div class="mx-auto w-32 h-32 mb-2 border rounded-lg relative bg-slate-100 mb-4 shadow-inset">
                         <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
                             alt="Default Image" id="preview" class="h-32 w-32 object-cover rounded-lg">
                     </div>
-                    <!-- ปุ่มสำหรับอัพโหลดรูปภาพ -->
                     <label for="file"
                         class="cursor-pointer inline-flex justify-between items-center p-2 rounded-lg text-slate-800 bg-slate-100 hover:bg-slate-300">
                         อัพโหลดรูป
@@ -37,18 +31,15 @@
                 </div>
                 <div class="flex flex-col">
                     <div class="mb-4">
-                        <!-- ฟิลด์สำหรับใส่ Line ID -->
                         <input type="text"
                             class="input-field w-full  bg-slate-200 p-2 text-slate-500 text-sm text-center rounded-lg"
                             id="userlineId" placeholder="lineId" name="userlineId" readonly>
                     </div>
                     <div class="mb-4">
-                        <!-- ฟิลด์สำหรับใส่ชื่อ-สกุล -->
                         <input type="text" class="input-field w-full border border-slate-300 p-2 text-md rounded-lg"
                             id="nameId" placeholder="ชื่อ-สกุล" name="nameId" required>
                     </div>
                     <div class="mb-4">
-                        <!-- ฟิลด์สำหรับใส่เลข ท. -->
                         <input type="text" class="input-field w-full border border-slate-300 p-2 text-md rounded-lg"
                             id="keynumberId" placeholder="เลข ท." name="keynumberId" required>
                     </div>
@@ -66,8 +57,7 @@
                         <div id="nicknameError" class="text-red-500 text-sm mt-1 hidden"></div>
                     </div>
                     <div class="mb-4">
-                        <!-- ฟิลด์สำหรับใส่หยุดประจำวัน? -->
-                      <label for="dayoffId" class="block text-sm font-medium text-gray-700 mb-1">หยุดประจำวัน?</label>
+                        <label for="dayoffId" class="block text-sm font-medium text-gray-700 mb-1">หยุดประจำวัน?</label>
                         <select id="dayoffId" name="dayoffId"
                             class="input-field w-full border border-slate-300 p-2 text-md rounded-lg" required>
                             <option value="" disabled selected>หยุดประจำวัน?</option>
@@ -76,19 +66,20 @@
                             <option value="พุธ">พุธ</option>
                             <option value="พฤหัส">พฤหัส</option>
                             <option value="ศุกร์">ศุกร์</option>
+                            <option value="เสาร์">เสาร์</option>
+                            <option value="อาทิตย์">อาทิตย์</option>
                         </select>
                     </div>
                     <div class="mb-4">
-                        <input type="text" class="input-field w-full border border-slate-300 p-2 text-md rounded-lg"
+                        <input type="email" class="input-field w-full border border-slate-300 p-2 text-md rounded-lg"
                             id="EmailId" placeholder="อีเมล" name="EmailId">
                     </div>
                     <div class="mb-4">
-                <label for="BeginworkdateId" class="block text-sm font-medium text-gray-700 mb-1">วันเริ่มงาน</label>
-                <input type="text" id="BeginworkdateId" name="BeginworkdateId" class="date-picker w-full mr-2 p-2 border rounded-lg">
-                  </div>
+                        <label for="BeginworkdateId" class="block text-sm font-medium text-gray-700 mb-1">วันเริ่มงาน</label>
+                        <input type="text" id="BeginworkdateId" name="BeginworkdateId" class="date-picker w-full mr-2 p-2 border rounded-lg" required>
+                    </div>
                 </div>
-                <!-- ปุ่มสำหรับบันทึกข้อมูล -->
-                <button type="button" id="submitBtn"
+                <button type="submit" id="submitBtn"
                     class="bg-slate-800 text-center w-full text-white py-4 px-4 rounded-lg hover:bg-blue-700">บันทึกข้อมูล</button>
             </div>
         </form>
@@ -96,22 +87,29 @@
     <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
     <script src="config.js"></script>
     <script>
+        // กำหนด URL ของ Web App (ควรอยู่ในไฟล์ config.js)
+        // const WEB_APP_MEMBER_URL = "YOUR_WEB_APP_URL"; // ตรวจสอบว่าได้กำหนดไว้ใน config.js แล้ว
+
         // ฟังก์ชันเริ่มต้น LIFF SDK เมื่อโหลดหน้าเว็บ
         window.onload = function () {
             initializeLiff();
-    flatpickr(".date-picker", {
-       locale: {weekdays: {
-      shorthand: ["อา", "จ", "อ", "พ", "พฤ", "ศ", "ส"],
-      longhand: ["อาทิตย์","จันทร์","อังคาร","พุธ","พฤหัสบดี","ศุกร์","เสาร์"]}, 
-          months: {
-      shorthand: ["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค.",],
-      longhand: ["มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม",],},
-        firstDayOfWeek: 0},
-        disableMobile: true,
-        dateFormat: "Y-m-d",
-        altInput: true,
-        altFormat: "d-m-Y"
-      });
+            flatpickr(".date-picker", {
+                locale: {
+                    weekdays: {
+                        shorthand: ["อา", "จ", "อ", "พ", "พฤ", "ศ", "ส"],
+                        longhand: ["อาทิตย์", "จันทร์", "อังคาร", "พุธ", "พฤหัสบดี", "ศุกร์", "เสาร์"]
+                    },
+                    months: {
+                        shorthand: ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."],
+                        longhand: ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"]
+                    },
+                    firstDayOfWeek: 0 // ตั้งค่าให้วันอาทิตย์เป็นวันแรก (0)
+                },
+                disableMobile: true,
+                dateFormat: "Y-m-d",
+                altInput: true,
+                altFormat: "d-m-Y"
+            });
         };
 
         // ฟังก์ชันสำหรับเริ่มต้น LIFF SDK
@@ -289,7 +287,8 @@
         let EmailIdInput = document.getElementById("EmailId");
         let BeginworkdateIdInput = document.getElementById("BeginworkdateId");
         let submitBtn = document.getElementById("submitBtn");
-    let nicknameError = document.getElementById("nicknameError");
+        let nicknameError = document.getElementById("nicknameError"); // อ้างอิงถึง div แสดง error
+
         // ฟังก์ชันสำหรับแปลงไฟล์เป็น Base64
         function getBase64(file) {
             return new Promise((resolve, reject) => {
@@ -329,26 +328,27 @@
             const keynumber2Id = keynumber2IdInput.value.trim();
             const nicknameId = nicknameIdInput.value.trim();
             const dayoffId = dayoffIdInput.value.trim();
-            const EmailId = EmailIdInput.value.trim();
             const BeginworkdateId = BeginworkdateIdInput.value.trim();
-            
+
             if (userlineId === '' || nameId === '' || keynumberId === '' || keynumber2Id === '' || nicknameId === '' || dayoffId === '' || BeginworkdateId === '') {
                 return false;
             }
             return true;
         }
 
-    document.getElementById('registrationForm').addEventListener('submit', async (event) => {
-            event.preventDefault();
+        // เพิ่ม event listener สำหรับปุ่มบันทึกข้อมูล (ใช้ type="submit" และฟัง event 'submit' บนฟอร์ม)
+        document.getElementById('registrationForm').addEventListener('submit', async (event) => {
+            event.preventDefault(); // ป้องกันการส่งฟอร์มตามปกติ
 
+            // ซ่อนข้อความ Error ของชื่อเล่นก่อนเริ่มการตรวจสอบใหม่
             nicknameError.classList.add('hidden');
             nicknameError.textContent = '';
 
             if (!validateForm()) { // ตรวจสอบว่ากรอกข้อมูลครบถ้วนหรือไม่
                 Swal.fire({
                     icon: 'error',
-                    title: 'Validation Error',
-                    text: 'กรุณากรอกข้อมูลในช่องที่จำเป็น.',
+                    title: 'ข้อผิดพลาด!',
+                    text: 'กรุณากรอกข้อมูลในช่องที่จำเป็นให้ครบถ้วน.',
                 });
                 return;
             }
@@ -356,11 +356,12 @@
             const isConfirmed = await showConfirmationDialog(); // แสดงกล่องยืนยันก่อนบันทึกข้อมูล
 
             if (isConfirmed) {
-                submitBtn.disabled = true;
-                showLoadingDialog();
+                submitBtn.disabled = true; // ปิดใช้งานปุ่มเพื่อป้องกันการกดซ้ำ
+                showLoadingDialog(); // แสดง dialog กำลังบันทึก
 
                 try {
                     const nickname = nicknameIdInput.value.trim();
+
                     // --- ตรวจสอบชื่อเล่นซ้ำก่อนส่งข้อมูลทั้งหมด ---
                     const nicknameCheckResponse = await fetch(url, {
                         method: "POST",
@@ -384,7 +385,8 @@
                         submitBtn.disabled = false; // เปิดใช้งานปุ่มกลับ
                         return; // หยุดการทำงาน
                     }
-                    // --- สิ้นสุดการตรวจสอบชื่อเล่นซ้ำ ---                    
+                    // --- สิ้นสุดการตรวจสอบชื่อเล่นซ้ำ ---
+
                     let obj;
                     if (fileInput.files.length > 0) { // ถ้ามีการอัพโหลดรูปภาพ
                         let file = fileInput.files[0];
@@ -392,7 +394,7 @@
                         imgPreview.src = `data:${file.type};base64,${base64}`;
 
                         obj = {
-                            action: 'saveMember',
+                            action: 'saveMember', // กำหนด action ให้ชัดเจน
                             base64: base64,
                             type: file.type,
                             name: file.name,
@@ -411,7 +413,7 @@
                         let base64 = await getBase64(blob);
 
                         obj = {
-                            action: 'saveMember',
+                            action: 'saveMember', // กำหนด action ให้ชัดเจน
                             base64: base64,
                             type: "image/png",
                             name: "Avatar.png",
@@ -426,17 +428,22 @@
                         };
                     }
 
+                    // ส่งข้อมูลสมาชิกทั้งหมดไปยัง Web App
                     let response = await fetch(url, {
                         method: "POST",
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
                         body: JSON.stringify(obj) // ส่งข้อมูลในรูปแบบ JSON ไปยัง Web App
                     });
 
-                     if (!response.ok) {
+                    // ตรวจสอบสถานะการตอบกลับจาก Apps Script
+                    if (!response.ok) {
                         const errorText = await response.text();
                         throw new Error(errorText || 'เกิดข้อผิดพลาดจากเซิร์ฟเวอร์');
                     }
 
-                    let data = await response.text();
+                    let data = await response.text(); // รับข้อความตอบกลับ เช่น "Data saved successfully"
 
                     Swal.fire({
                         title: 'สำเร็จ!',
@@ -453,16 +460,16 @@
                 } catch (error) {
                     Swal.fire({
                         icon: 'error',
-                        title: 'Error',
-                        text: 'เกิดข้อผิดพลาดขณะส่งข้อมูล.',
+                        title: 'เกิดข้อผิดพลาด!',
+                        text: error.message || 'เกิดข้อผิดพลาดขณะส่งข้อมูล.',
                     });
 
-                    console.error(error);
+                    console.error('Error during submission:', error);
                 } finally {
-                    submitBtn.disabled = false;
+                    submitBtn.disabled = false; // เปิดใช้งานปุ่มกลับ
                 }
             } else {
-                Swal.fire('Submission Canceled', 'ข้อมูลของคุณไม่ได้ถูกส่ง.', 'info'); // แสดงข้อความถ้ายกเลิกการส่งข้อมูล
+                Swal.fire('การส่งถูกยกเลิก', 'ข้อมูลของคุณไม่ได้ถูกส่ง.', 'info'); // แสดงข้อความถ้ายกเลิกการส่งข้อมูล
             }
         });
 
@@ -470,7 +477,7 @@
         async function showConfirmationDialog() {
             const confirmation = await Swal.fire({
                 title: 'ยืนยันการส่งข้อมูล',
-                text: 'แน่ใจ ว่าคุณกำลังส่งข้อมูล?',
+                text: 'แน่ใจ ว่าคุณต้องการส่งข้อมูลนี้?',
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonText: 'ใช่, ส่งข้อมูล!',
@@ -479,7 +486,8 @@
             return confirmation.isConfirmed;
         }
 
-       function showLoadingDialog() {
+        // ฟังก์ชันสำหรับแสดง SweetAlert2 Loading
+        function showLoadingDialog() {
             Swal.fire({
                 title: '<div class="text-md">กำลังบันทึก, รอสักครู่...</div>',
                 allowOutsideClick: false,
@@ -492,4 +500,5 @@
         }
     </script>
 </body>
+
 </html>
