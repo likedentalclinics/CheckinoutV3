@@ -358,8 +358,32 @@
                 submitBtn.disabled = true;
 
                 try {
-                    let obj;
+                    const nickname = nicknameIdInput.value.trim();
+                    // --- ตรวจสอบชื่อเล่นซ้ำก่อนส่งข้อมูลทั้งหมด ---
+                    const nicknameCheckResponse = await fetch(url, {
+                        method: "POST",
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ action: 'checkNicknameDuplicate', nickname: nickname }) // ส่ง action ใหม่เพื่อตรวจสอบ
+                    });
 
+                    const nicknameCheckResult = await nicknameCheckResponse.json();
+
+                    if (nicknameCheckResult.isDuplicate) {
+                        Swal.close(); // ปิด dialog โหลด
+                        nicknameError.textContent = 'ชื่อเล่นนี้มีผู้ใช้งานแล้ว กรุณาใช้ชื่อเล่นอื่น.';
+                        nicknameError.classList.remove('hidden');
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'ชื่อเล่นซ้ำ!',
+                            text: 'ชื่อเล่นที่คุณระบุมีอยู่แล้วในระบบ กรุณาใช้ชื่อเล่นอื่น.',
+                        });
+                        submitBtn.disabled = false; // เปิดใช้งานปุ่มกลับ
+                        return; // หยุดการทำงาน
+                    }
+                    // --- สิ้นสุดการตรวจสอบชื่อเล่นซ้ำ ---                    
+                    let obj;
                     if (fileInput.files.length > 0) { // ถ้ามีการอัพโหลดรูปภาพ
                         let file = fileInput.files[0];
                         let base64 = await getBase64(file);
