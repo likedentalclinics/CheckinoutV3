@@ -400,6 +400,7 @@
                         imgPreview.src = `data:${file.type};base64,${base64}`;
 
                         obj = {
+                            action: 'saveMember',
                             base64: base64,
                             type: file.type,
                             name: file.name,
@@ -418,6 +419,7 @@
                         let base64 = await getBase64(blob);
 
                         obj = {
+                            action: 'saveMember',
                             base64: base64,
                             type: "image/png",
                             name: "Avatar.png",
@@ -431,16 +433,6 @@
                             BeginworkdateId: BeginworkdateIdInput.value
                         };
                     }
-
-                    Swal.fire({
-                        title: '<div class="text-md">กำลังบันทึก, รอสักครู่...</div>',
-                        allowOutsideClick: false,
-                        showConfirmButton: false,
-                        html: '<div class="swal2-loading"></div>',
-                        onBeforeOpen: () => {
-                            Swal.showLoading();
-                        }
-                    });
 
                     let response = await fetch(url, {
                         method: "POST",
