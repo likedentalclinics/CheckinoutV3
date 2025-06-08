@@ -358,6 +358,17 @@
                 return;
             }
 
+     function showLoadingDialog() {
+            Swal.fire({
+                title: '<div class="text-md">กำลังบันทึก, รอสักครู่...</div>',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                html: '<div class="swal2-loading"></div>',
+                onBeforeOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+        }
             const isConfirmed = await showConfirmationDialog(); // แสดงกล่องยืนยันก่อนบันทึกข้อมูล
 
             if (isConfirmed) {
@@ -485,17 +496,7 @@
 
             return confirmation.isConfirmed;
         }
-         function showLoadingDialog() {
-            Swal.fire({
-                title: '<div class="text-md">กำลังบันทึก, รอสักครู่...</div>',
-                allowOutsideClick: false,
-                showConfirmButton: false,
-                html: '<div class="swal2-loading"></div>',
-                onBeforeOpen: () => {
-                    Swal.showLoading();
-                }
-            });
-        }
+
     </script>
 </body>
 
