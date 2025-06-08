@@ -50,7 +50,7 @@
                     <div class="mb-4">
                         <!-- ฟิลด์สำหรับใส่เลข ท. -->
                         <input type="text" class="input-field w-full border border-slate-300 p-2 text-md rounded-lg"
-                            id="keynumberId" placeholder="เลข ท." name="keynumberId" required>
+                            id="keynumberId" placeholder="เลขประจำตัว" name="keynumberId" required>
                     </div>
                     <div class="mb-4">
                         <select id="keynumber2Id" name="keynumber2Id"
@@ -60,10 +60,17 @@
                             <option value="คต">เคาเตอร์</option>
                         </select>
                     </div>
-                    <div class="mb-6">
+                    <div class="mb-4">
                         <input type="text" class="input-field w-full border border-slate-300 p-2 text-md rounded-lg"
                             id="nicknameId" placeholder="ชื่อเล่นที่ไม่ซ้ำเพื่อน" name="nicknameId" required>
                     </div>
+                    <div class="mb-6">
+                        <select id="branchId" name="branchId"
+                            class="input-field w-full border border-slate-300 p-2 text-md rounded-lg" required>
+                            <option value="" disabled selected>สาขา?</option>
+                            <option value="รังสิต">รังสิต</option>
+                        </select>
+                    </div>                   
                     <div class="mb-4">
                         <!-- ฟิลด์สำหรับใส่หยุดประจำวัน? -->
                       <label for="dayoffId" class="block text-sm font-medium text-gray-700 mb-1">หยุดประจำวัน?</label>
@@ -287,6 +294,7 @@
         let dayoffIdInput = document.getElementById("dayoffId");
         let EmailIdInput = document.getElementById("EmailId");
         let BeginworkdateIdInput = document.getElementById("BeginworkdateId");
+       let branchIdInput = document.getElementById("branchId");
         let submitBtn = document.getElementById("submitBtn");
 
         // ฟังก์ชันสำหรับแปลงไฟล์เป็น Base64
@@ -330,9 +338,9 @@
             const dayoffId = dayoffIdInput.value.trim();
             const EmailId = EmailIdInput.value.trim();
             const BeginworkdateId = BeginworkdateIdInput.value.trim();
+            const branchId = branchIdInput.value.trim();
            
-
-            if (userlineId === '' || nameId === '' || keynumberId === '' || keynumber2Id === '' || nicknameId === '' || dayoffId === '' || BeginworkdateId === '') {
+            if (userlineId === '' || nameId === '' || keynumberId === '' || keynumber2Id === '' || nicknameId === '' || dayoffId === '' || BeginworkdateId === '' || branchId === '' ) {
                 return false;
             }
 
@@ -376,7 +384,8 @@
                             nicknameId: nicknameIdInput.value,
                             dayoffId: dayoffIdInput.value,
                             EmailId: EmailIdInput.value,
-                            BeginworkdateId: BeginworkdateIdInput.value
+                            BeginworkdateId: BeginworkdateIdInput.value,
+                            branchId: branchIdInput.value
                         };
                     } else { // ถ้าไม่มีการอัพโหลดรูปภาพ ใช้ภาพเริ่มต้นแทน
                         let response = await fetch("https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png");
@@ -394,7 +403,8 @@
                             nicknameId: nicknameIdInput.value,
                             dayoffId: dayoffIdInput.value,
                             EmailId: EmailIdInput.value,
-                            BeginworkdateId: BeginworkdateIdInput.value
+                            BeginworkdateId: BeginworkdateIdInput.value,
+                            branchId: branchIdInput.value
                         };
                     }
 
@@ -466,5 +476,4 @@
         }
     </script>
 </body>
-
 </html>
