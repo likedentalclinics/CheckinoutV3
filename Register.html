@@ -6,23 +6,28 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ลงทะเบียน</title>
+    <!-- นำเข้า Tailwind CSS สำหรับการออกแบบ -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- นำเข้า SweetAlert2 สำหรับการแสดงการแจ้งเตือน -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- นำเข้า LIFF SDK สำหรับการเชื่อมต่อกับ LINE -->
     <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/th.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/th.js"></script>
 </head>
 
 <body class="bg-slate-50 min-h-screen">
     <div class="max-w-md m-auto p-2">
-        <form id="registrationForm">
+        <form>
             <div class="p-8">
                 <div class="mb-5 text-center">
+                    <!-- แสดงภาพโปรไฟล์ที่อัพโหลด -->
                     <div class="mx-auto w-32 h-32 mb-2 border rounded-lg relative bg-slate-100 mb-4 shadow-inset">
                         <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
                             alt="Default Image" id="preview" class="h-32 w-32 object-cover rounded-lg">
                     </div>
+                    <!-- ปุ่มสำหรับอัพโหลดรูปภาพ -->
                     <label for="file"
                         class="cursor-pointer inline-flex justify-between items-center p-2 rounded-lg text-slate-800 bg-slate-100 hover:bg-slate-300">
                         อัพโหลดรูป
@@ -32,15 +37,18 @@
                 </div>
                 <div class="flex flex-col">
                     <div class="mb-4">
+                        <!-- ฟิลด์สำหรับใส่ Line ID -->
                         <input type="text"
-                            class="input-field w-full bg-slate-200 p-2 text-slate-500 text-sm text-center rounded-lg"
+                            class="input-field w-full  bg-slate-200 p-2 text-slate-500 text-sm text-center rounded-lg"
                             id="userlineId" placeholder="lineId" name="userlineId" readonly>
                     </div>
                     <div class="mb-4">
+                        <!-- ฟิลด์สำหรับใส่ชื่อ-สกุล -->
                         <input type="text" class="input-field w-full border border-slate-300 p-2 text-md rounded-lg"
                             id="nameId" placeholder="ชื่อ-สกุล" name="nameId" required>
                     </div>
                     <div class="mb-4">
+                        <!-- ฟิลด์สำหรับใส่เลข ท. -->
                         <input type="text" class="input-field w-full border border-slate-300 p-2 text-md rounded-lg"
                             id="keynumberId" placeholder="เลข ท." name="keynumberId" required>
                     </div>
@@ -55,10 +63,10 @@
                     <div class="mb-6">
                         <input type="text" class="input-field w-full border border-slate-300 p-2 text-md rounded-lg"
                             id="nicknameId" placeholder="ชื่อเล่นที่ไม่ซ้ำเพื่อน" name="nicknameId" required>
-                        <div id="nicknameError" class="text-red-500 text-sm mt-1 hidden"></div>
                     </div>
                     <div class="mb-4">
-                        <label for="dayoffId" class="block text-sm font-medium text-gray-700 mb-1">หยุดประจำวัน?</label>
+                        <!-- ฟิลด์สำหรับใส่หยุดประจำวัน? -->
+                      <label for="dayoffId" class="block text-sm font-medium text-gray-700 mb-1">หยุดประจำวัน?</label>
                         <select id="dayoffId" name="dayoffId"
                             class="input-field w-full border border-slate-300 p-2 text-md rounded-lg" required>
                             <option value="" disabled selected>หยุดประจำวัน?</option>
@@ -67,8 +75,6 @@
                             <option value="พุธ">พุธ</option>
                             <option value="พฤหัส">พฤหัส</option>
                             <option value="ศุกร์">ศุกร์</option>
-                            <option value="เสาร์">เสาร์</option>
-                            <option value="อาทิตย์">อาทิตย์</option>
                         </select>
                     </div>
                     <div class="mb-4">
@@ -76,11 +82,12 @@
                             id="EmailId" placeholder="อีเมล" name="EmailId">
                     </div>
                     <div class="mb-4">
-                        <label for="BeginworkdateId" class="block text-sm font-medium text-gray-700 mb-1">วันเริ่มงาน</label>
-                        <input type="text" id="BeginworkdateId" name="BeginworkdateId" class="date-picker w-full mr-2 p-2 border rounded-lg" required>
-                    </div>
+                <label for="BeginworkdateId" class="block text-sm font-medium text-gray-700 mb-1">วันเริ่มงาน</label>
+                <input type="text" id="BeginworkdateId" name="BeginworkdateId" class="date-picker w-full mr-2 p-2 border rounded-lg">
+                  </div>
                 </div>
-                <button type="submit" id="submitBtn"
+                <!-- ปุ่มสำหรับบันทึกข้อมูล -->
+                <button type="button" id="submitBtn"
                     class="bg-slate-800 text-center w-full text-white py-4 px-4 rounded-lg hover:bg-blue-700">บันทึกข้อมูล</button>
             </div>
         </form>
@@ -91,23 +98,19 @@
         // ฟังก์ชันเริ่มต้น LIFF SDK เมื่อโหลดหน้าเว็บ
         window.onload = function () {
             initializeLiff();
-            flatpickr(".date-picker", {
-                locale: {
-                    weekdays: {
-                        shorthand: ["อา", "จ", "อ", "พ", "พฤ", "ศ", "ส"],
-                        longhand: ["อาทิตย์", "จันทร์", "อังคาร", "พุธ", "พฤหัสบดี", "ศุกร์", "เสาร์"]
-                    },
-                    months: {
-                        shorthand: ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."],
-                        longhand: ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"]
-                    },
-                    firstDayOfWeek: 0
-                },
-                disableMobile: true,
-                dateFormat: "Y-m-d",
-                altInput: true,
-                altFormat: "d-m-Y"
-            });
+    flatpickr(".date-picker", {
+       locale: {weekdays: {
+      shorthand: ["อา", "จ", "อ", "พ", "พฤ", "ศ", "ส"],
+      longhand: ["อาทิตย์","จันทร์","อังคาร","พุธ","พฤหัสบดี","ศุกร์","เสาร์"]},
+          months: {
+      shorthand: ["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค.",],
+      longhand: ["มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม",],},
+        firstDayOfWeek: 0},
+        disableMobile: true,
+        dateFormat: "Y-m-d",
+        altInput: true,
+        altFormat: "d-m-Y"
+      });
         };
 
         // ฟังก์ชันสำหรับเริ่มต้น LIFF SDK
@@ -115,9 +118,9 @@
             await liff.init({ liffId: `${LIFF_ID4}` });
 
             if (liff.isLoggedIn()) {
-                getUserProfile();
+                getUserProfile(); // ถ้าเข้าสู่ระบบแล้วให้ดึงข้อมูลโปรไฟล์
             } else {
-                liff.login();
+                liff.login(); // ถ้ายังไม่ได้เข้าสู่ระบบ ให้เข้าสู่ระบบก่อน
             }
         }
 
@@ -125,9 +128,9 @@
         async function getUserProfile() {
             try {
                 const profile = await liff.getProfile();
-                document.getElementById('userlineId').value = profile.userId;
+                document.getElementById('userlineId').value = profile.userId; // กำหนดค่า Line ID ในฟิลด์
             } catch (error) {
-                console.error('เกิดข้อผิดพลาดในการดึงข้อมูลโปรไฟล์:', error);
+                console.error('เกิดข้อผิดพลาดในการดึงข้อมูลโปรไฟล์:', error); // แสดงข้อผิดพลาดถ้าดึงข้อมูลไม่สำเร็จ
             }
         }
 
@@ -160,6 +163,7 @@
                         type: 'box',
                         layout: 'vertical',
                         contents: [
+                            // แถว "ชื่อ-สกุล"
                             {
                                 type: 'box',
                                 layout: 'horizontal',
@@ -167,7 +171,7 @@
                                 contents: [
                                     {
                                         type: 'image',
-                                        url: 'https://img.icons8.com/?size=100&id=zxB19VPoVLjK&format=png&color=000000',
+                                        url: 'https://img.icons8.com/?size=100&id=zxB19VPoVLjK&format=png&color=000000', // ตัวอย่างไอคอน
                                         size: 'xs',
                                         aspectRatio: '1:1'
                                     },
@@ -195,6 +199,7 @@
                                 type: 'separator',
                                 margin: 'md'
                             },
+                            // แถว "เลข ท."
                             {
                                 type: 'box',
                                 layout: 'horizontal',
@@ -202,7 +207,7 @@
                                 contents: [
                                     {
                                         type: 'image',
-                                        url: 'https://img.icons8.com/?size=100&id=22127&format=png&color=000000',
+                                        url: 'https://img.icons8.com/?size=100&id=22127&format=png&color=000000', // ตัวอย่างไอคอน
                                         size: 'xs',
                                         aspectRatio: '1:1'
                                     },
@@ -230,6 +235,7 @@
                                 type: 'separator',
                                 margin: 'md'
                             },
+                            // แถว "ตำแหน่ง"
                             {
                                 type: 'box',
                                 layout: 'horizontal',
@@ -237,7 +243,7 @@
                                 contents: [
                                     {
                                         type: 'image',
-                                        url: 'https://img.icons8.com/?size=100&id=3DvrlRiFfqDw&format=png&color=000000',
+                                        url: 'https://img.icons8.com/?size=100&id=3DvrlRiFfqDw&format=png&color=000000', // ตัวอย่างไอคอน
                                         size: 'xs',
                                         aspectRatio: '1:1'
                                     },
@@ -282,7 +288,6 @@
         let EmailIdInput = document.getElementById("EmailId");
         let BeginworkdateIdInput = document.getElementById("BeginworkdateId");
         let submitBtn = document.getElementById("submitBtn");
-        let nicknameError = document.getElementById("nicknameError");
 
         // ฟังก์ชันสำหรับแปลงไฟล์เป็น Base64
         function getBase64(file) {
@@ -301,12 +306,12 @@
                 let reader = new FileReader();
 
                 reader.onload = function (e) {
-                    imgPreview.src = e.target.result;
+                    imgPreview.src = e.target.result; // แสดงภาพที่อัพโหลดใน img
                 };
 
                 reader.readAsDataURL(file);
             } else {
-                imgPreview.src = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png";
+                imgPreview.src = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"; // ภาพเริ่มต้นถ้าไม่มีการอัพโหลดภาพใหม่
             }
         }
 
@@ -323,23 +328,22 @@
             const keynumber2Id = keynumber2IdInput.value.trim();
             const nicknameId = nicknameIdInput.value.trim();
             const dayoffId = dayoffIdInput.value.trim();
+            const EmailId = EmailIdInput.value.trim();
             const BeginworkdateId = BeginworkdateIdInput.value.trim();
+           
 
             if (userlineId === '' || nameId === '' || keynumberId === '' || keynumber2Id === '' || nicknameId === '' || dayoffId === '' || BeginworkdateId === '') {
                 return false;
             }
+
             return true;
         }
 
         // เพิ่ม event listener สำหรับปุ่มบันทึกข้อมูล
-        document.getElementById('registrationForm').addEventListener('submit', async (event) => {
+        submitBtn.addEventListener('click', async (event) => {
             event.preventDefault();
 
-            // ซ่อนข้อความ Error ของชื่อเล่นก่อนเริ่มการตรวจสอบใหม่
-            nicknameError.classList.add('hidden');
-            nicknameError.textContent = '';
-
-            if (!validateForm()) {
+            if (!validateForm()) { // ตรวจสอบว่ากรอกข้อมูลครบถ้วนหรือไม่
                 Swal.fire({
                     icon: 'error',
                     title: 'Validation Error',
@@ -348,132 +352,94 @@
                 return;
             }
 
-            // แสดง Loading Dialog ทันทีที่กด submit
-            showLoadingDialog();
-            submitBtn.disabled = true;
+            const isConfirmed = await showConfirmationDialog(); // แสดงกล่องยืนยันก่อนบันทึกข้อมูล
 
-            try {
-                const isConfirmed = await showConfirmationDialog(); // ย้ายการแสดงกล่องยืนยันมาไว้ที่นี่
+            if (isConfirmed) {
+                submitBtn.disabled = true;
 
-                if (!isConfirmed) {
-                    Swal.close(); // ปิด loading dialog หากผู้ใช้ยกเลิก
-                    Swal.fire('Submission Canceled', 'ข้อมูลของคุณไม่ได้ถูกส่ง.', 'info');
-                    submitBtn.disabled = false;
-                    return;
-                }
+                try {
+                    let obj;
 
-                const nickname = nicknameIdInput.value.trim();
-                const userlineId = userlineIdInput.value.trim();
+                    if (fileInput.files.length > 0) { // ถ้ามีการอัพโหลดรูปภาพ
+                        let file = fileInput.files[0];
+                        let base64 = await getBase64(file);
+                        imgPreview.src = `data:${file.type};base64,${base64}`;
 
-                // ตรวจสอบชื่อเล่นซ้ำก่อนส่งข้อมูลทั้งหมด
-                const nicknameCheckResponse = await fetch(url, {
-                    method: "POST",
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ action: 'checkNicknameDuplicate', nickname: nickname, userlineId: userlineId })
-                });
+                        obj = {
+                            base64: base64,
+                            type: file.type,
+                            name: file.name,
+                            userlineId: userlineIdInput.value,
+                            nameId: nameIdInput.value,
+                            keynumberId: keynumberIdInput.value,
+                            keynumber2Id: keynumber2IdInput.value,
+                            nicknameId: nicknameIdInput.value,
+                            dayoffId: dayoffIdInput.value,
+                            EmailId: EmailIdInput.value,
+                            BeginworkdateId: BeginworkdateIdInput.value
+                        };
+                    } else { // ถ้าไม่มีการอัพโหลดรูปภาพ ใช้ภาพเริ่มต้นแทน
+                        let response = await fetch("https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png");
+                        let blob = await response.blob();
+                        let base64 = await getBase64(blob);
 
-                // ตรวจสอบสถานะ response ก่อนที่จะพยายามแปลงเป็น JSON
-                if (!nicknameCheckResponse.ok) {
-                    const errorText = await nicknameCheckResponse.text();
-                    throw new Error(`Error during nickname check: ${nicknameCheckResponse.status} - ${errorText}`);
-                }
-
-                const nicknameCheckResult = await nicknameCheckResponse.json();
-
-                if (nicknameCheckResult.isDuplicate) {
-                    Swal.close();
-                    nicknameError.textContent = 'ชื่อเล่นนี้มีผู้ใช้งานแล้ว กรุณาใช้ชื่อเล่นอื่น.';
-                    nicknameError.classList.remove('hidden');
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'ชื่อเล่นซ้ำ!',
-                        text: 'ชื่อเล่นที่คุณระบุมีอยู่แล้วในระบบ กรุณาใช้ชื่อเล่นอื่น.',
-                    });
-                    submitBtn.disabled = false;
-                    return;
-                }
-
-                let obj;
-                if (fileInput.files.length > 0) {
-                    let file = fileInput.files[0];
-                    let base64 = await getBase64(file);
-                    imgPreview.src = `data:${file.type};base64,${base64}`;
-
-                    obj = {
-                        action: 'saveMember',
-                        base64: base64,
-                        type: file.type,
-                        name: file.name,
-                        userlineId: userlineIdInput.value,
-                        nameId: nameIdInput.value,
-                        keynumberId: keynumberIdInput.value,
-                        keynumber2Id: keynumber2IdInput.value,
-                        nicknameId: nicknameIdInput.value,
-                        dayoffId: dayoffIdInput.value,
-                        EmailId: EmailIdInput.value,
-                        BeginworkdateId: BeginworkdateIdInput.value
-                    };
-                } else {
-                    let response = await fetch("https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png");
-                    let blob = await response.blob();
-                    let base64 = await getBase64(blob);
-
-                    obj = {
-                        action: 'saveMember',
-                        base64: base64,
-                        type: "image/png",
-                        name: "Avatar.png",
-                        userlineId: userlineIdInput.value,
-                        nameId: nameIdInput.value,
-                        keynumberId: keynumberIdInput.value,
-                        keynumber2Id: keynumber2IdInput.value,
-                        nicknameId: nicknameIdInput.value,
-                        dayoffId: dayoffIdInput.value,
-                        EmailId: EmailIdInput.value,
-                        BeginworkdateId: BeginworkdateIdInput.value
-                    };
-                }
-
-                let response = await fetch(url, {
-                    method: "POST",
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(obj)
-                });
-
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(`Error during save: ${response.status} - ${errorText}`);
-                }
-
-                let data = await response.text();
-
-                Swal.fire({
-                    title: 'สำเร็จ!',
-                    text: 'บันทึกข้อมูลของคุณเรียบร้อย!',
-                    icon: 'success',
-                    confirmButtonText: 'ปิด',
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        liff.closeWindow();
+                        obj = {
+                            base64: base64,
+                            type: "image/png",
+                            name: "Avatar.png",
+                            userlineId: userlineIdInput.value,
+                            nameId: nameIdInput.value,
+                            keynumberId: keynumberIdInput.value,
+                            keynumber2Id: keynumber2IdInput.value,
+                            nicknameId: nicknameIdInput.value,
+                            dayoffId: dayoffIdInput.value,
+                            EmailId: EmailIdInput.value,
+                            BeginworkdateId: BeginworkdateIdInput.value
+                        };
                     }
-                });
-                sendFlexMessage();
-                console.log(data);
 
-            } catch (error) {
-                Swal.close(); // ปิด loading dialog ก่อนแสดง error
-                Swal.fire({
-                    icon: 'error',
-                    title: 'เกิดข้อผิดพลาด!',
-                    text: error.message || 'เกิดข้อผิดพลาดขณะส่งข้อมูล.',
-                });
-                console.error('Error during submission:', error);
-            } finally {
-                submitBtn.disabled = false;
+                    Swal.fire({
+                        title: '<div class="text-md">กำลังบันทึก, รอสักครู่...</div>',
+                        allowOutsideClick: false,
+                        showConfirmButton: false,
+                        html: '<div class="swal2-loading"></div>',
+                        onBeforeOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    let response = await fetch(url, {
+                        method: "POST",
+                        body: JSON.stringify(obj) // ส่งข้อมูลในรูปแบบ JSON ไปยัง Web App
+                    });
+
+                    let data = await response.text();
+
+                    Swal.fire({
+                        title: 'สำเร็จ!',
+                        text: 'บันทึกข้อมูลของคุณเรียบร้อย!',
+                        icon: 'success',
+                        confirmButtonText: 'ปิด',
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            liff.closeWindow(); // ปิดหน้าต่าง LIFF เมื่อบันทึกข้อมูลสำเร็จ
+                        }
+                    });
+                    sendFlexMessage(); // ส่งข้อความ Flex หลังจากบันทึกข้อมูลสำเร็จ
+                    console.log(data);
+                } catch (error) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'เกิดข้อผิดพลาดขณะส่งข้อมูล.',
+                    });
+
+                    console.error(error);
+                } finally {
+                    submitBtn.disabled = false;
+                }
+            } else {
+                Swal.fire('Submission Canceled', 'ข้อมูลของคุณไม่ได้ถูกส่ง.', 'info'); // แสดงข้อความถ้ายกเลิกการส่งข้อมูล
             }
         });
 
@@ -481,26 +447,14 @@
         async function showConfirmationDialog() {
             const confirmation = await Swal.fire({
                 title: 'ยืนยันการส่งข้อมูล',
-                text: 'แน่ใจ ว่าคุณต้องการส่งข้อมูลนี้?',
+                text: 'แน่ใจ ว่าคุณกำลังส่งข้อมูล?',
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonText: 'ใช่, ส่งข้อมูล!',
                 cancelButtonText: 'ไม่, ยกเลิก'
             });
-            return confirmation.isConfirmed;
-        }
 
-        // ฟังก์ชันสำหรับแสดง SweetAlert2 Loading
-        function showLoadingDialog() {
-            Swal.fire({
-                title: '<div class="text-md">กำลังบันทึก, รอสักครู่...</div>',
-                allowOutsideClick: false,
-                showConfirmButton: false,
-                html: '<div class="swal2-loading"></div>',
-                onBeforeOpen: () => {
-                    Swal.showLoading();
-                }
-            });
+            return confirmation.isConfirmed;
         }
     </script>
 </body>
