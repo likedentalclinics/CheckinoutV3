@@ -402,8 +402,7 @@
                         title: '<div class="text-md">กำลังบันทึก, รอสักครู่...</div>',
                         allowOutsideClick: false,
                         showConfirmButton: false,
-                        html: '<div class="swal2-loading"></div>',
-                        onBeforeOpen: () => {
+                        didOpen: () => {
                             Swal.showLoading();
                         }
                     });
@@ -413,8 +412,9 @@
                         body: JSON.stringify(obj) // ส่งข้อมูลในรูปแบบ JSON ไปยัง Web App
                     });
 
-                    let data = await response.text();
-
+                    let data = await response.json();
+                    
+                if (data.status === 'success') {
                     Swal.fire({
                         title: 'สำเร็จ!',
                         text: 'บันทึกข้อมูลของคุณเรียบร้อย!',
@@ -422,11 +422,19 @@
                         confirmButtonText: 'ปิด',
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            liff.closeWindow(); // ปิดหน้าต่าง LIFF เมื่อบันทึกข้อมูลสำเร็จ
+                            liff.closeWindow();
+                            sendFlexMessage();// ปิดหน้าต่าง LIFF เมื่อบันทึกข้อมูลสำเร็จ
                         }
                     });
-                    sendFlexMessage(); // ส่งข้อความ Flex หลังจากบันทึกข้อมูลสำเร็จ
-                    console.log(data);
+
+                } else {
+                    // ถ้ามีข้อผิดพลาด (เช่น ชื่อเล่นซ้ำ)
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'เกิดข้อผิดพลาด',
+                        text: data.message, // แสดงข้อความ error จาก server
+                    });
+                    }
                 } catch (error) {
                     Swal.fire({
                         icon: 'error',
@@ -439,7 +447,7 @@
                     submitBtn.disabled = false;
                 }
             } else {
-                Swal.fire('Submission Canceled', 'ข้อมูลของคุณไม่ได้ถูกส่ง.', 'info'); // แสดงข้อความถ้ายกเลิกการส่งข้อมูล
+                Swal.fire('ยกเลิกการบันทึก', 'ข้อมูลของคุณยังไม่ถูกบันทึก', 'info'); // แสดงข้อความถ้ายกเลิกการส่งข้อมูล
             }
         });
 
