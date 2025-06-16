@@ -50,6 +50,7 @@
           </div>
         </div>
         <input type="hidden" id="userId" name="userId">
+        <input type="hidden" id="EmailId" name="EmailId">
         <input type="hidden" id="BeginworkdateId" name="BeginworkdateId">
         <input type="hidden" id="columnAData" name="columnAData">
       </div>
@@ -187,6 +188,7 @@
       document.getElementById('columnHData').value = row[8] || '0'; // Personal
       document.getElementById('columnIData').value = row[9] || '0'; // Sick
      document.getElementById('titleId').value = row[13] || '';
+     document.getElementById('EmailId').value = row[15] || '';
      document.getElementById('BeginworkdateId').value = row[16] || '';
     }
 
@@ -223,6 +225,7 @@
     const detailIdTextarea = document.getElementById("detailId"); 
     const submitBtn = document.getElementById("submitBtn");
     const fileNameDisplay = document.getElementById("fileNameDisplay");
+   const EmailInput = document.getElementById('EmailId');
     const BeginworkdateInput = document.getElementById('BeginworkdateId');
 
     fileInput.addEventListener('change', function () {
@@ -500,7 +503,8 @@
           startDateId: startDateIdInput.value, 
           endDateId: endDateIdInput.value,   
           titleId: titleIdInput.value,
-          detailId: detailIdTextarea.value
+          detailId: detailIdTextarea.value,
+          EmailId: EmailInput.value
         };
 
         if (fileInput.files.length > 0) {
@@ -603,7 +607,7 @@
                   { type: "text", text: `เรื่อง: ${data.typeId}` },
                   { type: "text", text: `วันเริ่มต้น: ${formatDateForDisplay(data.startDateId)}` },
                   { type: "text", text: `วันสิ้นสุด: ${formatDateForDisplay(displayEndDateForFlex)}` },  
-                  { type: "text", color: '#2d63c7', text: `📋รอการอนุมัติ` }
+                  { type: "text", color: '#2d63c7', text: `📋การลาผ่านการคัดกรอง` }
                 ]
               }
             ]
