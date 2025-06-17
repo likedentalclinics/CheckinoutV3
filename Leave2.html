@@ -62,6 +62,9 @@
       <div class="bg-white relative p-10 shadow-xl rounded-lg w-6/6 mx-auto">
         <div class="w-32 mb-5">
           <label for="typeId" class="block text-sm font-medium text-gray-700 mb-1">ประเภท</label>
+         <div id="sickNote" class="text-xs text-red-500 mb-1 hidden">
+     * โปรดแนบใบรับรองแพทย์ เมื่อเลือก "ลาป่วย"
+       </div>
           <select id="typeId" name="typeId" class="w-full p-2 border rounded-lg">
             <option value="ลาพักร้อน">ลาพักร้อน</option>
             <option value="ลาป่วย">ลาป่วย</option>
@@ -227,6 +230,15 @@
     const fileNameDisplay = document.getElementById("fileNameDisplay");
    const EmailInput = document.getElementById('EmailId');
     const BeginworkdateInput = document.getElementById('BeginworkdateId');
+   const sickNoteDiv = document.getElementById("sickNote");
+
+   typeIdSelect.addEventListener('change', function () {
+    if (typeIdSelect.value === "ลาป่วย") {
+       sickNoteDiv.classList.remove("hidden");
+      } else {
+      sickNoteDiv.classList.add("hidden");
+    }
+    });
 
     fileInput.addEventListener('change', function () {
       if (fileInput.files.length > 0) {
