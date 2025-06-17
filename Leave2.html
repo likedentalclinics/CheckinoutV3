@@ -395,9 +395,18 @@
       
   const fileUploaded = fileInput.files.length > 0;
   if (typeIdValue === 'ลาป่วย' && !fileUploaded) {
-    Swal.fire('ต้องการเอกสารรับรอง',`ให้กรอกข้อมูลอีกครั้งหลังมีใบรับรองแพทย์ พร้อมอัพโหลด`,'warning');
-    return true;
-  }
+    Swal.fire({'title: 'ยืนยันการบันทึกข้อมูล',
+        text: 'อย่าลืมบันทึกใหม่หลังมีใบรับรองแพทย์',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'ใช่, บันทึกข้อมูล!',
+        cancelButtonText: 'ไม่, ยกเลิก'
+      });
+      return result.isConfirmed;
+    }
+
      
   if (typeIdValue === 'ลาคลอด') {
       if (leaveDurationDays > 1 || !fileUploaded) {
