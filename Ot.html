@@ -292,10 +292,9 @@
       const otTitleValue = otTitle.value.trim();
       const otDetailValue = otDetail.value.trim();
 
-      if (userlineId === '' || nameId === '' || roleIdValue === '' || otDateValue === '' || startTimeValue === '' || endTimeValue === '' || otTitleValue === '' || otDetailValue === '') {
+      if (userlineId === '' || nameId === '' || roleIdValue === '' || otDateValue === '' || startTimeValue === '' || endTimeValue === '' || otTitleValue === '' || otDetailValue === '' || !fileInput) {
         return false;
       }
-
       return true;
     }
 
