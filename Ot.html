@@ -94,7 +94,7 @@
         <div class="text-center bg-slate-100 rounded-lg my-5 p-4">
           <label for="file" class="block text-sm font-medium text-gray-700 mb-1">อัพโหลดเอกสาร</label>
           <label for="file" class="cursor-pointer flex justify-center items-center">
-            <input type="file" id="file" name="file" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx" class="hidden">
+            <input type="file" id="file" name="file" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx" class="hidden" required>
             <div id="fileNameDisplay" class="text-slate-800 text-xs text-center mt-1">ยังไม่ได้เลือกไฟล์</div>
           </label>
           <div class="mx-auto text-slate-800 text-xs text-center mt-1">รูปแบบที่รองรับ jpg jpeg png pdf doc docx</div>
@@ -292,7 +292,7 @@
       const otTitleValue = otTitle.value.trim();
       const otDetailValue = otDetail.value.trim();
 
-      if (userlineId === '' || nameId === '' || roleIdValue === '' || otDateValue === '' || startTimeValue === '' || endTimeValue === '' || otTitleValue === '' || otDetailValue === '' || !fileInput) {
+      if (userlineId === '' || nameId === '' || roleIdValue === '' || otDateValue === '' || startTimeValue === '' || endTimeValue === '' || otTitleValue === '' || otDetailValue === '') {
         return false;
       }
       return true;
