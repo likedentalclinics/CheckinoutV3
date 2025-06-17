@@ -394,9 +394,9 @@
       }
       
   const fileUploaded = fileInput.files.length > 0;
-  if (typeIdValue === 'ลาป่วย' && leaveDurationDays > 2 && !fileUploaded) {
-    Swal.fire('ต้องการเอกสารรับรอง',`ป่วยตั้งแต่ 3 วันขึ้นไป (${leaveDurationDays} วัน) ต้องอัพใบรับรองแพทย์`,'warning');
-    return false;
+  if (typeIdValue === 'ลาป่วย' && !fileUploaded) {
+    Swal.fire('ต้องการเอกสารรับรอง',`ให้กรอกข้อมูลอีกครั้งหลังมีใบรับรองแพทย์ พร้อมอัพโหลด`,'warning');
+    return true;
   }
      
   if (typeIdValue === 'ลาคลอด') {
