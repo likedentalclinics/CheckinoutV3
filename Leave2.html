@@ -60,10 +60,10 @@
   <div class="max-w-md mx-auto py-4">
     <form id="leaveForm">
       <div class="bg-white relative p-10 shadow-xl rounded-lg w-6/6 mx-auto">
-                <div id="sickNote" class="block w-full text-xs text-red-500 mb-1 hidden">
+        <div class="w-32 mb-5">
+                         <div id="sickNote" class="block w-full text-xs text-red-500 mb-1 hidden">
   * โปรดแนบใบรับรองแพทย์ เมื่อเลือก "ลาป่วย"
 </div>
-        <div class="w-32 mb-5">
           <label for="typeId" class="block text-sm font-medium text-gray-700 mb-1">ประเภท</label>
           <select id="typeId" name="typeId" class="w-full p-2 border rounded-lg">
             <option value="ลาพักร้อน">ลาพักร้อน</option>
@@ -230,14 +230,14 @@
     const fileNameDisplay = document.getElementById("fileNameDisplay");
    const EmailInput = document.getElementById('EmailId');
     const BeginworkdateInput = document.getElementById('BeginworkdateId');
-   const sickNoteDiv = document.getElementById("sickNote");
+    const sickNoteDiv = document.getElementById("sickNote");
 
-   typeIdSelect.addEventListener('change', function () {
-    if (typeIdSelect.value === "ลาป่วย") {
+    typeIdSelect.addEventListener('change', function () {
+     if (typeIdSelect.value === "ลาป่วย") {
        sickNoteDiv.classList.remove("hidden");
-      } else {
-      sickNoteDiv.classList.add("hidden");
-    }
+     } else {
+       sickNoteDiv.classList.add("hidden");
+     }
     });
 
     fileInput.addEventListener('change', function () {
@@ -406,19 +406,10 @@
       }
       
   const fileUploaded = fileInput.files.length > 0;
-  if (typeIdValue === 'ลาป่วย' && !fileUploaded) {
-    Swal.fire({title: 'ยืนยันการบันทึกข้อมูล',
-        text: 'อย่าลืมบันทึกใหม่หลังมีใบรับรองแพทย์',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'ใช่, บันทึกข้อมูล!',
-        cancelButtonText: 'ไม่, ยกเลิก'
-      });
-      return result.isConfirmed;
-    }
-
+  if (typeIdValue === 'ลาป่วย' && leaveDurationDays > 2 && !fileUploaded) {
+    Swal.fire('ต้องการเอกสารรับรอง',`ป่วยตั้งแต่ 3 วันขึ้นไป (${leaveDurationDays} วัน) ต้องอัพใบรับรองแพทย์`,'warning');
+    return false;
+  }
      
   if (typeIdValue === 'ลาคลอด') {
       if (leaveDurationDays > 1 || !fileUploaded) {
