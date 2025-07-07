@@ -729,21 +729,47 @@
 
     // จัดการขั้นตอนการทำงาน
     let currentStep = 1;
-    function nextStep() {
-      if (currentStep < 3) {
-        document.getElementById(`step${currentStep}`).style.display = 'none';
-        currentStep++;
-        document.getElementById(`step${currentStep}`).style.display = 'block';
-      }
-    }
+  // ฟีเจอร์ auto close window ถ้า user ไม่ active ใน step1 ภายใน 3 นาที
+  let inactivityTimeout;
+  const INACTIVITY_LIMIT = 180000; // 3 นาที (มิลลิวินาที)
 
-    function prevStep() {
-      if (currentStep > 1) {
-        document.getElementById(`step${currentStep}`).style.display = 'none';
-        currentStep--;
-        document.getElementById(`step${currentStep}`).style.display = 'block';
-      }
+  function resetInactivityTimer() {
+    clearTimeout(inactivityTimeout);
+    // ตรวจสอบว่าอยู่ที่ step1 เท่านั้น
+    if (currentStep === 1) {
+      inactivityTimeout = setTimeout(() => {
+      liff.closeWindow();
+      }, INACTIVITY_LIMIT);
     }
+  }
+  ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll'].forEach(event => {
+    document.addEventListener(event, resetInactivityTimer, {passive: true});
+  });
+
+  // เริ่มจับเวลาหลังโหลดหน้า หรือเมื่อกลับมาที่ step1
+  window.addEventListener('load', resetInactivityTimer);
+  function nextStep() {
+    if (currentStep < 3) {
+      document.getElementById(`step${currentStep}`).style.display = 'none';
+      currentStep++;
+      document.getElementById(`step${currentStep}`).style.display = 'block';
+    // ถ้าออกจาก step1 ก็หยุดจับเวลา
+      if (currentStep !== 1) clearTimeout(inactivityTimeout);
+    // ถ้าเข้ามา step1 ใหม่ ให้จับเวลาใหม่
+      if (currentStep === 1) resetInactivityTimer();
+    }
+  }
+  function prevStep() {
+    if (currentStep > 1) {
+      document.getElementById(`step${currentStep}`).style.display = 'none';
+      currentStep--;
+      document.getElementById(`step${currentStep}`).style.display = 'block';
+      // ถ้าออกจาก step1 ก็หยุดจับเวลา
+      if (currentStep !== 1) clearTimeout(inactivityTimeout);
+      // ถ้าเข้ามา step1 ใหม่ ให้จับเวลาใหม่
+      if (currentStep === 1) resetInactivityTimer();
+    }
+  }
   </script>
 </body>
 
