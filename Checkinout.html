@@ -109,6 +109,10 @@
 
       <!-- Section: Location Info - shown automatically when page loads -->
       <div class="my-6" id="locationSection">
+  <div class="w-full mb-4 rounded-lg bg-slate-800 text-white">
+    <button type="button" onclick="getLocation()"
+      class="w-full p-4 rounded-lg animate-pulse">กดเพื่อยืนยันที่อยู่ของคุณ</button>
+  </div>
         <div id="locationInfo" name="locationInfo"
           class="bg-white p-4 rounded-lg shadow-sm max-w-sm mx-auto my-4">
           <div class="flex justify-between">
@@ -190,7 +194,6 @@
         const userId = profile.userId;
         document.getElementById('userId').value = userId;
         await fetchData(userId);
-        getLocation();
       } catch (error) {
         console.error('Error getting profile data:', error);
       }
