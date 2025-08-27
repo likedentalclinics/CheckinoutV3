@@ -169,7 +169,6 @@
   <script>
     window.onload = async function () {
       await initializeLiff();
-      getLocation(); // ดึงตำแหน่งทันทีเมื่อโหลดหน้า
     };
 
     async function initializeLiff() {
@@ -191,6 +190,7 @@
         const userId = profile.userId;
         document.getElementById('userId').value = userId;
         await fetchData(userId);
+        getLocation();
       } catch (error) {
         console.error('Error getting profile data:', error);
       }
